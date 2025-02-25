@@ -1,0 +1,6 @@
+-----------------------------------------
+Note: Use pdflatex to process this file.
+-----------------------------------------
+
+\documentclassbook
+

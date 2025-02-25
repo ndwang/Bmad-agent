@@ -1,0 +1,3158 @@
+chapter Bmad Library Routine List
+
+Below are a list of Bmad and sim_utils routines sorted by their
+functionality.  Use the "getf" and "listf" 
+scripts for more information on individual routines.
+This list includes low level routines that are not generally used in
+writing code for a program but may be useful in certain unique
+situations.  Excluded from the list are very low level routines that are
+solely meant for Bmad internal use.
+
+\toffset
+\em Routine Type \em Section  
+  Beam: Low Level Routines                    \refr:low.beam       
+  Beam: Tracking and Manipulation             \refr:beam           
+  Branch Handling                             \refr:branch         
+  Coherent Synchrotron Radiation (CSR)        \refr:csr            
+  Collective Effects                          \refr:collective     
+  Custom and Hook Routines                    \refr:custom         
+  Electro-Magnetic Fields                     \refr:em.fields      
+  HDF Read/Write                              \refr:hdf5           
+  Helper Routines: File, System, and IO       \refr:helper.file    
+  Helper Routines: Math (Except Matrix)       \refr:helper.math    
+  Helper Routines: Matrix                     \refr:helper.matrix  
+  Helper Routines: Miscellaneous              \refr:helper.misc    
+  Helper Routines: String Manipulation        \refr:helper.string  
+  Helper Routines: Switch to Name             \refr:switch         
+  Inter-Beam Scattering (IBS)                 \refr:ibs            
+  Lattice: Informational                      \refr:info           
+  Lattice: Element Manipulation               \refr:elem           
+  Lattice: Geometry                           \refr:geom           
+  Lattice: Low Level Stuff                    \refr:lat.low        
+  Lattice: Manipulation                       \refr:trans          
+  Lattice: Miscellaneous                      \refr:lat.misc       
+  Lattice: Nametable                          \refr:lat.nametab    
+  Lattice: Reading and Writing Files          \refr:lat.read       
+  Matrices                                    \refr:mat            
+  Matrix: Low Level Routines                  \refr:low.mat        
+  Measurement Simulation Routines             \refr:meas           
+  Multipass                                   \refr:multipass      
+  Multipoles                                  \refr:multipoles     
+  Optimizers (Nonlinear)                      \refr:opti           
+  Overload Equal Sign                         \refr:equal          
+  Particle Coordinate Stuff                   \refr:coord.stuff    
+  Photon Routines                             \refr:photon         
+  PTC Interface Routines                      \refr:ptc            
+  Quick Plot                                  \refr:qp             
+  Spin                                        \refr:spin           
+  Transfer Maps: Routines Called by make_mat6 \refr:mat6           
+  Transfer Maps: Complex Taylor Maps          \refr:ctaylor        
+  Transfer Maps: Taylor Maps                  \refr:taylor         
+  Transfer Maps: Driving Terms                \refr:driving.terms  
+  Tracking: Tracking and Closed Orbit         \refr:track          
+  Tracking: Low Level Routines                \refr:low.track      
+  Tracking: Mad Routines                      \refr:mad            
+  Tracking: Routines Called by track1         \refr:track1         
+  Twiss and Other Calculations                \refr:twiss          
+  Twiss: 6-Dimensional                        \refr:twiss6         
+  Wakefields                                  \refr:wake           
+  C/C++ Interface                             \refr:c.interface    
+  % Deprecated                                \refr:deprecated      
+\toffset
+
+------------------------------------------------------------------------
+
+The following helper routines are generally not useful for general use.
+
+\index[routine]bend_edge_kick
+     bend_edge_kick (ele, param, particle_at, orb, mat6, make_matrix, track_spin)  
+Subroutine to track through the edge field of an sbend.
+Reverse tracking starts with the particle just outside the bend and
+
+\index[routine]init_spin_distribution
+     init_spin_distribution (beam_init, bunch, ele)  
+Initializes a spin distribution according to init_beam%spin
+
+\index[routine]order_particles_in_z
+     order_particles_in_z (bunch)  
+Routine to order the particles longitudinally in terms of decreasing %vec(5).
+That is from large z (head of bunch) to small z.
+
+\index[routine]track1_bunch
+     track1_bunch (bunch, ele, err, centroid, direction)  
+Routine to track a bunch of particles through an element.
+
+\index[routine]track1_bunch_hom
+     track1_bunch_hom (bunch, ele, direction)  
+Routine to track a bunch of particles through an element.
+
+------------------------------------------------------------------------
+
+See for a discussion of using a collection of particles to simulate
+a bunch.
+
+\index[routine]bbi_kick
+     bbi_kick (x_norm, y_norm, r, kx, ky)  
+Routine to compute the normalized kick due to the beam-beam
+interaction using the normalized position for input.
+
+\index[routine]calc_bunch_params
+     calc_bunch_params (bunch, bunch_params, error, print_err, n_mat)  
+Finds all bunch parameters defined in bunch_params_struct, both normal-mode
+and projected
+
+\index[routine]calc_bunch_params_slice
+     
+    calc_bunch_params (bunch, bunch_params, plane, slice_center, 
+                  slice_spread, err, print_err)   
+Finds all bunch parameters for a slice through the beam distribution.
+
+\index[routine]calc_bunch_sigma_matrix
+     calc_bunch_sigma_matrix (particle, charge, bunch_params)  
+Routine to find the sigma matrix elements of a particle distribution.
+
+\index[routine]calc_emit_from_beam_init
+     calc_emit_from_beam_init (beam_init, ele, species)  
+Routine to calculate the emittances from the beam_init structure.
+
+\index[routine]calc_emittances_and_twiss_from_sigma_matrix
+     
+    calc_emittances_and_twiss_from_sigma_matrix(sigma_mat, gamma, 
+                  bunch_params, error, print_err, n_mat)   
+  Routine to calc emittances and Twiss function from a beam sigma matrix.
+  
+\index[routine]init_beam_distribution
+     init_beam_distribution (ele, param, beam_init, beam, err_flag, modes)  
+Routine to initialize a distribution of particles matched to
+the Twiss parameters, centroid position, and Energy - z correlation
+
+\index[routine]init_bunch_distribution
+     init_bunch_distribution (ele, param, beam_init, ix_bunch, bunch, err_flag, modes)  
+Routine to initialize either a random or tail-weighted distribution of particles.  
+
+\index[routine]read_beam_file
+     read_beam_file (file_name, beam, beam_init, err_flag, ele)  
+Subroutine to read in a beam definition file.
+
+\index[routine]reallocate_beam
+     reallocate_beam (beam, n_bunch, n_particle, save)  
+Routine to reallocate memory within a beam_struct.
+
+\index[routine]reallocate_bunch
+     reallocate_bunch (bunch, n_particle)  
+Subroutine to reallocate particles within a bunch_struct.
+
+\index[routine]track_beam
+     track_beam (lat, beam, ele1, ele2, err, centroid, direction)  
+     Routine to track a beam of particles from the end of
+     lat%ele(ix1) Through to the end of lat%ele(ix2).
+
+\index[routine]track_bunch
+     track_bunch (lat, bunch, ele1, ele2, err, centroid, direction)  
+Subroutine to track a particle bunch from the end of ele1 Through to the end of ele2.
+Both must be in the same lattice branch.
+
+\index[routine]track_bunch_time
+     track_bunch_time (bunch, ele_in, t_end, s_end, dt_step, extra_field)  
+Routine to track a particle bunch for a given time step (or if the ! particle position exceeds s_end).
+
+\index[routine]write_beam_file
+     write_beam_file (file_name, beam, new_file, file_format, lat)  
+Routine to write a beam file.
+
+\index[routine]write_beam_floor_positions
+     write_beam_floor_positions (file_name, beam, ele, new_file)  
+Routine to write a file of beam positions in global floor coordinates.
+
+------------------------------------------------------------------------
+
+\index[routine]allocate_branch_array
+     allocate_branch_array (lat, upper_bound)  
+Routine to allocate or re-allocate an branch array.
+The old information is saved.
+
+\index[routine]transfer_branch
+     transfer_branch (branch1, branch2)  
+Routine to set branch2 = branch1. 
+This is a plain transfer of information not using the overloaded equal.
+
+\index[routine]transfer_branches
+     transfer_branches (branch1, branch2)  
+Routine to set branch2 = branch1. 
+This is a plain transfer of information not using the overloaded equal.
+
+------------------------------------------------------------------------
+
+\index[routine]csr_bin_particles
+     csr_bin_particles (ele, particle, csr, err_flag)  
+Routine to bin the particles longitudinally in s. 
+
+\index[routine]csr_bin_kicks
+     csr_bin_kicks (ele, ds_kick_pt, csr, err_flag)  
+Routine to cache intermediate values needed for the csr calculations.
+
+\index[routine]i_csr
+     i_csr (kick1, i_bin, csr) result (i_this)  
+Routine to calculate the CSR kick integral.
+
+------------------------------------------------------------------------
+
+\index[routine]touschek_lifetime
+     touschek_lifetime (mode, Tl, lat) 
+Routine to calculate the Touschek lifetime for a lat.
+
+------------------------------------------------------------------------
+
+\index[routine]apply_element_edge_kick_hook
+     
+  apply_element_edge_kick_hook (orb, fringe_info, track_ele, param, 
+                finished, mat6, make_matrix, rf_time)   
+
+Routine that can be customized to track through the edge field of an element.
+This routine is always called by apply_element_edge_kick.
+
+\index[routine]check_aperture_limit_custom
+     check_aperture_limit_custom (orb, ele, particle_at, param, err_flag) 
+Routine to check if an orbit is outside an element's aperture.
+Used when "ele%aperture_type" is set to "custom$" 
+
+\index[routine]ele_geometry_hook
+     ele_geometry_hook (floor0, ele, floor, finished, len_scale)  
+Routine that can be customized to calculate the floor position of an element.
+
+\index[routine]ele_to_fibre_hook
+     ele_to_fibre_hook (ele, ptc_fibre, param)  
+Routine that can be customized for creating a PTC fibre from a Bmad element.
+This routine is always called by ele_to_fibre.
+
+\index[routine]em_field_custom
+     
+  em_field_custom(ele, param, s_rel, orbit, local_ref_frame, field, 
+                calc_dfield, err_flag, calc_potential, use_overlap, 
+                grid_allow_s_out_of_bounds, rf_time, used_eles)  
+Custom routine for calculating fields.
+
+\index[routine]init_custom
+     init_custom (ele, err_flag) 
+Routine for initializing custom elements or elements that do custom
+calculations.
+
+\index[routine]make_mat6_custom
+     make_mat6_custom (ele, param, start_orb, end_orb, err_flag) 
+Routine for custom calculations of the 6x6 transfer matrices.
+
+\index[routine]radiation_integrals_custom
+     radiation_integrals_custom (lat, ir, orb, rad_int1, err_flag) 
+User supplied routine to calculate the synchrotron radiation integrals for
+a custom element.
+
+\index[routine]time_runge_kutta_periodic_kick_hook
+     time_runge_kutta_periodic_kick_hook (orbit, ele, param, stop_time, init_needed)  
+Custom routine to add a kick to a particle at periodic times.
+
+\index[routine]track1_bunch_hook
+     track1_bunch_hook (bunch, ele, err, centroid, direction, finished)  
+Routine that can be customized for tracking a bunch through a single element.
+
+\index[routine]track1_custom
+         track1_custom (start_orb, ele, param, end_orb, err_flag, finished, track) 
+Dummy routine for custom tracking.
+
+\index[routine]track1_postprocess
+     track1_postprocess (start_orb, ele, param, end_orb)  
+Dummy routine for post processing after the track1 routine is done.
+
+\index[routine]track1_preprocess
+     track1_preprocess (start_orb, ele, param, err_flag, finished, radiation_included, track)  
+Dummy routine for pre processing at the start of the track1 routine.
+
+\index[routine]track1_spin_custom
+     track1_spin_custom (start, ele, param, end, err_flag, make_quaternion)  
+Dummy routine for custom spin tracking. 
+This routine needs to be replaced for a custom calculation.
+
+\index[routine]track1_wake_hook
+     track1_wake_hook (bunch, ele, finished)  
+Routine that can be customized for tracking through a wake.
+
+\index[routine]wall_hit_handler_custom
+     wall_hit_handler_custom (orb, ele, s)  
+This routine is called by the Runge-Kutta integrator odeint_bmad when a particle hits a wall.
+
+------------------------------------------------------------------------
+
+\index[routine]em_field_calc
+     
+    em_field_calc (ele, param, s_pos, orbit, local_ref_frame, field, calc_dfield, err_flag, 
+                  calc_potential, use_overlap, grid_allow_s_out_of_bounds, rf_time, 
+                  used_eles, print_err)   
+Routine to calculate the E and B fields for an element.
+
+\index[routine]em_field_custom
+     
+    em_field_custom(orbit, ele, param, s1_body, s2_body, err_flag, track, mat6, 
+                  make_matrix)  
+Custom routine for calculating fields.
+
+------------------------------------------------------------------------
+
+\index[routine]hdf5_write_attribute_string
+     hdf5_write_attribute_string(root_id, attrib_name, string, error)  
+Routine to create an HDF5 attribute whose value is a string.
+
+\index[routine]hdf5_open_file
+     hdf5_open_file (file_name, action, file_id, error, verbose)  
+Routine to open an HDF5 file.
+
+\index[routine]hdf5_open_object
+     hdf5_open_object(root_id, object_name, info, error, print_error) result (obj_id)  
+Routine to open an existing group or dataset.
+
+\index[routine]hdf5_close_object
+     hdf5_close_object(obj_id, info)  
+Routine to close a group or dataset.
+
+\index[routine]hdf5_exists
+     hdf5_exists (root_id, object_name, error, print_error) result (exists)  
+Routine to check if a object with object_name exists relative to root_id.
+
+\index[routine]hdf5_open_group
+     hdf5_open_group (root_id, group_name, error, print_error) result (g_id)  
+Routine to open an existing group.
+
+\index[routine]hdf5_open_dataset
+     hdf5_open_dataset(root_id, dataset_name, error, print_error) result (obj_id)  
+Routine to open an existing group or dataset.
+
+\index[routine]hdf5_num_attributes
+     hdf5_num_attributes(root_id) result (num)  
+Routine to return the number of attributes associated with a group or dataset.
+
+\index[routine]hdf5_get_attribute_by_index
+     hdf5_get_attribute_by_index(root_id, attrib_indx, attrib_id, attrib_name)  
+Routine to return the ID and name of an attribute given the attribute's index number.
+This routine is useful for looping over all the attributes in a group or dataset.
+
+\index[routine]hdf5_attribute_info
+     hdf5_attribute_info(root_id, attrib_name, error, print_error) result (info)  
+Routine to return information on an attribute given the attribute name and encompassing group.
+
+\index[routine]hdf5_object_info
+     hdf5_object_info (root_id, obj_name, error, print_error) result (info)  
+Routine to get information on an object (group or dataset).
+
+\index[routine]hdf5_read_attribute_int
+     
+    hdf5_read_attribute_int(root_id, attrib_name, attrib_value, error, 
+                  print_error, dflt_value)   
+Routine to read a integer attribute value or array.
+
+\index[routine]hdf5_read_attribute_real
+     
+    hdf5_read_attribute_real(root_id, attrib_name, attrib_value, error, 
+                  print_error, dflt_value)   
+Routine to read a real attribute value or array.
+
+\index[routine]hdf5_read_attribute_alloc_string
+     hdf5_read_attribute_alloc_string(root_id, attrib_name, string, error, print_error)  
+Routine to read a string attribute.
+Also see: hdf5_read_attribute_string
+
+\index[routine]hdf5_read_attribute_string
+     hdf5_read_attribute_string(root_id, attrib_name, string, error, print_error)  
+Routine to read a string attribute.
+Also see: hdf5_read_attribute_alloc_string
+
+\index[routine]hdf5_write_dataset_real
+     hdf5_write_dataset_real(root_id, dataset_name, value, error)  
+Routine to create a dataset of reals.
+
+\index[routine]hdf5_write_dataset_int
+     hdf5_write_dataset_int(root_id, dataset_name, value, error)  
+Routine to create a dataset of integers.
+
+\index[routine]hdf5_read_beam
+     hdf5_read_beam (file_name, beam, error, ele, pmd_header)  
+Routine to read a beam data file. 
+
+\index[routine]hdf5_write_grid_field
+     hdf5_write_grid_field (file_name, ele, g_field, err_flag)  
+Routine to create an hdf5 file encoding an array of grid_field structures.
+Note: Conventionally, the file name should have an ".h5" suffix.
+
+\index[routine]pmd_write_int_to_dataset
+     pmd_write_int_to_dataset (root_id, dataset_name, bmad_name, unit, array, error)  
+
+\index[routine]pmd_write_int_to_pseudo_dataset
+     
+    pmd_write_int_to_pseudo_dataset(root_id, dataset_name, bmad_name, unit, 
+                  value, v_shape, error)   
+
+\index[routine]pmd_write_real_to_dataset
+     pmd_write_real_to_dataset (root_id, dataset_name, bmad_name, unit, array, error)  
+
+\index[routine]pmd_write_real_to_pseudo_dataset
+     
+    pmd_write_real_to_pseudo_dataset (root_id, dataset_name, bmad_name, unit, 
+                  value, v_shape, error)   
+
+\index[routine]pmd_write_complex_to_dataset
+     pmd_write_complex_to_dataset (root_id, dataset_name, bmad_name, unit, array, error)  
+
+\index[routine]pmd_write_units_to_dataset
+     pmd_write_units_to_dataset (root_id, dataset_name, bmad_name, unit, error)  
+
+\index[routine]pmd_read_int_dataset
+     pmd_read_int_dataset (root_id, name, conversion_factor, array, error)  
+
+\index[routine]pmd_read_real_dataset
+     pmd_read_real_dataset (root_id, name, conversion_factor, array, error)  
+
+\index[routine]pmd_read_complex_dataset
+     pmd_read_complex_dataset (root_id, name, conversion_factor, array, error)  
+
+\index[routine]hdf5_read_grid_field
+     hdf5_read_grid_field (file_name, ele, g_field, err_flag, pmd_header, combine)  
+Routine to read an hdf5 file that encodes an array of grid_field structures.
+
+\index[routine]hdf5_write_beam
+     hdf5_write_beam (file_name, bunches, append, error, lat)  
+Routine to write particle positions of a beam to an HDF5 binary file.
+
+------------------------------------------------------------------------
+
+\index[routine]append_subdirectory
+     append_subdirectory (dir, sub_dir, dir_out, err)  
+Routine to combine a directory specification with a 
+subdirectory specification to form a complete directory
+
+\index[routine]cesr_iargc
+     cesr_iargc ()  
+Platform independent function to return the number of command
+line arguments. Use this with cesr_getarg.
+
+\index[routine]cesr_getarg
+     cesr_getarg (i_arg, arg)  
+Platform independent function to return the i'th command
+line argument. Use this with cesr_iargc.
+
+\index[routine]dir_close
+     dir_close ()   
+Routine to close a directory that was opened with dir_open.
+Also see dir_read.
+
+\index[routine]dir_open
+     dir_open (dir_name) result (opened)  
+Routine to open a directory to obtain a list of its files.
+Use this routine with dir_read and dir_close.
+
+\index[routine]dir_read
+     dir_read (file_name) result (valid)  
+Routine to get the names of the files in a directory.
+Use this routine with dir_open and dir_close.
+
+\index[routine]file_suffixer
+     file_suffixer (in_file_name, out_file_name, suffix, add_switch)  
+Routine to add/replace a suffix to a file name.
+
+\index[routine]get_tty_char
+     get_tty_char (this_char, wait, flush)  
+Routine for getting a single character from the terminal.
+Also see: get_a_char
+
+\index[routine]get_a_char
+     get_a_char (this_char, wait, ignore_this)  
+Routine for getting a single character from the terminal.
+Also see: get_tty_char
+
+\index[routine]get_file_time_stamp
+     get_file_time_stamp (file, time_stamp)  
+Routine to get the "last modified" time stamp for a file.
+
+\index[routine]lunget
+     lunget()  
+Function to return a free file unit number to be used with an open statement.
+
+\index[routine]milli_sleep
+     milli_sleep (milli_sec)  
+Routine to pause the program for a given number of milli-seconds.
+
+\index[routine]out_io
+     out_io (...)  
+Routine to print to the terminal for command line type programs.
+The idea is that for programs with a gui this routine can be easily
+replaced with another routine.
+
+\index[routine]out_io_called
+     out_io_called (level, routine_name)  
+Dummy routine for linker.
+See out_io for more details.
+
+\index[routine]out_io_end
+     out_io_end ()  
+Dummy routine for linker.
+See out_io for more details.
+
+\index[routine]out_io_line
+     out_io_line (line)  
+Dummy routine for linker.
+See out_io for more details.
+
+\index[routine]output_direct
+     output_direct (file_unit, print_and_capture, min_level, max_level, set, get)  
+Routine to set where the output goes when out_io is called.
+Output may be sent to the terminal screen, written to a file, or both.
+Also can be used to restrict output verbosity.
+
+\index[routine]read_a_line
+     read_a_line (prompt, line_out, trim_prompt, prompt_color, prompt_bold, history_file)  
+Routine to read a line of input from the terminal.
+The line is also add to the history buffer so that the up-arrow
+
+\index[routine]skip_header
+     skip_header (ix_unit, error_flag)  
+Routine to find the first line of data in a file. 
+
+\index[routine]splitfilename
+     splitfilename(filename, path, basename, is_relative) result (ix_char)  
+Routine to take filename and splits it into its constituent parts, 
+the directory path and the base file name.  
+
+\index[routine]system_command
+     system_command (line, err_flag)  
+Routine to execute an operating system command from within the program.
+
+\index[routine]type_this_file
+     type_this_file (filename)  
+Routine to type out a file to the screen.
+
+------------------------------------------------------------------------
+
+\index[routine]complex_error_function
+     complex_error_function (wr, wi, zr, zi)  
+This routine evaluates the function w(z) in the first quadrant of
+the complex plane. 
+
+\index[routine]cross_product
+     cross_product (a, b)  
+Returns the cross product of a x b
+
+\index[routine]linear_fit
+     linear_fit (x, y, n_data, a, b, sig_a, sig_b)  
+Routine to fit to y = A + B x
+
+\index[routine]modulo2
+     modulo2 (x, amp)  
+Function to return y = x + 2 * n * amp, n is an integer, such that y is 
+in the interval [-amp, amp].
+
+\index[routine]ran_engine
+     ran_engine (set, get, ran_state)  
+Routine to set what random number generator algorithm is used.
+If this routine is never called then pseudo_random$ is used.
+
+\index[routine]ran_gauss
+     ran_gauss (harvest)  
+Routine to return a Gaussian distributed random number with unit sigma.
+
+\index[routine]ran_gauss_converter
+     ran_gauss_converter (set, set_sigma_cut, get, get_sigma_cut, ran_state)  
+Routine to set what conversion routine is used for converting
+uniformly distributed random numbers to Gaussian distributed random numbers.
+
+\index[routine]ran_seed_put
+     ran_seed_put (seed, ran_state, mpi_offset)  
+Routine to seed the random number generator. 
+
+\index[routine]ran_seed_get
+     ran_seed_get (seed, ran_state)  
+Routine to return the seed used for the random number generator.
+
+\index[routine]ran_uniform
+     ran_uniform (harvest)  
+Routine to return a random number uniformly distributed in the 
+interval [0, 1]. This routine uses the same algorithm as ran from
+
+\index[routine]spline_akima
+     spline_akima (spline, ok)  
+Given a set of (x,y) points we want to interpolate between the points.
+This routine computes the semi-hermite cubic spline developed by akima
+
+\index[routine]spline_evaluate
+     spline_evaluate (spline, x, ok, y, dy)  
+Routine to evaluate a spline at a set of points.
+
+\index[routine]super_ludcmp
+     super_ludcmp (a,indx,d, err)  
+This routine is essentially ludcmp from Numerical Recipes with the added feature
+that an error flag is set instead of bombing the program when there is a problem.
+
+------------------------------------------------------------------------
+
+\index[routine]mat_eigen
+     mat_eigen (mat, eigen_val, eigen_vec, error, print_err)  
+Routine for determining the eigen vectors and eigen values of a matrix.
+
+\index[routine]mat_inverse
+     mat_inverse (mat, mat_inv, ok, print_err) 
+Routine to take the inverse of a square matrix. 
+
+\index[routine]mat_make_unit
+     mat_make_unit (mat)  
+     routine to create a unit matrix.
+
+\index[routine]mat_rotation
+     mat_rotation (mat, angle, bet_1, bet_2, alph_1, alph_2)  
+     Routine to construct a 2x2 rotation matrix for translation from
+     point 1 to point 2.
+
+\index[routine]mat_symplectify
+     mat_symplectify (mat_in, mat_symp, p0_ratio, r_root) 
+Routine to form a symplectic matrix that is approximately equal to the input matrix. 
+
+\index[routine]mat_symp_error
+     mat_symp_error (mat, p0_ratio, err_mat) result (error) 
+Routine to check the symplecticity of a square matrix 
+
+\index[routine]mat_symp_conj
+     mat_symp_conj (mat) result (mat_conj)  
+Routine to take the symplectic conjugate of a square matrix.
+
+\index[routine]mat_symp_decouple
+     
+    mat_symp_decouple (t0, stat, u, v, 
+                  ubar, vbar, g, twiss1, twiss2, gamma, type_out)  
+Routine to find the symplectic eigen--modes of the one turn 4x4 coupled 
+transfer matrix T0. 
+
+\index[routine]mat_type
+     mat_type (mat, nunit, header, num_form, lines, n_lines)  
+     Routine to output matrices to the terminal or to a file
+
+------------------------------------------------------------------------
+
+\index[routine]date_and_time_stamp
+     date_and_time_stamp (string, numeric_month, include_zone)  
+Routine to return the current date and time in a character string.
+
+\index[routine]err_exit
+     err_exit(err_str)  
+Routine to first show the stack call list before exiting.
+This routine is typically used when a program detects an error condition.
+
+\index[routine]integer_option
+     integer_option (integer_default, opt_integer)  
+Function to return True or False depending upon the state of an 
+optional integer.
+
+\index[routine]is_false
+     is_false (param) result (this_false)  
+Routine to translate from a real number to a boolian True or False.
+Translation: 0 = False, nonzero = True.
+
+\index[routine]is_true
+     is_true (param) result (this_true)  
+Routine to translate from a real number to a boolian True or False.
+Translation: 0 = False, nonzero = True.
+
+\index[routine]logic_option
+     logic_option (logic_default, opt_logic)  
+Function to return True or False depending upon the state of an 
+optional logical.
+
+\index[routine]re_allocate
+     re_allocate (ptr_to_array, n, exact)  
+Function to reallocate a pointer to an array of strings, integers, reals, or logicals.
+
+\index[routine]re_associate
+     re_associate (array, n)  
+Function to reassociate an allocatable array of strings, integers, reals, or logicals.
+
+\index[routine]real_option
+     real_option (real_default, opt_real)  
+Function to return True or False depending upon the state of an 
+optional real.
+
+\index[routine]string_option
+     string_option (string_default, opt_string)  
+Routine to return True or False depending upon the state of an 
+optional string.
+
+------------------------------------------------------------------------
+
+\index[routine]all_pointer_to_string
+     all_pointer_to_string (a_ptr, err) result (str)  
+Routine to turn the value pointed to by an all_pointer_struct into a string for printing.
+
+\index[routine]downcase
+     downcase (str_in) result (str_out)  
+Routine to convert a string to lower case.
+
+\index[routine]downcase_string
+     downcase_string (string)  
+Routine to convert a string to lowercase:
+
+\index[routine]index_nocase
+     index_nocase (string, match_str) result (indx)  
+Function to look for a sub-string of string that matches match_str.
+This routine is similar to the fortran INDEX function
+
+\index[routine]int_str
+     int_str(int, width) result (str)  
+Routine to return a string representation of an integer.
+
+\index[routine]is_alphabetic
+     is_alphabetic (string, valid_chars) result (is_alpha)  
+Function to tell if a string has all alphabetical characters.
+Spaces are counted as not alphabetic
+
+\index[routine]is_integer
+     is_integer (string, int)  
+Function to tell if the first word in a string is a valid integer.
+
+\index[routine]is_logical
+     is_logical (string, ignore) result (good)  
+Function to test if a string represents a logical.
+Accepted possibilities are (individual characters can be either case):
+
+\index[routine]is_real
+     is_real (string, ignore, real_num) result (good)  
+Function to test if a string represents a real number.
+
+\index[routine]location_decode
+     location_decode (string, array, ix_min, num, names, exact_case, print_err)  
+Subroutine to set a list of locations in a logical array to True.
+
+\index[routine]location_encode1
+     location_encode1 (string, loc, exists, ix_min, names, separator, err_flag)  
+Routine to encode a list of locations. 
+This routine is overloaded by the routine: location_encode.
+
+\index[routine]logic_str
+     logic_str(logic) result (str)  
+Routine to return a string representation (T/F) of a logical.
+
+\index[routine]match_reg
+     match_reg (str, pat)  
+Function for matching with regular expressions.
+Note: strings are trimmed before comparison.
+
+\index[routine]match_wild
+     match_wild (string, template) result (this_match)  
+Function to do wild card matches. Note: trailing blanks will be discarded
+before any matching is done.
+
+\index[routine]match_word
+     match_word (string, names, ix, exact_case, can_abbreviate, matched_name)  
+Routine to match the first word in a string against a list of names.
+Abbreviations are accepted.  
+
+\index[routine]on_off_logic
+     on_off_logic (logic, true_str, false_str) result (name)  
+Function to return the string "ON" or "OFF".
+
+\index[routine]ordinal_str
+     ordinal_str(n) result (str)  
+Routine to return a string representing the ordinal position of n.
+EG n = 1 -> "1st", n = 2 -> "2nd", etc.
+
+\index[routine]parse_fortran_format
+     parse_fortran_format (format_str, n_repeat, power, descrip, width, digits)  
+Routine to parse a Fortran edit descriptor.
+This routine assumes that format_str will be a edit descriptor for a single entity like '3f10.6'.
+
+\index[routine]quote
+     quote(str) result (q_str)  
+Function to put double quote marks (") around a string.
+The string will not be modified if there are already quote marks of either kind.
+
+\index[routine]quoten
+     quoten(str, delim) result (q_str)  
+Function to put double quote marks (") around each string in an array and
+return the concatenated string with a delimitor between the strings.
+
+\index[routine]real_num_fortran_format
+     real_num_fortran_format (number, width, n_blanks) result (fmt_str)  
+Routine to find a "nice" edit descriptor format for a real number.
+The format will either be "es" for numbers that are very small or very large or "f".
+
+\index[routine]real_str
+     real_str(r_num, n_signif, n_decimal) result (str)  
+Routine to return a string representing a real number.
+Trailing zeros will be supressed. 
+
+\index[routine]real_to_string
+     real_to_string (real_num, width, n_signif, n_decimal) result (str)  
+Routine to turn a real number into a string for printing. 
+Printing the number without an explicit exponent is preferred.
+
+\index[routine]reals_to_string
+     reals_to_string (real_arr, n_number, n_blank, n_signif, n_decimal) result (str)  
+Routine to turn a n array of reals into a string for printing. 
+
+\index[routine]reals_to_table_row
+     reals_to_table_row (real_arr, width, n_decimal, n_blank) result (str)  
+Routine to turn an array of real numbers into a string for printing tables.
+Fixed format is preferred and floating format will only be used if necessary.
+
+\index[routine]str_match_wild
+     str_match_wild(str, pat) result (a_match)  
+Function to match a character string against a regular expression pattern.
+
+\index[routine]str_set
+     str_set(str_out, str_in)  
+Routine to set a variable length string.
+Trailing blanks will be trimmed.
+
+\index[routine]string_to_int
+     string_to_int (line, default, err_flag, err_print_flag)  
+Routine to convert a string to an integer.
+
+\index[routine]string_to_real
+     string_to_real (line, default, err_flag, err_print_flag)  
+Routine to convert a string to an real.
+
+\index[routine]string_trim
+     string_trim(in_string, out_string, word_len)  
+Routine to trim a string of leading blanks and/or tabs and also to return the
+length of the first word.
+
+\index[routine]string_trim2
+     string_trim2 (in_str, delimitors, out_str, ix_word, delim, ix_next)  
+Routine to trim a string of leading delimiters and also to return the
+length of the first word.
+
+\index[routine]str_downcase
+     str_downcase (dst, src)  
+Routine to convert a string to down case.
+
+\index[routine]str_substitute
+     str_substitute (string, str_match, str_replace, do_trim, ignore_escaped)  
+Routine to substitute all instances of one sub-string for another in a string
+
+\index[routine]to_str
+     to_str(num, max_signif) result (string)  
+Routine to return the string representation of a number.
+
+\index[routine]unquote
+     unquote (str_in) result (str_out)  
+Routine to remove quotation marks at the ends of a string.
+Quotation marks will only be removed if they match at both ends.
+
+\index[routine]upcase
+     upcase (str_in) result (str_out)  
+Routine to convert a string to upper case.
+
+\index[routine]upcase_string
+     upcase_string (string)  
+Routine to convert a string to uppercase:
+
+------------------------------------------------------------------------
+
+\index[routine]coord_state_name
+     coord_state_name (coord_state) result (state_str)  
+Routine to return the string representation of a coord%state state.
+
+------------------------------------------------------------------------
+
+\index[routine]bane1
+     bane1(ele, coulomb_log, rates, n_part)  
+ This is an implementation of equations 10-15 from "Intrabeam
+ scattering formulas for high energy beams" Kubo,Mtingwa,Wolski.
+
+\index[routine]bjmt1
+     bjmt1(ele, coulomb_log, rates, n_part)  
+ This is an implementation of equations 1-9 from "Intrabeam
+ scattering formulas for high energy beams" Kubo,Mtingwa,Wolski.
+
+\index[routine]cimp1
+     cimp1(ele, coulomb_log, rates, n_part)  
+ This is an implementation of equations 34,38-40 from "Intrabeam
+ scattering formulas for high energy beams" Kubo,Mtingwa,Wolski.
+
+\index[routine]ibs_lifetime
+     ibs_lifetime(lat,ibs_sim_params,maxratio,lifetime,granularity)  
+ This module computes the beam lifetime due to
+ the diffusion process.
+
+\index[routine]mpxx1
+     mpxx1(ele, coulomb_log, rates, n_part)  
+ Modified Piwinski, further modified to treat Coulomb Log
+ in the same manner as Bjorken-Mtingwa, CIMP, Bane, Kubo \& Oide, etc.
+
+\index[routine]mpzt1
+     mpzt1(ele, coulomb_log, rates, n_part)  
+ Modified Piwinski with Zotter's integral.  This is Piwinski's original derivation,
+ generalized to take the derivatives of the optics functions.  
+
+------------------------------------------------------------------------
+
+These routine are for adding elements, moving elements, etc.
+
+\index[routine]add_lattice_control_structs
+     
+  add_lattice_control_structs (ele, n_add_slave, n_add_lord, n_add_slave_field, 
+                n_add_lord_field, add_at_end)   
+Routine to adjust the control structure of a lat so that extra control elements can be added.
+
+\index[routine]add_superimpose
+     
+    add_superimpose (lat, super_ele_in, ix_branch, err_flag, super_ele_out, 
+                  save_null_drift, create_jumbo_slave, ix_insert, mangle_slave_names, wrap)  
+Routine to make a superimposed element. 
+
+\index[routine]attribute_bookkeeper
+     attribute_bookkeeper (ele, force_bookkeeping) 
+Routine to make sure the attributes of an element are self-consistent. 
+
+\index[routine]autoscale_phase_and_amp
+     
+      autoscale_phase_and_amp(ele, param, err_flag, scale_phase, 
+                    scale_amp, call_bookkeeper)   
+Routine to set the phase offset and amplitude scale of the accelerating field. 
+This routine works on lcavity, rfcavity and e_gun elements.
+
+\index[routine]create_element_slice
+     
+    create_element_slice (sliced_ele, ele_in, l_slice, offset, param, 
+                    include_upstream_end, include_downstream_end, err_flag, old_slice)   
+Routine to transfer the %value, %wig_term, and %wake%lr information from a 
+superposition lord to a slave when the slave has only one lord.
+
+\index[routine]create_field_overlap
+     create_field_overlap (lat, lord_name, slave_name, err_flag)  
+Subroutine to add the bookkeeping information to a lattice for an element's field
+overlapping another element.
+
+\index[routine]create_group
+     create_group (lord, contrl, err) 
+Routine to create a group control element. 
+
+\index[routine]create_girder
+     create_girder (lat, ix_girder, contrl, girder_info, err_flag)  
+     Routine to add the controller information to slave elements of
+     an girder_lord.
+
+\index[routine]create_overlay
+     create_overlay (lord, contrl, err) 
+Routine to add the controller information to slave elements of an 
+overlay_lord. 
+
+\index[routine]create_planar_wiggler_model
+     create_wiggler_model (wiggler_in, lat)  
+Routine to create series of bend and drift elements to serve as a model for a wiggler.
+This routine uses the mrqmin nonlinear optimizer to vary the parameters in the wiggler 
+
+\index[routine]insert_element
+     insert_element (lat, insert_ele, ix_ele, ix_branch, orbit) 
+Routine to Insert a new element into the tracking part of the 
+lat structure. 
+
+\index[routine]make_hybrid_lat
+     make_hybrid_lat (lat_in, lat_out, use_taylor, orb0_arr) 
+Routine to concatenate together elements to make a hybrid lat 
+
+\index[routine]new_control
+     new_control (lat, ix_ele, ele_name) 
+Routine to create a new control element. 
+
+\index[routine]pointer_to_attribute
+     
+  pointer_to_attribute (ele, attrib_name, do_allocation, 
+                a_ptr, err_flag, err_print_flag, ix_attrib) 
+Returns a pointer to an attribute of an element with name attrib_name. 
+
+\index[routine]pointers_to_attribute
+     
+    pointers_to_attribute (lat, ele_name, attrib_name, do_allocation, 
+                  ptr_array, err_flag, err_print_flag, eles, ix_attrib)   
+Returns an array of pointers to an attribute with name attrib_name within 
+elements with name ele_name.
+
+\index[routine]pointer_to_branch
+     pointer_to_branch  
+Routine to return a pointer to a lattice branch.
+
+\index[routine]pointer_to_next_ele
+     pointer_to_next_ele (this_ele, offset, skip_beginning, follow_fork) result (next_ele)  
+Function to return a pointer to the N\^th element relative to this_ele
+in the array of elements in a lattice branch.
+
+\index[routine]pointer_to_ele
+     
+  pointer_to_ele (lat, ix_ele, ix_branch) result (ele_ptr) 
+  pointer_to_ele (lat, ele_loc_id) result (ele_ptr)
+    
+Routine to point to a given element.
+
+\index[routine]pointer_to_ele_multipole
+     pointer_to_ele_multipole (ele, a_pole, b_pole, ksl_pole, pole_type)  
+Routine to point to the appropriate magnetic or electric poles in an element.
+
+\index[routine]pointer_to_element_at_s
+     
+    pointer_to_element_at_s (branch, s, choose_max, err_flag, s_eff, position, 
+                  print_err) result (ele)   
+Function to return a pointer to the element at position s.
+
+\index[routine]remove_eles_from_lat
+     remove_eles_from_lat (lat, check_sanity)  
+Routine to remove an elements from the lattice.
+
+\index[routine]set_ele_attribute
+     set_ele_attribute (ele, set_string, err_flag, err_print_flag, set_lords)  
+Routine to set an element's attribute.
+
+\index[routine]set_ele_status_stale
+     set_ele_status_stale (ele, status_group, set_slaves)  
+Routine to set a status flags to stale in an element and the corresponding 
+ones for any slaves the element has.
+
+\index[routine]set_status_flags
+     set_status_flags (bookkeeping_state, stat)  
+Routine to set the bookkeeping status block.
+
+\index[routine]split_lat
+     
+    split_lat (lat, s_split, ix_branch, ix_split, split_done, add_suffix, check_sanity, 
+                  save_null_drift, err_flag, choose_max, ix_insert)  
+Routine to split a lat at a point.
+
+\index[routine]value_of_attribute
+     
+    value_of_attribute (ele, attrib_name, err_flag, err_print_flag, 
+                  err_value) result (value)   
+Returns the value of an element attribute.
+
+------------------------------------------------------------------------
+
+\index[routine]bend_shift
+     bend_shift(position1, g, delta_s, w_mat, ref_tilt) result(position2)  
+Function to shift a particle's coordinates from one coordinate frame of reference 
+to another within a bend with curvature g and reference tilt ref_tilt.
+
+\index[routine]coords_curvilinear_to_floor
+     coords_curvilinear_to_floor (xys, branch, err_flag) result (global)  
+Routine to find the global position of a local lab (x, y, s) position.
+s = position from beginning of lattice branch.
+
+\index[routine]coords_floor_to_curvilinear
+     coords_floor_to_curvilinear (floor_coords, ele0, ele1, status, w_mat) result (local_coords)  
+Given a position in global "floor" coordinates, return local curvilinear (ie element) coordinates 
+for an appropriate element, ele1, near ele0. That is, the s-position of local_coords will be within
+
+\index[routine]coords_floor_to_relative
+     
+    coords_floor_to_relative (floor0, global_position, 
+                  calculate_angles, is_delta_position) result (local_position)   
+Returns local floor position relative to floor0 given a global floor position.
+This is an essentially an inverse of routine coords_relative_to_floor.
+
+\index[routine]coords_relative_to_floor
+     coords_relative_to_floor (floor0, dr, theta, phi, psi) result (floor1)  
+Starting from a given reference frame and given a shift in position, return
+the resulting reference frame.
+
+\index[routine]coords_local_curvilinear_to_floor
+     
+  coords_local_curvilinear_to_floor (local_position, ele, in_body_frame, w_mat, 
+                calculate_angles, relative_to_upstream) result (global_position)   
+Given a position local to ele, return global floor coordinates.
+
+\index[routine]coords_floor_to_local_curvilinear
+     
+      coords_floor_to_local_curvilinear  (global_position, ele, status, w_mat, 
+                    relative_to_upstream) result(local_position)   
+Given a position in global coordinates, return local curvilinear coordinates in ele
+  relative to floor0
+
+\index[routine]ele_geometry
+     ele_geometry (floor_start, ele, floor_end, len_scale, ignore_patch_err)  
+Routine to calculate the physical (floor) placement of an element given the
+placement of the preceding element. This is the same as the MAD convention.
+
+\index[routine]ele_geometry_with_misalignments
+     ele_geometry_with_misalignments (ele, len_scale) result (floor)  
+Routine to calculate the element body coordinates (that is, coordinates with misalignments) 
+for an element at some distance s_offset from the upstream end.
+
+\index[routine]ele_misalignment_l_s_calc
+     ele_misalignment_l_s_calc (ele, l_mis, s_mis)  
+Calculates transformation vector L_mis and matrix S_mis due to misalignments for an ele
+Used to transform coordinates and vectors relative to the center of the element
+
+\index[routine]floor_angles_to_w_mat
+     floor_angles_to_w_mat (theta, phi, psi, w_mat, w_mat_inv)  
+Routine to construct the W matrix that specifies the orientation of an element
+in the global "floor" coordinates. See the Bmad manual for more details.
+
+\index[routine]floor_w_mat_to_angles
+     floor_w_mat_to_angles (w_mat, theta, phi, psi, floor0)  
+Routine to construct the angles that define the orientation of an element
+in the global "floor" coordinates from the W matrix. See the Bmad manual for more details.
+
+\index[routine]lat_geometry
+     lat_geometry (lat) 
+Routine to calculate the physical placement of all the elements in a lattice. 
+That is, the physical machine layout on the floor. 
+
+\index[routine]orbit_to_local_curvilinear
+     orbit_to_local_curvilinear (orbit, ele) result (local_position)  
+Routine to return the local curvilinear position and orientation of a particle.
+
+\index[routine]patch_flips_propagation_direction
+     patch_flips_propagation_direction (x_pitch, y_pitch) result (is_flip)  
+Routine to determine if the propagation direction is flipped in a patch.
+This is true if the tranformation matrix element S(3,3) = cos(x_pitch) * cos(y_pitch) 
+
+\index[routine]s_calc
+     s_calc (lat) 
+Routine to calculate the longitudinal distance S for the elements in a lat. 
+
+\index[routine]update_floor_angles
+     update_floor_angles (floor, floor0)  
+Routine to calculate floor angles from its W matrix.
+
+\index[routine]w_mat_for_bend_angle
+     w_mat_for_bend_angle (angle, ref_tilt, r_vec) result (w_mat)  
+Routine to compute the W matrix for the angle transformation in a bend.
+Using the notation in the Bmad manual:
+
+\index[routine]w_mat_for_x_pitch
+     w_mat_for_x_pitch (x_pitch, return_inverse)  
+Routine to return the transformation matrix for an x_pitch.
+
+\index[routine]w_mat_for_y_pitch
+     w_mat_for_y_pitch (y_pitch, return_inverse)  
+Routine to return the transformation matrix for an y_pitch.
+
+\index[routine]w_mat_for_tilt
+     w_mat_for_tilt (tilt, return_inverse)  
+Routine to return the transformation matrix for an tilt.
+
+------------------------------------------------------------------------
+
+\index[routine]attribute_free
+     
+  attribute_free (ix_ele, attrib_name, lat, err_print_flag, except_overlay) result (free) 
+  attribute_free (ele, attrib_name, lat, err_print_flag, except_overlay) result (free) 
+  attribute_free (ix_ele, ix_branch, attrib_name, lat, err_print_flag, except_overlay) result (free)
+   
+Overloaded function to check if an attribute is free to vary.
+
+\index[routine]attribute_index
+     attribute_index (ele, name, full_name) 
+Function to return the index of an attribute for a given element 
+type and the name of the attribute 
+
+\index[routine]attribute_name
+     attribute_name (ele, ix_att) 
+Function to return the name of an attribute for a particular type of element. 
+
+\index[routine]attribute_type
+     attribute_type (attrib_name, ele) result (attrib_type)  
+Routine to return the type (logical, integer, real, or named) of an attribute.
+
+\index[routine]branch_name
+     branch_name(branch) result (name)  
+Routine to return a string with the lattice branch name encoded.
+This routine is useful for error messages.
+
+\index[routine]check_if_s_in_bounds
+     check_if_s_in_bounds (branch, s, err_flag, translated_s, print_err)  
+Routine to check if a given longitudinal position s is within the bounds of a given branch of a lattice.
+
+\index[routine]element_at_s
+     element_at_s (lat, s, choose_max, ix_branch, err_flag, s_eff, position) result (ix_ele)  
+Routine to return the index of the element at position s.
+
+\index[routine]ele_loc_name
+     ele_loc_to_string (ele, show_branch0, parens) result (str)  
+Routine to encode an element's location into a string.
+
+\index[routine]equivalent_taylor_attributes
+     equivalent_taylor_attributes (ele_taylor, ele2) result (equiv)  
+Routine to see if two elements are equivalent in terms of their attributes so
+that their Taylor Maps, if they existed, would be the same.
+
+\index[routine]find_element_ends
+     find_element_ends (ele, ele1, ele2, ix_multipass) 
+Routine to find the end points of an element. 
+
+\index[routine]get_slave_list
+     get_slave_list (lord, slaves, n_slave)  
+Routine to get the list of slaves for an element.
+
+\index[routine]key_name
+     key_name (key_index) 
+Translate an element key index (EG: quadrupole$, etc.) to a character string.
+
+\index[routine]key_name_to_key_index
+     key_name_to_key_index (key_str, abbrev_allowed) result (key_index)  
+Function to convert a character string  (eg: "drift") to an index (eg: drift$).
+
+\index[routine]lat_ele_locator
+     
+    lat_ele_locator (loc_str, lat, eles, n_loc, err, above_ubound_is_err, 
+                  ix_dflt_branch, order_by_index)   
+Routine to locate all the elements in a lattice that corresponds to loc_str. 
+
+\index[routine]lat_sanity_check
+     lat_sanity_check (lat, err_flag) 
+Routine to check the control links in a lat structure, etc.
+
+\index[routine]n_attrib_string_max_len
+     n_attrib_string_max_len () result (max_len)  
+Routine to return the maximum number of characters in any attribute
+name known to bmad.
+
+\index[routine]num_lords
+     num_lords (slave, lord_type) result (num)  
+Routine to return the number of lords of a given type for a given lattice element.
+
+     num_lords (slave, lord_type) result (num)  
+Routine to return the number of lords of a lattice element of a certain type.
+
+\index[routine]pointer_to_indexed_attribute
+     
+  pointer_to_indexed_attribute (ele, ix_attrib, do_allocation, 
+                a_ptr, err_flag, err_print_flag)   
+Returns a pointer to an attribute of an element ele with attribute index ix_attrib.
+
+\index[routine]pointer_to_lord
+     
+    pointer_to_lord (slave, ix_lord, control, ix_slave_back, field_overlap_ptr, 
+                  ix_control, ix_ic) result (lord_ptr)  
+Function to point to a lord of a slave.
+
+\index[routine]pointer_to_multipass_lord
+     pointer_to_multipass_lord (ele, ix_pass, super_lord) result (multi_lord)  
+Routine to find the multipass lord of a lattice element.
+A multi_lord will be found for:
+
+\index[routine]pointer_to_slave
+     pointer_to_slave (lord, ix_slave, control, field_overlap_ptr) result (slave_ptr)  
+Function to point to a slave of a lord.
+
+\index[routine]rf_is_on
+     rf_is_on (branch, ix_ele1, ix_ele2) result (is_on)  
+Routine to check if any rfcavity is powered in a branch.
+
+\index[routine]switch_attrib_value_name
+     
+    switch_attrib_value_name (attrib_name, attrib_value, ele, is_default,  
+                  name_list) result (val_name)   
+Routine to return the name corresponding to the value of a given switch attribute.
+
+\index[routine]type_ele
+     type_ele (ele, type_zero_attrib, type_mat6, type_taylor, 
+              twiss_out, type_control, type_wake, type_floor_coords, 
+              type_field, type_wall, type_rad_kick, lines, n_lines) 
+Subroutine to print or put in a string array information on a lattice element.
+
+\index[routine]type_twiss
+     type_twiss (ele, frequency_units, compact_format, lines, n_lines) 
+Subroutine to print or put in a string array Twiss information from an element.
+
+\index[routine]valid_tracking_method
+     valid_tracking_method (ele, species, tracking_method) result (is_valid)  
+Routine to return whether a given tracking method is valid for a given element.
+
+\index[routine]valid_mat6_calc_method
+     
+    valid_mat6_calc_method (ele, species, mat6_calc_method) result (is_valid)   
+Routine to return whether a given mat6_calc method is valid for a given element.
+
+------------------------------------------------------------------------
+
+\index[routine]bracket_index
+     bracket_index (s, s_arr, i_min, dr, restrict) 
+Routine to find the index ix so that s(ix) \le s < s(ix+1). 
+If s < s(1) then ix = 0 
+
+\index[routine]check_controller_controls
+     check_controller_controls (ele_key, contrl, name, err)  
+Routine to check for problems when setting up group or overlay controllers.
+
+\index[routine]deallocate_ele_pointers
+     deallocate_ele_pointers (ele, nullify_only, nullify_branch, dealloc_poles) 
+Routine to deallocate the pointers in an element. 
+
+\index[routine]re_allocate_eles
+     re_allocate_eles (eles, n, save_old, exact)  
+Routine to allocate an array of ele_pointer_structs.
+
+\index[routine]twiss1_propagate
+     twiss1_propagate (twiss1, mat2, ele_key, length, twiss2, err)  
+Routine to propagate the twiss parameters of a single mode.
+
+------------------------------------------------------------------------
+
+\index[routine]allocate_element_array
+     allocate_element_array (ele, upper_bound)  
+Routine to allocate or re-allocate an element array.
+
+\index[routine]allocate_lat_ele_array
+     allocate_lat_ele_array (lat, upper_bound, ix_branch)  
+Routine to allocate or re-allocate an element array.
+
+\index[routine]control_bookkeeper
+     control_bookkeeper (lat, ele, err_flag) 
+Routine to calculate the combined strength of the attributes for
+controlled elements.
+
+\index[routine]deallocate_ele_array_pointers
+     deallocate_ele_array_pointers (eles)  
+Routine to deallocate the pointers of all the elements in an 
+element array and the array itself.
+
+\index[routine]deallocate_lat_pointers
+     deallocate_lat_pointers (lat)  
+Routine to deallocate the pointers in a lat.
+
+\index[routine]init_ele
+     init_ele (ele, key, sub_key, ix_ele, branch) 
+Routine to initialize an element. 
+
+\index[routine]init_lat
+     init_lat (lat, n, init_beginning_ele)  
+Routine to initialize a Bmad lat.
+
+\index[routine]lattice_bookkeeper
+     lattice_bookkeeper (lat, err_flag)  
+Routine to do bookkeeping for the entire lattice.
+
+\index[routine]reallocate_coord
+     reallocate_coord (coord, n_coord)  
+Routine to reallocate an allocatable  coord_struct array to at least:
+coord(0:n_coord).
+
+\index[routine]reallocate_coord_array
+     reallocate_coord_array (coord_array, lat)  
+Routine to allocate an allocatable coord_array_struct array to
+the proper size for a lattice.
+
+\index[routine]set_custom_attribute_name
+     set_custom_attribute_name (custom_name, err_flag, custom_index)  
+Routine to add custom element attributes to the element attribute name table.
+
+\index[routine]set_ele_defaults
+     set_ele_defaults (ele, do_allocate)  
+Subroutine to set the defaults for an element of a given type.
+
+\index[routine]set_on_off
+     set_on_off (key, lat, switch, orb, use_ref_orb, ix_branch, saved_values, attribute) 
+Routine to turn on or off a set of elements (quadrupoles,
+RF cavities, etc.) in a lat.
+
+\index[routine]transfer_ele
+     transfer_ele (ele1, ele2, nullify_pointers)  
+     Routine to set ele2 = ele1. 
+     This is a plain transfer of information not using the overloaded equal.
+
+\index[routine]transfer_eles
+     transfer_eles (ele1, ele2)  
+     Routine to set ele2(:) = ele1(:). 
+     This is a plain transfer of information not using the overloaded equal.
+
+\index[routine]transfer_ele_taylor
+     transfer_ele_taylor (ele_in, ele_out, taylor_order)  
+     Routine to transfer a Taylor map from one element to another.
+
+\index[routine]transfer_lat
+     transfer_lat (lat1, lat2)  
+     Routine to set lat2 = lat1. 
+     This is a plain transfer of information not using the overloaded equal.
+
+\index[routine]transfer_lat_parameters
+     transfer_lat_parameters (lat_in, lat_out) 
+Routine to transfer the lat parameters (such as lat%name, 
+lat%param, etc.) from one lat to another. 
+
+\index[routine]zero_ele_kicks
+     zero_ele_kicks (ele)  
+Subroutine to zero any kick attributes like hkick, bl_vkick, etc.
+See also: ele_has_kick, ele_has_offset, zero_ele_offsets.
+
+\index[routine]zero_ele_offsets
+     zero_ele_offsets (ele)  
+Routine to zero the offsets, pitches and tilt of an element.
+
+------------------------------------------------------------------------
+
+\index[routine]c_multi
+     c_multi (n, m, no_n_fact, c_full) 
+Routine to compute multipole factors: 
+c_multi(n, m) = +/- ("n choose m")/n! 
+
+\index[routine]ele_compute_ref_energy_and_time
+     ele_compute_ref_energy_and_time (ele0, ele, param, err_flag)  
+Routine to compute the reference energy and reference time at the end
+of an element given the reference enegy and reference time at the
+start of the element.
+
+\index[routine]lat_compute_ref_energy_and_time
+     lat_compute_ref_energy_and_time (lat, err_flag) 
+Routine to compute the reference energy for each element in a lattice. 
+
+\index[routine]field_interpolate_3d
+     field_interpolate_3d (position, field_mesh, deltas, position0) 
+Function to interpolate a 3d field. 
+
+\index[routine]order_super_lord_slaves
+     order_super_lord_slaves (lat, ix_lord) 
+Routine to make the slave elements of a super_lord in order. 
+
+\index[routine]release_rad_int_cache
+     release_rad_int_cache (ix_cache)  
+     Routine to release the memory associated with caching wiggler values.
+
+\index[routine]set_flags_for_changed_attribute
+     set_flags_for_changed_attribute (ele, attrib)  
+Routine to mark an element as modified for use with "intelligent" bookkeeping.
+
+------------------------------------------------------------------------
+
+\index[routine]create_lat_ele_nametable
+     create_lat_ele_nametable (lat, nametable)  
+Routine to create a sorted nametable of element names for a lattice.
+
+\index[routine]ele_nametable_index
+     ele_nametable_index(ele) result(ix_nt)  
+Routine to return the index in the nametable corresponding to ele.
+The reverse routine is: pointer_to_ele.
+
+\index[routine]nametable_add
+     nametable_add (nametable, name, ix_name)  
+Routine to add a name to the nametable at index ix_name.
+
+\index[routine]nametable_bracket_indexx
+     nametable_bracket_indexx (nametable, name, n_match) result (ix_max)  
+Routine to find the index ix_max such that:
+  nametable%name(nametable%indexx(ix_max)) <= name < nametable%name(nametable%indexx(ix_max+1))
+
+\index[routine]nametable_change1
+     nametable_change1 (nametable, name, ix_name)  
+Routine to change one entry in a nametable.
+
+\index[routine]nametable_init
+     nametable_init(nametable, n_min, n_max)  
+Routine to initialize a nametable_struct instance.
+
+\index[routine]nametable_remove
+     nametable_remove (nametable, ix_name)  
+Routine to remove a name from the nametable at index ix_name.
+
+------------------------------------------------------------------------
+
+\index[routine]bmad_parser
+     
+    bmad_parser (lat_file, lat, make_mats6, digested_read_ok, use_line, 
+                  err_flag, parse_lat)  
+Routine to parse (read in) a Bmad input file. 
+
+\index[routine]bmad_parser2
+     bmad_parser2 (lat_file, lat, orbit, make_mats6, err_flag, parse_lat) 
+Routine to parse (read in) a Bmad input file to modify an existing lattice. 
+
+\index[routine]write_lattice_in_foreign_format
+     write_lattice_in_foreign_format (out_type, out_file_name, lat, ref_orbit, 
+                use_matrix_model, include_apertures, dr12_drift_max, 
+                ix_start, ix_end, ix_branch, converted_lat, err)  
+Routine to write a mad or sad lattice file.
+
+\index[routine]combine_consecutive_elements
+     combine_consecutive_elements (lat, error)  
+Routine to combine consecutive elements in the lattice that have the same name.
+This allows simplification, for example, of lattices where elements have been split 
+to compute the beta function at the center.
+
+\index[routine]create_sol_quad_model
+     create_sol_quad_model (sol_quad, lat)  
+Routine to create series of solenoid and quadrupole elements to serve as a replacement
+model for a sol_quad element.
+
+\index[routine]create_unique_ele_names
+     create_unique_ele_names (lat, key, suffix)  
+Routine to give elements in a lattice unique names.
+
+\index[routine]read_digested_bmad_file
+     read_digested_bmad_file (digested_file, lat, inc_version, 
+                err_flag, parser_calling, lat_files) 
+Routine to read in a digested file. 
+
+\index[routine]write_bmad_lattice_file
+     write_bmad_lattice_file (bmad_file, lat, err, output_form, orbit0)  
+Routine to write a Bmad lattice file using the information in
+a lat_struct.
+
+\index[routine]write_digested_bmad_file
+     write_digested_bmad_file (digested_name, lat, n_files, file_names, extra, err_flag) 
+Routine to write a digested file. 
+
+------------------------------------------------------------------------
+
+\index[routine]c_to_cbar
+     c_to_cbar (ele, cbar_mat) 
+Routine to compute Cbar from the C matrix and the Twiss parameters. 
+
+\index[routine]cbar_to_c
+     cbar_to_c (cbar_mat, a, b, c_mat) 
+Routine to compute C coupling matrix from the Cbar matrix and the Twiss parameters. 
+
+\index[routine]clear_lat_1turn_mats
+     clear_lat_1turn_mats (lat) 
+Clear the 1-turn matrices in the lat structure. 
+
+\index[routine]concat_transfer_mat
+     concat_transfer_mat (mat_1, vec_1, mat_0, vec_0, mat_out, vec_out)  
+Routine to concatinate two linear maps
+
+\index[routine]determinant
+     determinant (mat) result (det)  
+Routine to take the determinant of a square matrix
+This routine is adapted from Numerical Recipes.
+
+\index[routine]do_mode_flip
+     do_mode_flip (ele, err_flag) 
+Routine to mode flip the Twiss parameters of an element 
+
+\index[routine]make_g2_mats
+     make_g2_mats (twiss, g2_mat, g2_inv_mat) 
+Routine to make the matrices needed to go from normal mode coords to 
+coordinates with the beta function removed. 
+
+\index[routine]make_g_mats
+     make_g_mats (ele, g_mat, g_inv_mat) 
+Routine to make the matrices needed to go from normal mode coords to 
+coordinates with the beta function removed. 
+
+\index[routine]make_mat6
+     make_mat6 (ele, param, start_orb, end_orb, err_flag) 
+Routine to make the 6x6 transfer matrix for an element. 
+
+\index[routine]make_v_mats
+     make_v_mats (ele, v_mat, v_inv_mat) 
+Routine to make the matrices needed to go from normal mode coords to X-Y 
+coords and vice versa. 
+
+\index[routine]mat6_from_s_to_s
+     
+    mat6_from_s_to_s (lat, mat6, vec0, s1, s2, ref_orb_in, ref_orb_out, ix_branch, 
+                  one_turn, unit_start, err_flag, ele_save)   
+Subroutine to calculate the transfer map between longitudinal positions
+s1 to s2.
+
+\index[routine]mat6_to_taylor
+     mat6_to_taylor (vec0, mat6, bmad_taylor, ref_orb) 
+Routine to form a first order Taylor map from the 6x6 transfer matrix 
+and the 0th order transfer vector. 
+
+\index[routine]match_ele_to_mat6
+     
+  match_ele_to_mat6 (ele, start_orb, mat6, vec0, err_flag, twiss_ele, 
+                include_delta_time, set_trombone)  
+Routine to make the 6 x 6 transfer matrix from the twiss parameters.
+
+\index[routine]multi_turn_tracking_to_mat
+     multi_turn_tracking_to_mat (track, n_var, map1, map0, track0, chi) 
+Routine to analyze 1-turn tracking data to find the 1-turn transfer matrix 
+and the closed orbit offset.
+
+\index[routine]transfer_matrix_calc
+     transfer_matrix_calc (lat, xfer_mat, xfer_vec, ix1, ix2, ix_branch, one_turn) 
+Routine to calculate the transfer matrix between two elements. If
+ix1 and ix2 are not present the full 1--turn matrix is calculated.
+
+\index[routine]one_turn_mat_at_ele
+     one_turn_mat_at_ele (ele, phi_a, phi_b, mat4) 
+Routine to form the 4x4 1-turn coupled matrix with the reference point 
+at the end of an element. 
+
+\index[routine]lat_make_mat6
+     lat_make_mat6 (lat, ix_ele, ref_orb, ix_branch, err_flag) 
+Routine to make the 6x6 linear transfer matrix for an element 
+
+\index[routine]taylor_to_mat6
+     taylor_to_mat6 (a_taylor, r_in, vec0, mat6, r_out) 
+Routine to calculate the linear (Jacobian) matrix about some trajectory from a Taylor map. 
+
+\index[routine]transfer_mat2_from_twiss
+     transfer_mat2_from_twiss (twiss1, twiss2, mat) 
+Routine to make a 2 x 2 transfer matrix from the Twiss parameters at the end points. 
+
+\index[routine]transfer_mat_from_twiss
+     transfer_mat_from_twiss (ele1, ele2, orb1, orb2, m)  
+Routine to make a 6 x 6 transfer matrix from the twiss parameters
+at the beginning and end of the element.
+
+\index[routine]twiss_from_mat2
+     twiss_from_mat2 (mat_in, twiss, stat, type_out) 
+Routine to extract the Twiss parameters from the one-turn 2x2 matrix 
+
+\index[routine]twiss_from_mat6
+     twiss_from_mat6 (mat6, orb0, ele, stable, growth_rate, status, type_out) 
+Routine to extract the Twiss parameters from the one-turn 6x6 matrix 
+
+\index[routine]twiss_to_1_turn_mat
+     twiss_to_1_turn_mat (twiss, phi, mat2) 
+Routine to form the 2x2 1-turn transfer matrix from the Twiss parameters. 
+
+------------------------------------------------------------------------
+
+Listed below are helper routines that are not meant for general use.
+
+\index[routine]sol_quad_mat6_calc
+     sol_quad_mat6_calc (ks_in, k1_in, length, ele, orbit, mat6, make_matrix) 
+Routine to calculate the transfer matrix for a combination solenoid/quadrupole element. 
+
+\index[routine]tilt_mat6
+     tilt_mat6 (mat6, tilt) 
+Routine to transform a 6x6 transfer matrix to a new reference frame that is 
+tilted in (x, Px, y, Py) with respect to the old reference frame. 
+
+------------------------------------------------------------------------
+
+Routines to simulate errors in orbit, dispersion, betatron phase, and
+coupling measurements
+
+\index[routine]to_eta_reading
+     to_eta_reading (eta_actual, ele, axis, add_noise, reading, err) 
+Compute the measured dispersion reading given the true dispersion and the
+monitor offsets, noise, etc.
+
+\index[routine]to_orbit_reading
+     to_orbit_reading (orb, ele, axis, add_noise, reading, err) 
+Calculate the measured reading on a bpm given the actual orbit and the
+BPM's offsets, noise, etc.
+
+\index[routine]to_phase_and_coupling_reading
+     to_phase_and_coupling_reading (ele, add_noise, reading, err) 
+Find the measured coupling values given the actual ones
+
+------------------------------------------------------------------------
+
+\index[routine]multipass_all_info
+     multipass_all_info (lat, info)  
+Routine to put multipass to a multipass_all_info_struct structure.
+
+\index[routine]multipass_chain
+     multipass_chain (ele, ix_pass, n_links, chain_ele, use_super_lord)  
+Routine to return the chain of elements that represent the same physical element
+when there is multipass.
+
+\index[routine]pointer_to_multipass_lord
+     pointer_to_multipass_lord (ele, lat, ix_pass, super_lord) result (multi_lord)  
+Routine to find the multipass lord of a lattice element.
+A multi_lord will be found for:
+
+------------------------------------------------------------------------
+
+\index[routine]ab_multipole_kick
+     
+    ab_multipole_kick (a, b, n, ref_species, ele_orientation, coord, kx, ky, dk, 
+                  pole_type, scale)   
+Routine to put in the kick due to an ab_multipole.
+
+\index[routine]multipole_kicks
+     multipole_kicks (knl, tilt, ref_species, ele, orbit, pole_type, ref_orb_offset)  
+Routine to put in the kick due to a multipole.
+
+\index[routine]mexp
+     mexp (x, m) result (this_exp)  
+Returns x**m with 0**0 = 0.
+
+\index[routine]multipole_ab_to_kt
+     multipole_ab_to_kt (an, bn, knl, tn) 
+Routine to convert ab type multipoles to kt (MAD standard) multipoles. 
+
+\index[routine]multipole_ele_to_ab
+     
+    multipole_ele_to_ab (ele, use_ele_tilt, ix_pole_max, a, b, pole_type, 
+                  include_kicks, b1)  
+Routine to put the scaled element multipole components (normal and skew) into 2 vectors. 
+
+\index[routine]multipole_ele_to_kt
+     
+    multipole_ele_to_kt (ele, use_ele_tilt, ix_pole_max, knl, tilt, 
+                  pole_type, include_kicks)  
+Routine to put the scaled element multipole components (strength and tilt) 
+into 2 vectors. 
+
+\index[routine]multipole_init
+     multipole_init(ele, who, zero) 
+Routine to initialize the multipole arrays within an element.
+
+\index[routine]multipole_kick
+     multipole_kick (knl, tilt, n, ref_species, ele_orientation, coord, pole_type, ref_orb_offset) 
+Routine to put in the kick due to a multipole. 
+
+\index[routine]multipole_kt_to_ab
+     multipole_kt_to_ab (knl, knsl, tn, an, bn) 
+Routine to convert kt (MAD standard) multipoles to ab type multipoles. 
+
+------------------------------------------------------------------------
+
+\index[routine]opti_lmdif
+     opti_lmdif (vec, n, merit, eps) result(this_opti)  
+Function which tries to get the merit function(s) as close to zero as possible
+by changing the values in vec. Multiple merit functions can be used.
+
+\index[routine]initial_lmdif  
+     initial_lmdif()  
+Routine that clears out previous saved values of the optimizer.
+
+\index[routine]suggest_lmdif
+     suggest_lmdif (XV, FV, EPS, ITERMX, at_end, reset_flag)  
+Reverse communication routine. 
+
+\index[routine]super_mrqmin
+     super_mrqmin (y, weight, a, 
+                chisq, funcs, storage, alamda, status, maska)  
+Routine to do non-linear optimizations. 
+This routine is essentially mrqmin from Numerical Recipes with some added features.
+
+\index[routine]opti_de
+     opti_de (v_best, generations, population, merit_func, v_del, status)  
+Differential Evolution for Optimal Control Problems.
+This optimizer is based upon the work of Storn and Price. 
+
+------------------------------------------------------------------------
+
+These routines are overloaded by the equal sign so should not be called explicitly.
+
+\index[routine]branch_equal_branch
+     branch_equal_branch (branch1, branch2)  
+Routine that is used to set one branch equal to another. 
+
+\index[routine]bunch_equal_bunch
+     bunch_equal_bunch (bunch1, bunch2) 
+Routine that is used to set one macroparticle bunch to another. This routine
+takes care of the pointers in bunch1.
+
+\index[routine]coord_equal_coord
+     coord_equal_coord (coord1, coord2) 
+Routine that is used to set one coord_struct equal to another. 
+
+\index[routine]ele_equal_ele
+     ele_equal_ele (ele_out, ele_in) 
+Routine that is used to set one element equal to another. 
+This routine takes care of the pointers in ele1. 
+
+\index[routine]lat_equal_lat
+     lat_equal_lat (lat_out, lat_in) 
+Routine that is used to set one lat equal to another. 
+This routine takes care of the pointers in lat1. 
+
+\index[routine]lat_vec_equal_lat_vec
+     lat_vec_equal_lat_vec (lat1, lat2) 
+Routine that is used to set one lat array equal to another. 
+This routine takes care of the pointers in lat1(:). 
+
+\index[routine]universal_equal_universal
+     universal_equal_universal (ut1, ut2) 
+Routine that is used to set one PTC universal_taylor 
+structure equal to another. 
+
+------------------------------------------------------------------------
+
+\index[routine]angle_to_canonical_coords
+     angle_to_canonical_coords (orbit, coord_type)  
+Routine to convert from angle (x, x', y, y', z, z') coordinates to
+canonical (x, px, y, py, z, pz) coordinates.
+
+\index[routine]convert_coords
+     convert_coords (in_type_str, coord_in, ele, out_type_str, coord_out, err_flag) 
+Routine to convert between lab frame, normal mode, normalized normal mode, 
+and action-angle coordinates. 
+
+\index[routine]convert_pc_to
+     convert_pc_to (pc, particle, E_tot, gamma, kinetic, beta, brho, beta1, err_flag) 
+Routine to calculate the energy, etc. from a particle's momentum. 
+
+\index[routine]convert_total_energy_to
+     
+    convert_total_energy_to (E_tot, particle, gamma, kinetic, beta, pc, brho, 
+                  beta1, err_flag, print_err)  
+Routine to calculate the momentum, etc. from a particle's total energy. 
+
+\index[routine]init_coord
+     
+    init_coord (orb, vec, ele, element_end, particle, direction, E_photon, 
+                  t_offset, shift_vec6, spin)   
+Routine to initialize a coord_struct.
+
+\index[routine]type_coord
+     type_coord (coord) 
+Routine to type out a coordinate. 
+
+------------------------------------------------------------------------
+
+\index[routine]bend_photon_init
+     
+  bend_photon_init (g_bend_x, g_bend_y, gamma, orbit, E_min, E_max, 
+                E_integ_prob, vert_angle_min, vert_angle_max, 
+                vert_angle_symmetric, emit_probability)   
+Routine to initialize a photon generated by a charged particle in a bend.
+
+\index[routine]bend_photon_vert_angle_init
+     bend_photon_vert_angle_init (E_rel, gamma, r_in, invert) result (r_in)  
+Routine to convert a "random" number in the interval [0,1] to a photon vertical emission 
+angle for a simple bend.
+
+------------------------------------------------------------------------
+
+\index[routine]concat_real_8
+     concat_real_8 (y1, y2, y3, r2_ref, keep_y1_const_terms) 
+Routine to concatenate two real_8 taylor series. 
+
+\index[routine]ele_to_fibre
+     
+    ele_to_fibre (ele, ptc_fibre, param, use_offsets, integ_order, steps, 
+                  for_layout, ref_in)  
+Routine to convert a Bmad element to a PTC fibre element. 
+
+\index[routine]kill_ptc_layouts
+     kill_ptc_layouts (lat)  
+Routine to kill the layouts associated with a Bmad lattice.
+
+\index[routine]kind_name
+     kind_name (this_kind) 
+Function to return the name of a PTC kind. 
+
+\index[routine]lat_to_ptc_layout
+     lat_to_ptc_layout (lat) 
+Routine to create a PTC layout from a Bmad lat. 
+
+\index[routine]map_coef
+     map_coef (y, i, j, k, l) 
+Function to return the coefficient of the map y(:) up to 3rd order. 
+
+\index[routine]normal_form_rd_terms
+     normal_form_rd_terms(one_turn_map, normal_form, rf_on, order) 
+Calculates driving terms `a la \citeb:bengtsson from the one-turn map.
+
+\index[routine]ptc_transfer_map_with_spin
+     ptc_transfer_map_with_spin (branch, t_map, s_map, orb0, err_flag, ix1, ix2, one_turn, unit_start)  
+Subroutine to calculate the transfer map between two elements.
+To calculate just the first order transfer matrices see the routine:
+
+\index[routine]remove_constant_taylor
+     remove_constant_taylor (taylor_in, taylor_out, c0, remove_higher_order_terms) 
+Routine to remove the constant part of a taylor series. 
+
+\index[routine]set_ptc
+     
+    set_ptc (e_tot, particle, taylor_order, integ_order, n_step, no_cavity, 
+                  force_init)  
+Routine to initialize PTC. 
+
+\index[routine]sort_universal_terms
+     sort_universal_terms (ut_in, ut_sorted) 
+Routine to sort the taylor terms from "lowest" to "highest". 
+
+\index[routine]taylor_to_genfield
+     taylor_to_genfield (bmad_taylor, ptc_genfield, c0) 
+Routine to construct a genfield (partially inverted map) from a taylor map. 
+
+\index[routine]taylor_to_real_8
+     taylor_to_real_8 (bmad_taylor, beta0, beta1, ptc_re8, ref_orb_ptc, exi_orb_ptc) 
+Routine to convert from a taylor map in Bmad to a real_8 taylor map in \'Etienne's PTC. 
+
+\index[routine]type_ptc_layout
+     type_layout (lay) 
+Routine to print the global information in a PTC layout.
+
+\index[routine]type_map
+     type_map (y) 
+Routine to type the transfer maps of a real_8 array. 
+
+\index[routine]type_map1
+     type_map1 (y, type0, n_dim) 
+Routine to type the transfer map up to first order. 
+
+\index[routine]type_ptc_fibre
+     type_fibre (ptc_fibre, print_coords, lines, n_lines) 
+Routine to print the global information in a fibre.
+
+\index[routine]type_real_8_taylors
+     type_real_8_taylors (y) 
+Routine to type out the taylor series from a real_8 array. 
+
+\index[routine]universal_to_bmad_taylor
+     universal_to_bmad_taylor (u_taylor, bmad_taylor) 
+Routine to convert from a universal_taylor map in \'Etienne's PTC to a taylor map in Bmad. 
+
+------------------------------------------------------------------------
+
+--------------------------------------
+
+\index[routine]qp_open_page
+     qp_open_page (page_type, i_chan, x_len, y_len, units, plot_file, scale)  
+     Routine to Initialize a page (window) for plotting.
+
+\index[routine]qp_select_page
+     qp_select_page (iw)  
+     Routine to switch to a particular page for drawing graphics.
+
+\index[routine]qp_close_page
+     qp_close_page()  
+     Routine to finish plotting on a page.
+
+--------------------------------------
+
+\index[routine]qp_axis_niceness
+     qp_axis_niceness (imin, imax, divisions) result (score)  
+Routine to calculate how "nicely" an axis will look.
+The higher the score the nicer.
+
+\index[routine]qp_calc_and_set_axis
+     
+    qp_calc_and_set_axis (axis_str, data_min, data_max, div_min, div_max, 
+                  bounds, axis_type, slop_factor) 
+     Routine to calculate a "nice" plot scale given the minimum and maximum
+     of the data. 
+
+\index[routine]qp_calc_axis_params
+     qp_calc_axis_params (data_min, data_max, div_min,  
+                    div_max, axis)  
+     Routine to calculate a "nice" plot scale given the minimum and maximum
+     of the data. This is similar to calc_axis_scale.
+
+\index[routine]qp_calc_axis_places
+     qp_calc_axis_places (axis)  
+     Routine to calculate the number of decimal places needed to display the
+     axis numbers.
+
+\index[routine]qp_calc_axis_scale
+     qp_calc_axis_scale (data_min, data_max, axis, niceness_score)  
+     Routine to calculate a "nice" plot scale given the minimum and maximum
+     of the data. 
+
+\index[routine]qp_calc_minor_div
+     qp_calc_minor_div (delta, div_max, divisions)  
+     Routine to calculate the number of minor divisions an axis should have.
+
+\index[routine]qp_convert_rectangle_rel
+     qp_convert_rectangle_rel (rect1, rect2)  
+     Routine to convert a "rectangle" (structure of 4 points) from
+     one set of relative units to another
+
+--------------------------------------
+
+\index[routine]qp_clear_box
+     qp_clear_box()  
+Routine to clear the current box on the page.
+
+\index[routine]qp_clear_page
+     qp_clear_page()  
+Routine to clear all drawing from the page.
+
+\index[routine]qp_draw_circle
+     
+      qp_draw_circle (x0, y0, r, angle0, del_angle, 
+                    units, width, color, line_pattern, clip)  
+Routine to plot a section of an ellipse.
+
+\index[routine]qp_draw_ellipse
+     
+    qp_draw_ellipse (x0, y0, r_x, r_y, theta_xy, 
+                  angle0, del_angle, units, width, color, line_pattern, clip)   
+     Routine to plot a section of an ellipse.
+
+\index[routine]qp_draw_axes
+     qp_draw_axes(x_lab, y_lab, title, draw_grid)  
+     Routine to plot the axes, title, etc. of a plot.
+
+\index[routine]qp_draw_data
+     qp_draw_data (x_dat, y_dat, draw_line, symbol_every, clip) 
+     Routine to plot data, axes with labels, a grid, and a title.
+
+\index[routine]qp_draw_graph
+     qp_draw_graph (x_dat, y_dat, x_lab, y_lab, title, 
+                draw_line, symbol_every, clip)   
+     Routine to plot data, axes with labels, a grid, and a title.
+
+\index[routine]qp_draw_graph_title
+     qp_draw_graph_title (title)  
+     Routine to draw the title for a graph.
+
+\index[routine]qp_draw_grid
+     qp_draw_grid()  
+     Routine to draw a grid on the current graph.
+
+\index[routine]qp_draw_histogram
+     qp_draw_histogram (x_dat, y_dat, fill_color, fill_pattern, line_color, clip)  
+     Routine to plot data, axes with labels, a grid, and a title.
+
+\index[routine]qp_draw_curve_legend
+     qp_draw_curve_legend (x_origin, y_origin, units, line, line_length,  
+               symbol, text, text_offset, draw_line, draw_symbol, draw_text)  
+Routine to draw a legend with each line in the legend having
+  a line, a symbol, some text.
+
+\index[routine]qp_draw_text_legend
+     qp_draw_text_legend (text, x_origin, y_origin, units)  
+Routine to draw a legend of lines of text.
+
+\index[routine]qp_draw_main_title
+     qp_draw_main_title (lines, justify)  
+     Routine to plot the main title at the top of the page.
+
+\index[routine]qp_draw_polyline
+     qp_draw_polyline (x, y, units, width, color, line_pattern, clip, style)  
+     Routine to draw a polyline.
+
+\index[routine]qp_draw_polyline_no_set
+     qp_draw_polyline_no_set (x, y, units)  
+Routine to draw a polyline.
+This is similar to qp_draw_polyline except qp_set_line_attrib is not called.
+
+\index[routine]qp_draw_polyline_basic
+     qp_draw_polyline_basic (x, y)  
+     Routine to draw a polyline. See also qp_draw_polyline
+
+\index[routine]qp_draw_line
+     qp_draw_line (x1, x2, y1, y2, units, width, color, line_pattern, clip, style)  
+     Routine to draw a line.
+
+\index[routine]qp_draw_rectangle
+     qp_draw_rectangle (x1, x2, y1, y2, units, color, width, line_pattern, clip, style)  
+     Routine to draw a rectangular box.
+
+\index[routine]qp_draw_symbol
+     qp_draw_symbol (x, y, units, type, height, color, fill_pattern, line_width, clip)  
+     Draws a symbol at (x, y) 
+
+\index[routine]qp_draw_symbols
+     qp_draw_symbols (x, y, units, type, height, color, 
+                fill_pattern, line_width, clip, symbol_every)   
+     Draws a symbol at the (x, y) points. 
+
+\index[routine]qp_draw_text
+     
+  qp_draw_text (text, x, y, units, justify, height, color, angle, 
+                background, uniform_spacing, spacing_factor)   
+     Routine to draw text.
+
+\index[routine]qp_draw_text_no_set
+     qp_draw_text_no_set (text, x, y, units, justify, angle)  
+Routine to display on a plot a character string.
+See also: qp_draw_text.
+
+\index[routine]qp_draw_text_basic
+     qp_draw_text_basic (text, len_text, x0, y0, angle, justify)  
+     Routine to display on a plot a character string.
+     See also: qp_draw_text.
+
+\index[routine]qp_draw_x_axis
+     qp_draw_x_axis (who, y_pos)  
+     Routine to draw a horizontal axis.
+
+\index[routine]qp_draw_y_axis
+     qp_draw_y_axis (who, x_pos)  
+     Routine to draw a horizontal axis.
+
+\index[routine]qp_paint_rectangle
+     qp_paint_rectangle (x1, x2, y1, y2, units, color, fill_pattern)  
+Routine to paint a rectangular region a specified color.
+The default color is the background color (white$).
+
+\index[routine]qp_to_axis_number_text
+     qp_to_axis_number_text (axis, ix_n, text)  
+     Routine to form the text string for an axis number.
+
+--------------------------------------
+
+\index[routine]qp_calc_and_set_axis
+     
+  qp_calc_and_set_axis (axis, data_min, data_max, 
+                div_min, div_max, bounds, axis_type, slop_factor) 
+     Routine to calculate a "nice" plot scale given the minimum and maximum
+     of the data. 
+
+\index[routine]qp_eliminate_xy_distortion
+     qp_eliminate_xy_distortion(axis_to_scale)  
+This routine will increase the x or y margins so that the conversion
+between data units and page units is the same for the x and y axes.
+
+\index[routine]qp_set_axis
+     qp_set_axis (axis_str, a_min, a_max, div, places, label, draw_label, 
+              draw_numbers, minor_div, minor_div_max, mirror, number_offset, 
+              label_offset, major_tick_len, minor_tick_len, ax_type, 
+              tick_min, tick_max, dtick, set_ticks, axis) 
+    Routine to set (but not plot) the min, max and divisions for the axes of the graph.
+
+\index[routine]qp_set_box
+     qp_set_box (ix, iy, ix_tot, iy_tot)  
+     Routine to set the box on the physical page.
+     This routine divides the page into a grid of boxes. 
+
+\index[routine]qp_set_graph
+     qp_set_graph (title)  
+     Routine to set certain graph attributes.
+
+\index[routine]qp_set_graph_limits
+     qp_set_graph_limits()  
+     Routine to calculate the offsets for the graph.
+     This routine also sets the PGPLOT window size equal to the graph size.
+
+\index[routine]qp_set_graph_placement
+     qp_set_graph_placement (x1_marg, x_graph_len, y1_marg, y_graph_len, units)  
+Routine to set the placement of the current graph inside the box. 
+This routine can be used in place of qp_set_margin.
+
+\index[routine]qp_set_layout
+     
+  qp_set_layout (x_axis, y_axis, x2_axis, y2_axis, 
+                x2_mirrors_x, y2_mirrors_y, box, margin, page_border)   
+     Routine to set various attributes. This routine can be used
+     in place of other qp_set_* routines.
+
+\index[routine]qp_set_line
+     qp_set_line (who, line)  
+     Routine to set the default line attributes.
+
+\index[routine]qp_set_margin
+     qp_set_margin (x1_marg, x2_marg, y1_marg, y2_marg, units)  
+Routine to set up the margins from the sides of the box (see QP_SET_BOX)
+to the edges of the actual graph.
+
+\index[routine]qp_set_page_border
+     qp_set_page_border (x1_b, x2_b, y1_b, y2_b, units)  
+     Routine to set the border around the physical page.
+
+\index[routine]qp_set_page_border_to_box
+     qp_set_page_border_to_box ()  
+Routine to set the page border to correspond to the region of the
+current box. This allows qp_set_box to subdivide the current box.
+
+\index[routine]qp_set_clip
+     qp_set_clip (clip)  
+     Routine to set the default clipping state.
+
+\index[routine]qp_set_parameters
+     
+    qp_set_parameters (text_scale, default_draw_units, default_set_units, 
+                  default_axis_slop_factor)   
+Routine to set various quick plot parameters.
+
+\index[routine]qp_subset_box
+     qp_subset_box (ix, iy, ix_tot, iy_tot, x_marg, y_marg)  
+     Routine to set the box for a graph. This is the same as
+     qp_set_box but the boundaries of the page are taken to be the box boundaries.
+
+\index[routine]qp_set_symbol
+     qp_set_symbol (symbol)  
+     Routine to set the type and size of the symbols used in plotting data.
+     See the pgplot documentation for more details.
+
+\index[routine]qp_set_symbol_attrib
+     qp_set_symbol_attrib (type, height, color, fill_pattern, line_width, clip)  
+     Routine to set the type and size of the symbols used in plotting data.
+
+\index[routine]qp_set_line_attrib
+     qp_set_line_attrib (style, width, color, pattern, clip)  
+     Routine to set the default line attributes.
+
+\index[routine]qp_set_graph_attrib
+     qp_set_graph_attrib (draw_grid, draw_title)  
+     Routine to set attributes of the current graph.
+
+\index[routine]qp_set_text_attrib
+     qp_set_text_attrib (who, height, color, 
+                background, uniform_spacing, spacing_factor)   
+     Routine to set the default text attributes.
+
+\index[routine]qp_use_axis
+     qp_use_axis (x, y)  
+Routine to set what axis to use: X or X2, Y or Y2.
+
+--------------------------------------
+
+\index[routine]qp_get_axis_attrib
+     
+  qp_get_axis_attrib (axis_str, a_min, a_max, div,  places, label, 
+                draw_label, draw_numbers, minor_div, mirror, number_offset, 
+                label_offset, major_tick_len, minor_tick_len, ax_type, 
+                tick_min, tick_max, dtick)  
+     Routine to get the min, max, divisions etc. for the X and Y axes.
+
+\index[routine]qp_get_layout_attrib
+     qp_get_layout_attrib (who, x1, x2, y1, y2, units)  
+     Routine to get the attributes of the layout.
+
+\index[routine]qp_get_line_attrib
+     qp_get_line (style, line)  
+Routine to get the default line attributes.
+
+\index[routine]qp_get_parameters
+     
+    qp_get_parameters (text_scale, default_draw_units, default_set_units, 
+                  default_axis_slop_factor)   
+Routine to get various quick_plot parameters.
+
+\index[routine]qp_get_symbol_attrib
+     qp_get_symbol (symbol)  
+Routine to get the symbol parameters used in plotting data.
+Use qp_set_symbol or qp_set_symbol_attrib to set symbol attributes.
+
+\index[routine]qp_text_len
+     qp_text_len (text)  
+     Function to find the length of a text string.
+
+--------------------------------------
+
+\index[routine]qp_from_inch_rel
+     qp_from_inch_rel (x_inch, y_inch, x, y, units)  
+     Routine to convert from a relative position (an offset) in inches
+     to other units.
+
+\index[routine]qp_from_inch_abs
+     qp_from_inch_abs (x_inch, y_inch, x, y, units)  
+     Routine to convert to absolute position (x, y) from inches referenced
+     to the Left Bottom corner of the page
+
+\index[routine]qp_text_height_to_inches
+     qp_text_height_to_inches(height_pt) result (height_inch)  
+Function to convert from a text height in points to a text height in
+inches taking into account the text_scale.
+
+\index[routine]qp_to_inch_rel
+     qp_to_inch_rel (x, y, x_inch, y_inch, units)  
+Routine to convert a relative (x, y) into inches.
+
+\index[routine]qp_to_inch_abs
+     qp_to_inch_abs (x, y, x_inch, y_inch, units)  
+Routine to convert an absolute position (x, y) into inches referenced
+to the Left Bottom corner of the page.
+
+\index[routine]qp_to_inches_rel
+     qp_to_inches_rel (x, y, x_inch, y_inch, units)  
+     Routine to convert a relative (x, y) into inches.
+
+\index[routine]qp_to_inches_abs
+     qp_to_inches_abs (x, y, x_inch, y_inch, units)  
+     Routine to convert an absolute position (x, y) into inches referenced
+     to the left bottom corner of the page.
+
+--------------------------------------
+
+\index[routine]qp_read_data
+     qp_read_data (iu, err_flag, x, ix_col, y, iy_col, z, iz_col, 
+                                                               t, it_col)  
+     Routine to read columns of data.
+
+--------------------------------------
+
+\index[routine]qp_clear_box_basic
+     qp_clear_box_basic (x1, x2, y1, y2)  
+Routine to clear all drawing from a box.
+That is, white out the box region.
+
+\index[routine]qp_clear_page_basic
+     qp_clear_page_basic()  
+Routine to clear all drawing from the page.
+
+\index[routine]qp_close_page_basic
+     qp_close_page_basic()  
+Routine to finish plotting on a page.
+For X this closes the window.
+
+\index[routine]qp_convert_point_rel
+     qp_convert_point_rel (x_in, y_in, units_in, x_out, y_out, units_out)  
+Routine to convert a (x, y) point from from
+one set of relative units to another.
+
+\index[routine]qp_convert_point_abs
+     qp_convert_point_abs (x_in, y_in, units_in, x_out, y_out, units_out)  
+Routine to convert a (x, y) point from from
+one set of absolute units to another.
+
+\index[routine]qp_draw_symbol_basic
+     qp_draw_symbol_basic (x, y, symbol)  
+Routine to draw a symbol.
+
+\index[routine]qp_init_com_struct
+     qp_init_com_struct ()  
+Routine to initialize the common block qp_state_struct.
+This routine is not for general use.
+
+\index[routine]qp_join_units_string
+     qp_join_units_string (u_type, region, corner, units)  
+Routine to form a units from its components.
+
+\index[routine]qp_justify
+     qp_justify (justify)  
+     Function to convert a justify character string to a real value
+     representing the horizontal justification. 
+
+\index[routine]qp_open_page_basic
+     
+    qp_open_page_basic (page_type, x_len, y_len, plot_file, 
+                  x_page, y_page, i_chan, page_scale)   
+Routine to Initialize a page (window) for plotting.
+
+\index[routine]qp_paint_rectangle_basic
+     qp_paint_rectangle_basic (x1, x2, y1, y2, color, fill_pattern)  
+Routine to fill a rectangle with a given color. 
+A color of white essentially erases the rectangle.
+
+\index[routine]qp_pointer_to_axis
+     qp_pointer_to_axis (axis_str, axis_ptr)  
+Routine to return a pointer to an common block axis.
+
+\index[routine]qp_restore_state
+     qp_restore_state()  
+     Routine to restore saved attributes. 
+     Use qp_save_state to restore the saved state.
+
+\index[routine]qp_restore_state_basic
+     qp_restore_state_basic (buffer_basic)  
+Routine to restore the print state.
+
+\index[routine]qp_save_state
+     qp_save_state (buffer_basic)  
+     Routine to save the current attributes. 
+     Use qp_restore_state to restore the saved state.
+
+\index[routine]qp_save_state_basic
+     qp_save_state_basic ()  
+Routine to save the print state.
+
+\index[routine]qp_select_page_basic
+     qp_select_page_basic (iw)  
+Routine to switch to a particular page for drawing graphics.
+
+\index[routine]qp_set_char_size_basic
+     qp_set_char_size_basic (height)  
+Routine to set the character size.
+
+\index[routine]qp_set_clip_basic
+     qp_set_clip_basic (clip)  
+Routine to set the clipping state.
+Note: This affects both lines and symbols.
+
+\index[routine]qp_set_color_basic
+     qp_set_color_basic (ix_color, set_background)    
+Routine to set the color taking into account that GIF
+inverts the black for white.
+
+\index[routine]qp_set_graph_position_basic
+     qp_set_graph_position_basic (x1, x2, y1, y2)  
+Routine to set the position of a graph.
+Units are inches from lower left of page.
+
+\index[routine]qp_set_line_width_basic
+     qp_set_line_width_basic (line_width)  
+Routine to set the line width.
+
+\index[routine]qp_set_symbol_fill_basic
+     qp_set_symbol_fill_basic (fill)  
+Routine to set the symbol fill style.
+
+\index[routine]qp_set_symbol_size_basic
+     qp_set_symbol_size_basic (height, symbol_type, uniform_size)  
+Routine to set the symbol_size
+
+\index[routine]qp_set_text_background_color_basic
+     qp_set_text_background_color_basic (color)  
+Routine to set the character text background color.
+
+\index[routine]qp_split_units_string
+     qp_split_units_string (u_type, region, corner, units)  
+     Routine to split a units string into its components.
+
+\index[routine]qp_text_len_basic
+     qp_text_len_basic (text)  
+Function to find the length of a text string.
+
+------------------------------------------------------------------------
+
+\index[routine]calc_spin_params
+     calc_spin_params (bunch, bunch_params)  
+Rotine to calculate spin averages
+
+\index[routine]spinor_to_polar
+     spinor_to_polar (spinor) result (polar)  
+Routine to convert a spinor into polar coordinates.
+
+\index[routine]polar_to_vec
+     polar_to_vec (polar) result (vec) 
+Routine to convert a spin vector from polar coordinates to Cartesian coordinates.
+
+\index[routine]polar_to_spinor
+     polar_to_spinor (polar) result (coord) 
+Routine to convert a spin vector in polar coordinates to a spinor.
+
+\index[routine]vec_to_polar
+     vec_to_polar (vec, phase) result (polar) 
+Routine to convert a spin vector from Cartesian coordinates to polar coordinates 
+preserving the complex phase.
+
+\index[routine]spinor_to_vec
+     spinor_to_vec (spinor) result (vec) 
+Routine to convert a spinor to a spin vector in Cartesian coordinates.
+
+\index[routine]vec_to_spinor
+     vec_to_spinor (vec, phase) result (coord) 
+Routine to convert a spin vector in Cartesian coordinates to a spinor using
+the specified complex phase.
+
+\index[routine]angle_between_polars
+     angle_between_polars (polar1, polar2) 
+Function to return the angle between two spin vectors in polar coordinates.
+
+\index[routine]spin_omega
+     spin_omega (field, orbit, sign_z_vel, phase_space_coords), result (omega)  
+Return the modified T-BMT spin omega vector.
+
+\index[routine]track1_spin
+     track1_spin (start_orb, ele, param, end_orb, make_quaternion) 
+Routine to track the particle spin through one element.
+
+------------------------------------------------------------------------
+ 
+"Make_mat6" is the routine for calculating the transfer matrix (Jacobin)
+through an element. The routines listed below are used by "make_mat6".
+In general a program should call "make_mat6" rather than using these
+routines directly.
+
+\index[routine]make_mat6_bmad
+     make_mat6_bmad (ele, param, start_orb, end_orb, err) 
+Routine to make the 6x6 transfer matrix for an element
+using closed formulas.
+
+\index[routine]make_mat6_custom
+     make_mat6_custom (ele, param, c0, c1, err_flag) 
+Routine for custom calculations of the 6x6 transfer matrices.
+
+\index[routine]make_mat6_symp_lie_ptc
+     make_mat6_symp_lie_ptc (ele, param, start_orb, end_orb) 
+Routine to make the 6x6 transfer matrix for an element using
+the PTC symplectic integrator.
+
+\index[routine]make_mat6_taylor
+     make_mat6_taylor (ele, param, start_orb, end_orb, err_flag) 
+Routine to make the 6x6 transfer matrix for an element
+from a Taylor map.
+
+\index[routine]make_mat6_tracking
+     make_mat6_tracking (ele, param, start_orb, end_orb, err_flag) 
+Routine to make the 6x6 transfer matrix for an element by 
+tracking 7 particle with different starting conditions.
+
+------------------------------------------------------------------------
+
+\index[routine]complex_taylor_coef
+     complex_taylor_coef (bmad_taylor, expn)  
+Function complex_taylor_coef (bmad_complex_taylor, i1, i2, i3, i4, i5, i6, i7, i8, i9)
+Function to return the coefficient for a particular complex_taylor term
+from a complex_taylor Series.
+
+\index[routine]complex_taylor_equal_complex_taylor
+     complex_taylor_equal_complex_taylor (complex_taylor1, complex_taylor2)  
+Subroutine that is used to set one complex_taylor equal to another. 
+This routine takes care of the pointers in complex_taylor1. 
+
+\index[routine]complex_taylor_make_unit
+     complex_taylor_make_unit (complex_taylor)  
+Subroutine to make the unit complex_taylor map:
+      r(out) = Map * r(in) = r(in)
+
+\index[routine]complex_taylor_exponent_index
+     complex_taylor_exponent_index(expn) result(index)  
+Function to associate a unique number with a complex_taylor exponent.
+
+\index[routine]complex_taylor_to_mat6
+     complex_taylor_to_mat6 (a_complex_taylor, r_in, vec0, mat6, r_out)  
+Subroutine to calculate, from a complex_taylor map and about some trajectory:
+  The 1st order (Jacobian) transfer matrix.
+
+\index[routine]complex_taylors_equal_complex_taylors
+     complex_taylors_equal_complex_taylors (complex_taylor1, complex_taylor2)  
+Subroutine to transfer the values from one complex_taylor map to another:
+    complex_taylor1 <= complex_taylor2
+
+\index[routine]init_complex_taylor_series
+     init_complex_taylor_series (complex_taylor, n_term, save)  
+Subroutine to initialize a Bmad complex_taylor series (6 of these series make
+a complex_taylor map). Note: This routine does not zero the structure. The calling
+
+\index[routine]kill_complex_taylor
+     kill_complex_taylor (complex_taylor)  
+Subroutine to deallocate a Bmad complex_taylor map.
+
+\index[routine]mat6_to_complex_taylor
+     mat6_to_complex_taylor (vec0, mat6, complex_taylor)  
+Subroutine to form a first order complex_taylor map from the 6x6 transfer
+matrix and the 0th order transfer vector.
+
+\index[routine]sort_complex_taylor_terms
+     sort_complex_taylor_terms (complex_taylor_in, complex_taylor_sorted)  
+Subroutine to sort the complex_taylor terms from "lowest" to "highest" of
+a complex_taylor series.
+
+\index[routine]track_complex_taylor
+     track_complex_taylor (start_orb, complex_taylor, end_orb)  
+Subroutine to track using a complex_taylor map.
+
+\index[routine]truncate_complex_taylor_to_order
+     truncate_complex_taylor_to_order (complex_taylor_in, order, complex_taylor_out)  
+Subroutine to throw out all terms in a complex_taylor map that are above a certain order.
+
+\index[routine]type_complex_taylors
+     type_complex_taylors (complex_taylor, max_order, lines, n_lines, file_id, out_type, clean)  
+Subroutine to output a Bmad complex_taylor map.
+
+------------------------------------------------------------------------
+
+\index[routine]add_taylor_term
+     
+  add_taylor_term (bmad_taylor, coef, expn, replace) 
+  add_taylor_term (bmad_taylor, coef, i1, i2, i3, i4, i5, i6, i7, i8, i9, replace)  
+Overloaded routine to add a Taylor term to a Taylor series.
+
+\index[routine]concat_ele_taylor
+     concat_ele_taylor (taylor1, ele, taylor3)  
+Routine to concatenate two taylor maps.
+
+\index[routine]concat_taylor
+     concat_taylor (taylor1, taylor2, taylor3) 
+Routine to concatenate two taylor series: taylor3(x) = taylor2(taylor1(x)) 
+
+\index[routine]ele_to_taylor
+     
+  ele_to_taylor (ele, param, orb0, taylor_map_includes_offsets, 
+                include_damping, orbital_taylor, spin_taylor) 
+Routine to make a Taylor map for an element. The order of the map is set by set_ptc.
+
+\index[routine]equivalent_taylor_attributes
+     equivalent_taylor_attributes (ele1, ele2) result (equiv)  
+Routine to see if to elements are equivalent in terms of attributes so
+that their Taylor Maps would be the same. 
+
+\index[routine]init_taylor_series
+     init_taylor_series (bmad_taylor, n_term, save_old) 
+Routine to initialize a Bmad Taylor series. 
+
+\index[routine]kill_taylor
+     kill_taylor (bmad_taylor) 
+Routine to deallocate a Bmad Taylor map. 
+
+\index[routine]mat6_to_taylor
+     mat6_to_taylor (mat6, vec0, bmad_taylor) 
+Routine to form a first order Taylor map from the 6x6 transfer matrix 
+and the 0th order transfer vector. 
+
+\index[routine]sort_taylor_terms
+     sort_taylor_terms (taylor_in, taylor_sorted, min_val) 
+Routine to sort the taylor terms from "lowest" to "highest" of a
+Taylor series.
+
+\index[routine]taylor_coef
+     taylor_coef (bmad_taylor, expn)  
+Function to return the coefficient for a particular taylor term from a
+Taylor Series.
+
+\index[routine]taylor_equal_taylor
+     taylor_equal_taylor (taylor1, taylor2) 
+Routine to transfer the values from one taylor map to another:
+Taylor1 \le Taylor2
+
+\index[routine]transfer_map_calc
+     
+  transfer_map_calc (lat, t_map, err_flag, ix1, ix2, ref_orb, ix_branch, 
+                one_turn, unit_start, concat_if_possible)   
+Routine to calculate the transfer map between two elements.
+
+\index[routine]transfer_map_from_s_to_s
+     
+    transfer_map_from_s_to_s (lat, t_map, s1, s2, ref_orb_in, ref_orb_out, 
+                  ix_branch, one_turn, unit_start, err_flag, concat_if_possible)   
+Subroutine to calculate the transfer map between longitudinal positions
+s1 to s2.
+
+\index[routine]taylor_minus_taylor
+     taylor_minus_taylor (taylor1, taylor2) result (taylor3)  
+Routine to add two taylor maps.
+
+\index[routine]taylor_plus_taylor
+     taylor_plus_taylor (taylor1, taylor2) result (taylor3)  
+Routine to add two taylor maps.
+
+\index[routine]taylors_equal_taylors
+     taylors_equal_taylors (taylor1, taylor2)  
+Routine to transfer the values from one taylor map to another.
+
+\index[routine]taylor_make_unit
+     taylor_make_unit (bmad_taylor, ref_orbit) 
+Routine to make the unit Taylor map
+
+\index[routine]taylor_to_mat6
+     taylor_to_mat6 (a_taylor, c0, mat6, c1) 
+Routine to calculate the linear (Jacobian) matrix about some
+trajectory from a Taylor map.
+
+\index[routine]taylor_inverse
+     taylor_inverse (taylor_in, taylor_inv, err) 
+Routine to invert a taylor map. 
+
+\index[routine]taylor_propagate1
+     taylor_propagate1 (bmad_taylor, ele, param, ref_in) 
+Routine to track a real_8 taylor map through an element. 
+The alternative routine, if ele has a taylor series, is concat_taylor. 
+
+\index[routine]track_taylor
+     track_taylor (start_orb, bmad_taylor, ref_orb) 
+Routine to track using a Taylor map. 
+
+\index[routine]transfer_ele_taylor
+     transfer_ele_taylor (ele_in, ele_out, taylor_order)  
+Routine to transfer a Taylor map from one element to another.
+
+\index[routine]truncate_taylor_to_order
+     truncate_taylor_to_order (taylor_in, order, taylor_out)  
+Routine to throw out all terms in a taylor map that are above a certain order.
+
+\index[routine]type_taylors
+     type_taylors (bmad_taylor, max_order, lines, n_lines, file_id, out_style, clean) 
+Routine to output a Bmad taylor map.
+
+------------------------------------------------------------------------
+
+\index[routine]srdt_calc
+     srdt_calc (lat, srdt_sums, order, n_slices_gen_opt, n_slices_sxt_opt, per_ele_out) 
+Calculates driving terms using summations over sextupole moments like those in \citeb:bengtsson
+and \citeb:wang.  Often called resonance driving terms (RDTs), though strictly speaking not all terms
+drive resonances.
+Terms that are first and second order in sextupole moment are included.
+See srdt_mod for a list of available driving terms.
+
+\index[routine]make_srdt_cache
+     make_srdt_cache(lat, n_slices_gen, n_slices_sxt, eles, cache) 
+Used to speed up calculation of the 2nd order driving terms.
+Makes an N_k2\times N_k2\times 11 array that contains the precomputed
+cross-products of the linear optics at each sextupole moment.  
+
+\index[routine]srdt_calc_with_cache
+     srdt_calc_with_cache(lat, srdt_sums, order, n_slices_gen_opt, 
+                  n_slices_sxt_opt, cache, per_ele_out) 
+Same as \refr:srdt.calc, but makes use of a cache precomputed by \refr:make.srdt.cache to speed
+up the calculations.
+
+\index[routine]srdt_lsq_solution
+     srdt_lsq_solution(lat, var_indexes, ls_soln, n_slices_gen_opt, 
+                  n_slices_sxt_opt, chrom_set_x_opt, chrom_set_y_opt, weight_in) 
+Given a lattice and the indices of the sextupole moments to use as variables, finds the least squares solution
+to the sextupole moments that minimize the 1st order driving terms.  If there are more variables than driving
+terms, then the solution sets the driving terms to zero and minimizes the sum of the squares of the variables.  
+If there are fewer
+variables than driving terms, then the solution is that which minimizes the sum of the squares of the driving terms.
+
+------------------------------------------------------------------------
+
+The following routines perform tracking and closed orbit calculations.
+
+\index[routine]check_aperture_limit
+     check_aperture_limit (orb, ele, particle_at, param, old_orb, check_momentum) 
+Routine to check if an orbit is outside an element's aperture. 
+
+\index[routine]check_aperture_limit_custom
+     check_aperture_limit_custom (orb, ele, particle_at, param, err_flag) 
+Routine to check if an orbit is outside an element's aperture.
+Used when "ele%aperture_type" is set to "custom$" 
+
+\index[routine]closed_orbit_calc
+     closed_orbit_calc (lat, closed_orb, i_dim, direction, ix_branch, err_flag, print_err)  
+Routine to calculate the closed orbit at the beginning of the lat.
+
+\index[routine]closed_orbit_from_tracking
+     
+  closed_orbit_from_tracking (lat, closed_orb, i_dim, eps_rel, eps_abs, 
+                init_guess, err_flag)  
+Routine to find the closed orbit via tracking. 
+
+\index[routine]multi_turn_tracking_analysis
+     
+    multi_turn_tracking_analysis (track, i_dim, track0, ele, stable, growth_rate, 
+                  chi, err_flag)  
+Routine to analyze multi-turn tracking data to get the Twiss
+parameters etc.
+
+\index[routine]multi_turn_tracking_to_mat
+     multi_turn_tracking_to_mat (track, i_dim, 
+mat1, track0, chi) 
+Routine to analyze 1-turn tracking data to find the 1-turn transfer
+matrix and the closed orbit offset.
+
+\index[routine]offset_particle
+     
+    offset_particle (ele, set, orbit, set_tilt, set_hvkicks, drift_to_edge, 
+                  s_pos, s_out, set_spin, mat6, make_matrix, spin_qrot)  
+Routine to effectively offset an element by instead offsetting 
+the particle position to correspond to the local element coordinates. 
+
+\index[routine]offset_photon
+     offset_photon (ele, orbit, set, offset_position_only, rot_mat)  
+Routine to effectively offset an element by instead offsetting
+the photon position to correspond to the local crystal or mirror coordinates.
+
+\index[routine]orbit_amplitude_calc
+     orbit_amplitude_calc (ele, orb, amp_a, amp_b, amp_na, amp_nb) 
+Routine to calculate the "invariant" amplitude of a particle at a 
+particular point in its orbit. 
+
+\index[routine]particle_is_moving_backwards
+     particle_is_moving_backwards (orbit) result (is_moving_backward)  
+Routine to determine if a particle is moving in the backward -s direction.
+If not moving backward it is dead or is moving backward.
+
+\index[routine]particle_is_moving_forward
+     particle_is_moving_forward (orbit) result (is_moving_forward)  
+Routine to determine if a particle is moving in the forward +s direction.
+If not moving forward it is dead or is moving backward.
+
+\index[routine]tilt_coords
+     tilt_coords (tilt_val, coord, mat6, make_matrix) 
+Routine to effectively tilt (rotate in the x-y plane) an element by 
+instead rotating the particle position with negative the angle. 
+
+\index[routine]track1
+     
+    track1 (start_orb, ele, param, end_orb, track, err_flag, ignore_radiation, 
+                  make_map1, init_to_edge) 
+Routine to track through a single element. 
+
+\index[routine]track1_bunch_csr
+     track1_bunch_csr (bunch, ele, centroid, err, s_start, s_end)  
+Routine to track a bunch of particles through the element lat%ele(ix_ele)
+with csr radiation effects.
+
+\index[routine]track1_spin_custom
+     track1_spin_custom (start, ele, param, end, err_flag, track, make_quaternion)  
+Dummy routine for custom spin tracking. 
+This routine needs to be replaced for a custom calculation.
+
+\index[routine]track_all
+     track_all (lat, orbit, ix_branch, track_state, err_flag, orbit0) 
+Routine to track through the lat. 
+
+\index[routine]track_from_s_to_s
+     
+    track_from_s_to_s (lat, s_start, s_end, orbit_start, orbit_end, all_orb, 
+                  ix_branch, track_state)  
+Routine to track a particle between two s-positions.
+
+\index[routine]track_many
+     track_many (lat, orbit, ix_start, ix_end, direction, ix_branch, track_state) 
+Routine to track from one element in the lat to another. 
+
+\index[routine]twiss_and_track
+     
+  twiss_and_track (lat, orb, ok) 
+  twiss_and_track (lat, orb_array, ok) 
+ 
+Routine to calculate the twiss parameters, transport matrices and orbit.
+
+\index[routine]twiss_and_track_at_s
+     
+    twiss_and_track_at_s (lat, s, ele_at_s, orb, orb_at_s, ix_branch, err, 
+                  use_last, compute_floor_coords)  
+Routine to calculate the Twiss parameters and orbit at a particular longitudinal position. 
+
+\index[routine]twiss_and_track_from_s_to_s
+     
+    twiss_and_track_from_s_to_s (branch, orbit_start, s_end, orbit_end, 
+                  ele_start, ele_end, err, compute_floor_coords)  
+Routine to track a particle from one location to another.
+
+\index[routine]twiss_and_track_intra_ele
+     
+  twiss_and_track_intra_ele (ele, param, l_start, l_end, track_upstream_end, 
+                track_downstream_end, orbit_start, orbit_end, ele_start, ele_end, err, compute_floor_coords, reuse_ele_end)   
+Routine to track a particle within an element.
+
+\index[routine]twiss_from_tracking
+     twiss_from_tracking (lat, ref_orb0, symp_err, err_flag, d_orb) 
+Routine to compute from tracking the Twiss parameters and the transfer matrices 
+for every element in the lat. 
+
+\index[routine]wall_hit_handler_custom
+     wall_hit_handler_custom (orb, ele, s)  
+This routine is called by the Runge-Kutta integrator odeint_bmad when a particle hits a wall.
+
+------------------------------------------------------------------------
+
+\index[routine]absolute_time_tracking
+     absolute_time_tracking (ele) result (is_abs_time)  
+Routine to return a logical indicating whether the tracking through an
+element should use absolute time or time relative to the reference particle.
+
+\index[routine]odeint_bmad
+     
+    odeint_bmad (orbit, ele, param, s1_body, s2_body, err_flag, track, 
+                  mat6, make_matrix)  
+Routine to do Runge Kutta tracking. 
+
+\index[routine]track_a_drift
+     track_a_drift (orb, length, mat6, make_matrix, include_ref_motion) 
+Routine to track through a drift. 
+
+\index[routine]track_a_bend
+     track_a_bend (orbit, ele, param, mat6, make_matrix) 
+Particle tracking through a bend element. 
+
+------------------------------------------------------------------------
+
+\index[routine]make_mat6_mad
+     make_mat6_mad (ele, param, c0, c1)  
+     Routine to make the 6x6 transfer matrix for an element from the 
+     2nd order MAD transport map. The map is stored in ele%taylor.
+
+\index[routine]make_mad_map
+     make_mad_map (ele, param, energy, map)  
+     Routine to make a 2nd order transport map a la MAD.
+
+\index[routine]mad_add_offsets_and_multipoles
+     mad_add_offsets_and_multipoles (ele, map)  
+     Routine to add in the effect of element offsets and/or multipoles
+     on the 2nd order transport map for the element.
+
+\index[routine]mad_drift
+     mad_drift (ele, energy, map)  
+     Routine to make a transport map for a drift space.
+     The equivalent MAD-8 routine is: TMDRF
+
+\index[routine]mad_elsep
+     mad_elsep (ele, energy, map)  
+     Routine to make a transport map for an electric separator. 
+     The equivalent MAD-8 routine is: TMSEP
+
+\index[routine]mad_sextupole
+     mad_sextupole (ele, energy, map)  
+     Routine to make a transport map for an sextupole.
+     The equivalent MAD-8 routine is: TMSEXT
+
+\index[routine]mad_sbend
+     mad_sbend (ele, energy, map)  
+     Routine to make a transport map for a sector bend element.
+     The equivalent MAD-8 routine is: TMBEND
+
+\index[routine]mad_sbend_fringe
+     mad_sbend_fringe (ele, energy, into, map)  
+     Routine to make a transport map for the fringe field of a dipole.
+     The equivalent MAD-8 routine is: TMFRNG
+
+\index[routine]mad_sbend_body
+     mad_sbend_body (ele, energy, map)  
+     Routine to make a transport map for the body of a sector dipole.
+     The equivalent MAD-8 routine is: TMSECT
+
+\index[routine]mad_tmfoc
+     mad_tmfoc (el, sk1, c, s, d, f)  
+     Routine to compute the linear focusing functions.  
+     The equivalent MAD-8 routine is: TMFOC
+
+\index[routine]mad_quadrupole
+     mad_quadrupole (ele, energy, map)  
+     Routine to make a transport map for an quadrupole element.
+     The equivalent MAD-8 routine is: TMSEXT
+
+\index[routine]mad_rfcavity
+     mad_rfcavity (ele, energy, map)  
+     Routine to make a transport map for an rfcavity element.
+     The equivalent MAD-8 routine is: TMRF
+
+\index[routine]mad_solenoid
+     mad_solenoid (ele, energy, map)  
+     Routine to make a transport map for an solenoid.
+     The equivalent MAD-8 routine is: TMSEXT
+
+\index[routine]mad_tmsymm
+     mad_tmsymm (te)  
+     routine to symmetrize the 2nd order map t.
+     The equivalent MAD-8 routine is: tmsymm
+
+\index[routine]mad_tmtilt
+     mad_tmtilt (map, tilt)  
+     Routine to apply a tilt to a transport map.
+     The equivalent MAD-8 routine is: TMTILT
+
+\index[routine]mad_concat_map2
+     mad_concat_map2 (map1, map2, map3)  
+     Routine to concatenate two 2nd order transport maps.
+
+\index[routine]mad_track1
+     mad_track1 (c0, map, c1)  
+     Routine to track through a 2nd order transfer map.
+     The equivalent MAD-8 routine is: TMTRAK
+
+\index[routine]track1_mad
+     track1_mad (start_orb, ele, param, end_orb)  
+     Routine to track through an element using a 2nd order transfer map.
+     Note: If map does not exist then one will be created. 
+
+\index[routine]mad_map_to_taylor
+     mad_map_to_taylor (map, energy, taylor)  
+     Routine to convert a mad order 2 map to a taylor map.
+
+\index[routine]taylor_to_mad_map
+     taylor_to_mad_map (taylor, energy, map)  
+     Routine to convert a Taylor map to a mad order 2 map.
+     If any of the Taylor terms have order greater than 2 they are ignored.
+
+\index[routine]make_unit_mad_map
+     make_unit_mad_map (map)  
+     Routine to initialize a 2nd order transport map to unity.
+
+------------------------------------------------------------------------
+
+Note: Unless you know what you are doing do not call these routines directly. Rather use
+track1.
+
+\index[routine]symp_lie_bmad
+     
+  symp_lie_bmad (ele, param, start_orb, end_orb, track, mat6, 
+                make_matrix, offset_ele)  
+Symplectic integration through an element to 0th or 1st order.
+
+\index[routine]track1_bmad
+     track1_bmad (start_orb, ele, param, end_orb, err_flag, track, mat6, make_matrix) 
+Particle tracking through a single element BMAD_standard style. 
+
+\index[routine]track1_custom
+     track1_custom (start_orb, ele, param, end_orb, err_flag, finished, track) 
+Dummy routine for custom tracking.
+
+\index[routine]track1_linear
+     track1_linear (start_orb, ele, param, end_orb) 
+Particle tracking through a single element using the transfer matrix.. 
+
+\index[routine]track1_postprocess
+     track1_postprocess (start_orb, ele, param, end_orb)  
+Dummy routine for post processing after the track1 routine is done.
+
+\index[routine]track1_preprocess
+     track1_preprocess (start_orb, ele, param, err_flag, finished, radiation_included, track)  
+Dummy routine for pre processing at the start of the track1 routine.
+
+\index[routine]track1_radiation
+     track1_radiation (orbit, ele, edge) 
+Routine to put in radiation damping and/or fluctuations. 
+
+\index[routine]track1_runge_kutta
+     
+    track1_runge_kutta (start_orb, ele, param, end_orb, err_flag, track, 
+                  mat6, make_matrix) 
+Routine to do tracking using Runge-Kutta integration. 
+
+\index[routine]track1_symp_lie_ptc
+     track1_symp_lie_ptc (start_orb, ele, param, end_orb, track) 
+Particle tracking through a single element using a Hamiltonian and a 
+symplectic integrator. 
+
+\index[routine]track1_taylor
+     track1_taylor (start_orb, ele, param, end_orb, taylor, mat6, make_matrix) 
+Routine to track through an element using the elements taylor series. 
+
+\index[routine]track1_time_runge_kutta
+     
+  track1_time_runge_kutta(start_orb, ele, param, end_orb, err_flag, track, 
+                t_end, dt_step)   
+Routine to track a particle through an element using 
+Runge-Kutta time-based tracking.
+
+------------------------------------------------------------------------
+
+\index[routine]calc_z_tune
+     calc_z_tune (branch) 
+Routine to calculate the synchrotron tune from the full 6X6 1 turn matrix. 
+
+\index[routine]chrom_calc
+     
+    chrom_calc (lat, delta_e, chrom_x, chrom_y, err_flag, pz, 
+                  low_E_lat, high_E_lat, low_E_orb, high_E_orb, ix_branch)  
+Routine to calculate the chromaticities by computing the tune 
+change when then energy is changed. 
+
+\index[routine]chrom_tune
+     chrom_tune (lat, delta_e, target_x, target_y, err_tol, err_flag) 
+Routine to set the sextupole strengths so that the lat 
+has the desired chromaticities. 
+
+\index[routine]radiation_integrals
+     radiation_integrals (lat, orbit, mode, ix_cache, ix_branch, rad_int_by_ele) 
+Routine to calculate the synchrotron radiation integrals, the emittance, and energy spread. 
+
+\index[routine]radiation_integrals_custom
+     radiation_integrals_custom (lat, ir, orb, err_flag) 
+User supplied routine to calculate the synchrotron radiation integrals for
+a custom element.
+
+\index[routine]relative_mode_flip
+     relative_mode_flip (ele1, ele2) 
+Function to see if the modes of ELE1 are flipped relative to ELE2. 
+
+\index[routine]set_tune
+     set_tune (phi_a_set, phi_b_set, dk1, eles, branch, orb, print_err) 
+Routine to Q_tune a lat. This routine will set the tunes to within 0.001 radian (0.06 deg). 
+
+\index[routine]set_z_tune
+     set_z_tune (branch, z_tune, ok) 
+Routine to set the longitudinal tune by setting the RF voltages in the RF cavities. 
+
+\index[routine]transfer_twiss
+     transfer_twiss (ele_in, ele_out, reverse)  
+Routine to transfer the twiss parameters from one element to another.
+
+\index[routine]twiss_and_track
+     twiss_and_track (lat, orb) 
+Routine to calculate the Twiss and orbit parameters. 
+This is not necessarily the fastest routine. 
+
+\index[routine]twiss_at_element
+     twiss_at_element (ele, start, end, average) 
+Routine to return the Twiss parameters at the beginning, end, or the average of an element. 
+
+\index[routine]twiss_and_track_at_s
+     twiss_and_track_at_s (lat, s, ele, orb_, here) 
+Routine to calculate the Twiss parameters and orbit at a particular longitudinal position. 
+
+\index[routine]twiss_at_start
+     twiss_at_start (lat, status, ix_branch, type_out) 
+Routine to calculate the Twiss parameters at the start of the lat. 
+
+\index[routine]twiss_from_tracking
+     twiss_from_tracking (lat, closed_orb_, d_orb, error) 
+Routine to compute from tracking, for every element in the lat, 
+the Twiss parameters and the transfer matrices. 
+
+\index[routine]twiss_propagate1
+     twiss_propagate1 (ele1, ele2, err_flag) 
+Routine to propagate the Twiss parameters from the end of ELE1 to the end of ELE2. 
+
+\index[routine]twiss_propagate_all
+     twiss_propagate_all (lat, ix_branch, err_flag, ie_start, ie_end, zero_uncalculated) 
+Routine to propagate the Twiss parameters from the start to the end. 
+
+\index[routine]twiss_to_1_turn_mat
+     twiss_to_1_turn_mat (twiss, phi, mat2) 
+Routine to form the 2x2 1-turn transfer matrix from the Twiss parameters. 
+
+------------------------------------------------------------------------
+
+\index[routine]normal_mode3_calc
+     normal_mode3_calc (t6, tune, B, HV, above_transition)  
+Decompose a 2n x 2n symplectic matrix into normal modes.
+For more details see:
+
+\index[routine]twiss3_propagate_all
+     twiss3_propagate_all (lat, ix_branch)  
+Routine to propagate the twiss parameters using all three normal modes.
+
+\index[routine]twiss3_propagate1
+     twiss3_propagate1 (ele1, ele2, err_flag)  
+Routine to propagate the twiss parameters using all three normal modes.
+
+\index[routine]twiss3_at_start
+     twiss3_at_start (lat, err_flag, ix_branch, tune3)  
+Routine to propagate the twiss parameters using all three normal modes.
+
+------------------------------------------------------------------------
+
+\index[routine]init_wake
+     init_wake (wake, n_sr_long, n_sr_trans, n_lr_mode, always_allocate)  
+Routine to initialize a wake struct.
+
+\index[routine]randomize_lr_wake_frequencies
+     randomize_lr_wake_frequencies (ele, set_done)  
+Routine to randomize the frequencies of the lr wake HOMs.
+
+\index[routine]track1_sr_wake
+     track1_sr_wake (bunch, ele)  
+Routine to apply the short range wakefields to a bunch. 
+
+\index[routine]track1_lr_wake
+     track1_lr_wake (bunch, ele)  
+Routine to put in the long-range wakes for particle tracking.
+
+\index[routine]zero_lr_wakes_in_lat
+     zero_lr_wakes_in_lat (lat)  
+Routine to zero the long range wake amplitudes for the elements that have
+long range wakes in a lattice.
+
+------------------------------------------------------------------------
+
+\index[routine]fscalar2scalar
+     fscalar2scalar (f_scalar, n) result (c_scalar)  
+Function to translate a scalar from Fortran form to C form.
+
+\index[routine]fvec2vec
+     fvec2vec (f_vec, n) result (c_vec)  
+Function to translate a vector from Fortran form to C form.
+
+\index[routine]mat2vec
+     mat2vec (mat, n) result (vec)  
+Function to take a matrix and turn it into an array in C standard row-major order.
+
+\index[routine]tensor2vec
+     tensor2vec (tensor, n) result (vec)  
+Function to take a tensor and turn it into an array in 
+C standard row-major order::
+
+\index[routine]vec2mat
+     vec2mat (vec, mat)  
+Routine to take a an array in C standard row-major 
+order and turn it into a matrix.
+
+\index[routine]vec2tensor
+     vec2tensor (vec, tensor)  
+Routine to take a an array in C standard row-major 
+order and turn it into a tensor.
+
+\index[routine]remove_null_in_string
+     remove_null_in_string (str_in, str_out  
+Routine to convert a null character in a string to a blank.
+
+\index[routine]f_logic
+     f_logic (logic) result (f_log)  
+Function to convert from a C logical to a Fortran logical.
+
+\index[routine]f_logic_int
+     f_logic_int (logic) result (f_log)  
+Function to convert from a C logical to a Fortran logical.
+This function is overloaded by f_logic.
+
+\index[routine]f_logic_bool
+     f_logic_bool (logic) result (f_log)  
+Function to convert from a C logical to a Fortran logical.
+This function is overloaded by f_logic.
+
+\index[routine]remove_null_in_string_arr
+     remove_null_in_string_arr (str_in, str_out)  
+This routine overloaded by:
+       remove_null_in_string
+
+\index[routine]remove_null_in_string_char
+     remove_null_in_string_char (str_in, str_out)  
+This routine overloaded by:
+       remove_null_in_string
+
+\index[routine]to_c_str
+     to_c_str (f_str, c_str)  
+Subroutine to append a null (0) character at the end of a string (trimmed
+of trailing blanks) so it will look like a C character array. 
+
+\index[routine]to_f_str
+     to_f_str (c_str, f_str)  
+Subroutine to append a null (0) character at the end of a string (trimmed
+of trailing blanks) so it will look like a C character array. 
+
+------------------------------------------------------------------------
+\sectionDeprecated
+\labelr:deprecated
+
+\begindescription
+
+\enddescription

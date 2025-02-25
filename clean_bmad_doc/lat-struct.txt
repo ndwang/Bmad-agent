@@ -1,0 +1,627 @@
+chapter The lat_struct
+
+The "lat_struct" is the structure that holds of all the information
+about a lattice . The components of a
+"lat_struct" are listed in \figf:lat.struct.
+type lat_struct
+  character(40) use_name                   ! Name in USE statement
+  character(40) lattice                    ! Lattice name
+  character(80) input_file_name            ! Lattice input file name
+  character(80) title                      ! From TITLE statement
+  character(100), allocatable :: print_str(:) ! Saved print statements
+  type (expression_atom_struct), allocatable :: constant(:)  ! Constants defined in the lattice
+  type (mode_info_struct) a, b, z             ! Tunes, etc.                       
+  type (lat_param_struct) param               ! Parameters                        
+  type (bookkeeping_state_struct) lord_state  ! lord bookkeeping status.          
+  type (ele_struct) ele_init                  ! For use by any program            
+  type (ele_struct), pointer ::  ele(:) => null()  ! Array of elements [=> branch(0)].
+  type (branch_struct), allocatable :: branch(:)   ! Branch(0:) array
+  type (control_struct), allocatable :: control(:) ! Control list
+  type (photon_reflect_surface_struct), pointer :: surface(:) => null()
+  type (coord_struct) particle_start      ! Starting coords
+  type (pre_tracker_struct) pre_tracker   ! For OPAL/IMPACT-T
+  type (nametable_struct) nametable       ! For quick searching by element name.
+  real(rp), allocatable :: custom(:)      ! Custom attributes.
+  integer version                         ! Version number
+  integer n_ele_track                     ! Number of lat elements to track through.
+  integer n_ele_max                       ! Index of last valid element in %ele(:) array
+  integer n_control_max                   ! Last index used in control_array
+  integer n_ic_max                        ! Last index used in ic_array
+  integer input_taylor_order              ! As set in the input file
+  integer, allocatable :: ic(:)           ! Index to %control(:)
+  integer :: photon_type = incoherent    ! Or coherent. For X-ray simulations.
+  integer :: creation_hash                ! Number to determine if lattice is different.
+end type
+
+The "%ele_init" component within the "lat_struct" is not used
+by Bmad and is available for general program use.
+
+----------------------------------------------------------------------------
+
+Normally initialization of a "lat_struct" lattice is done by
+\Hyperrefr:bmad.parserbmad_parser when a lattice file is parsed and does not have to be done by
+the programmer. When a programmer needs to initialize a lattice, however,
+\Hyperrefr:init.latinit_lat is used to initialize the lattice with a single branch. After this
+initial setup, the routines \Hyperrefr:allocate.branch.arrayallocate_branch_array and
+\Hyperrefr:allocate.lat.ele.arrayallocate_lat_ele_array can be used to set up additional
+branches. Example:
+  type (lat_struct) lat
+  ...
+  call init_lat (lat, 1000)           ! Branch(0) has 1001 elements.
+  call allocate_branch_array (lat, 2) ! Allocate Branch(1) and Branch(2).
+  call allocate_lat_ele_array (lat, 20, 1)  ! Branch(1) has 21 elements
+  call allocate_lat_ele_array (lat, 30, 2)  ! Branch(2) has 31 elements.
+
+----------------------------------------------------------------------------
+
+Since the "lat_struct" has pointers within it, there is an extra burden on the programmer to make
+sure that allocation and deallocation is done properly. To this end, the equal sign has been
+overloaded by the routine "lat_equal_lat" so that when one writes
+    type (lat_struct) lattice1, lattice2
+    ! ... some calculations ...
+    lattice1 = lattice2
+the pointers in the "lat_struct" structures will be handled properly. The result will be that
+lattice1 will hold the same information as "lattice2" with all the lattice elements in the same
+place but the pointers in "lattice1" will point to different locations in physical memory so that
+changes to one lattice will not affect the other.
+
+\Hyperrefr:deallocate.lat.pointersdeallocate_lat_pointers Initial allocation of the pointers in
+a "lat_struct" variable is generally handled by the \Hyperrefr:bmad.parserbmad_parser and
+\Hyperrefr:lat.equal.latlat_equal_lat routines.  Once allocated, local "lat_struct" variables
+must have the save attribute or the pointers within must be appropriately deallocated before leaving
+the routine.
+  type (lat_struct), save :: lattice     ! Either do this at the start or ...
+  ...
+  call deallocate_lat_pointers (lattice) ! ... Do this at the end.
+Using the save attribute will generally be faster but will use more
+memory. Typically using the save attribute will be the best choice.
+
+----------------------------------------------------------------------------
+
+The lattice is divided up into the "root branch"  and,
+if there are "fork" or "photon_fork" elements, a number "forked"
+"branches".
+
+The branches of a lattice is contained in the "lat%branch(0:)"
+array. The "%branch(0:)" array is always indexed from 0 with the
+0 branch being a root branch. The definition of the
+"branch_struct" structure is
+  type branch_struct
+    character(40) name
+    integer ix_branch                    ! Index in lat%branch(:) array.
+    integer ix_from_branch               ! -1 => No forking element to this branch.
+    integer ix_from_ele                  ! Index of forking element
+    integer, pointer :: n_ele_track      ! Number of tracking elements
+    integer, pointer :: n_ele_max
+    type (mode_info_struct), pointer :: a, b, z
+    type (ele_struct), pointer :: ele(:)
+    type (lat_param_struct), pointer :: param
+    type (wall3d_struct), pointer :: wall3d(:)
+    type (ptc_branch1_info_struct) ptc
+    type (normal_form_struct) normal_form_with_rf, normal_form_no_rf
+  end type
+The value of the "%branch(i)%ix_branch" conponent is the branch
+index and will thus have the value "i". This can be useful when
+passing a branch to a subroutine.  The "%branch(i)%ix_from_branch"
+component gives the branch index of the branch that the i\Th branch
+branched off from.  "%branch(i)%ix_from_ele" gives the index in the
+"%branch(j)%ele(:)" array of the "fork" or "photon_fork"
+element that marks the beginning of the i\Th branch. Example:
+  type (lat_struct), target :: lat
+  type (ele_struct), pointer :: ele
+  ...
+  ib = lat%branch(3)%ix_from_branch
+  ie = lat%branch(3)%ix_from_ele
+  ! ele is the fork or photon_fork element for lat%branch(3)
+  ele => lat%branch(ib)%ele(ie)
+  ! This is the same as the above.
+  ele => pointer_to_ele(lat%branch(3)%ix_from_branch, lat%branch(3)%ix_from_ele)
+
+The "%branch%ele(:)" array holds the array of elements in the
+branch. Historically, the "lat_struct" was developed at the start
+of the Bmad project and branches were implemented well after that. To
+maintain compatibility with older code, the following components point
+to the same memory blocks
+  lat%ele(:)              <--->  lat%branch(0)%ele(:)
+  lat%n_ele_track         <--->  lat%branch(0)%n_ele_track
+  lat%n_ele_max           <--->  lat%branch(0)%n_ele_max
+  lat%param               <--->  lat%branch(0)%param        
+
+              \multicolumn2c \em Element index    \cmidrule2-3
+\em section \em min          \em max             
+tracking      0                  "%n_ele_track"     
+control       "%n_ele_track"+1 "%n_ele_max"      
+Bounds of the tracking and control parts 
+of the root branch ("lat%branch(0)%ele(:)") array.
+
+All "%branch%ele(:)" arrays are allocated with zero as the lower
+bound. The "%ele(0)" element of all branches is an "beginning_ele"
+element with its "%name" component set to ""BEGINNING"".
+"%ele(0)%mat6" is always the unit matrix. For the root branch, the
+"%branch(0)%ele(0:)" array is divided up into two parts: The
+"tracking" part and a "control" part (also called the "lord"
+part). The tracking part of this array holds the elements that are
+tracked through. The control part holds elements that control
+attributes of other elements . The bounds of
+these two parts is given in Table~\reft:part.extent.
+Only the root branch has a lord section so 
+"%branch%n_ele_track" and "%branch%n_ele_max" are the same for 
+all other branches. Since the root branch can also be accessed via the "lat%ele(:)"
+array, code that deals with the lord section of the lattice may use "lat%ele(:)"
+in place of "lat%branch(0)%ele(:)".
+
+for a given "fork" or "photon_fork" element, the index of
+the branch that is being forked to and the index of the element that
+is being forked to is stored in:
+  ix_branch  = nint(branch_ele%value(ix_branch_to$))  ! branch index
+  ix_element = nint(branch_ele%value(ix_element_to$)) ! element index
+  direction  = nint(branch_ele%value(direction$))
+The direction will be +1 for forward forking and -1 for backward forking.
+
+----------------------------------------------------------------------------
+
+The "%param" component within each "lat%branch(:)" is a
+"lat_param_struct" structure whose definition is shown in
+\figf:lat.param.struct
+  type lat_param_struct
+    real(rp) n_part             ! Particles/bunch.
+    real(rp) total_length       ! total_length of lattice
+    real(rp) unstable_factor    ! closed branch: growth rate/turn. 
+                                !   all branches: |orbit/limit|
+    real(rp) t1_with_RF(6,6)    ! Full 1-turn 6x6 matrix
+    real(rp) t1_no_RF(6,6)      ! Transverse 1-turn 4x4 matrix (RF off).
+    integer particle            ! +1 = positrons, -1 = electrons, etc.
+    integer geometry            ! open, etc...
+    integer ixx                 ! Integer for general use
+    logical stable              ! For closed branch. Is lat stable?
+    type (bookkeeper_status_struct) bookkeeping_state
+                                          ! Overall status for the branch.
+  end type
+This structure would be more aptly named "branch_param_struct" but
+is named otherwise for historical reasons.
+
+"%param%total_length" is the length of the branch that a beam
+tracks through defined by
+  %param%total_length = %ele(n_ele_track)%s - %ele(0)%s
+Normally "%ele(0)%s" = 0 so "%param%total_length" =
+"%ele(n_ele_track)%s" but this is not always the case.
+
+"%param%n_part" is the number of particles in a bunch and is used in various calculations.
+Historically, this parameter has been used to set the number of strong beam particle with
+"BeamBeam" elements but it is strongly recommended to use the "beambeam" element's
+"n_particle" parameter instead.
+
+For closed branches, "%param%t1_with_RF" and "%param%t1_no_RF" are the 1--turn transfer
+matrices from the start of the branch to the end. "%param%t1_with_RF" is the full transfer matrix
+with RF on. "%param%t1_no_RF" is the transverse transfer matrix with RF off. "%param%t1_no_RF"
+is used to compute the Twiss parameters. When computing the Twiss parameters "%param%stable" is
+set according to whether the matrix is stable or not. If the matrix is not stable the Twiss
+parameters cannot be computed. If unstable, "%param%unstable_factor" will be set to the growth
+rate per turn of the unstable mode.
+
+Besides being set when the 1--turn transfer matrix is calculated, "%param%unstable_factor" will
+be set if a particle is lost in tracking to:
+  orbit_amplitude / limit - 1
+
+The particle type for a branch is stored in the integer variable "%param%particle". The value of
+this variable will encode for a fundamental particle, atom, or molecule. See the file
+"particle_species_mod.f90" for more details. If the particle corresponds to a fundamental
+particle, "%param%particle" will correspond to one of the following constants:
+  electron$,     positron$,   
+  muon$,         antimuon$,
+  proton$,       antiproton$,
+  photon$,       pion_0$,
+  pion_minus$,   pion_plus$
+  deuteron$      deuteron_0$
+To print the name of the particle use the function
+"species_name". A particles mass and charge can be obtained from
+the functions "mass_of" and "charge_of" respectively. 
+"charge_of" returns the particle's charge in units of e. Example:
+  type (lat_struct) lat
+  ...
+  print *, "Beam Particles are: ", species_name(lat%param%particle)
+  if (lat%param%particle == proton$) print *, "I do not like protons!"
+  print *, "Particle mass (eV):    ", mass_of(lat%param%particle)
+  print *, "Particle charge:       ", charge_of(lat%param%particle)
+
+----------------------------------------------------------------------------
+
+In the "lat_struct" structure, certain elements in the "%ele(:)" array (equivalent to the
+"%branch(0)%ele(:)" array), called "lord" elements, can control the attributes (component
+values) of other "%branch(:)%ele(:)" elements.  Elements so controlled are called "slave"
+elements.  The situation is complicated by the fact that a given element may simultaneously be a
+"lord" and a "slave". For example, an "overlay" element  is a lord since
+it controls attributes of other elements but an "overlay" can itself be controlled by other
+"overlay" and "group" elements. In all cases, circular lord/slave chains are not permitted.
+
+The lord and slave elements can be divided up into classes. What type of lord an element is, is set
+by the value of the element's "ele%lord_status" component. Similarly, what type of slave an
+element is is set by the value of the element's "ele%slave_status" component.  Nomenclature note:
+An element may be referred to by it's "%lord_status" or "%slave_status" value. For example, an
+element with "ele%lord_status" set to "super_lord$" can be referred to as a
+""super_lord"" element.
+
+The value of the "ele%lord_status" component can be one of:
+  %
+       super_lord$ 
+A "super_lord" element is created when elements are superimposed on top of other elements
+. "super_lords" (along with "multipass_lords"), are called "major" lords
+since the attribute values of a "super_slave" are entirely determined by the attribute values of
+the "super_lord"(s) of the slave. 
+  %
+       girder_lord$ 
+A "girder_lord" element is a "girder" element . That is, the element will
+have "ele%key" = "girder$".
+  %
+       multipass_lord$
+"multipass_lord" elements are created when multipass lines are present .
+"multipass_lords" (along with "super_lords") are called "major" lords since most of the
+attribute values of a "multipass_slave" are entirely determined by the attribute values of the
+"multipass_lord" of the slave. The few exceptions are parameters like "phi0_multipass" which can
+be set for individual slave elements.
+  %
+       overlay_lord$ 
+An "overlay_lord" is an "overlay" element . That is, such an element will
+have "ele%key" = "overlay$".
+  %
+       ramper_lord$ 
+A "ramper_lord" is a "ramper" element . That is, such an element will have
+"ele%key" = "ramper$". Note that a "ramper_lord" will not have pointers to its slaves.
+That is, "ele%n_slave" will be zero. 
+  %
+       group_lord$ 
+A "group_lord" is a "group" element . That is, such an element will have
+"ele%key" = "group$".
+  %
+       not_a_lord$
+This element does not control anything.
+Any element whose "%lord_status" is something other than "not_a_lord$" is called a "lord"
+element. In the "tracking part" of the branch , "%lord_status" will
+always be "not_a_lord$". In the "lord section" of the branch, under normal circumstances,
+there will never be any "not_a_lord" elements.  However, it is permissible, and sometimes
+convenient, for programs to set the "%lord_status" of a lord element to "not_a_lord$".
+
+The possible values for the "ele%slave_status" component are:
+       multipass_slave$
+A "multipass_slave" element is the slave of a "multipass_lord"
+.
+       slice_slave$
+A "slice_slave" element represents a longitudinal slice of another element.
+Slice elements are not part of the lattice but rather are created on-the-fly
+when, for example, a program needs to track part way through an element.
+       super_slave$ 
+A "super_slave" element is an element in the tracking part of the branch that 
+has one or more "super_lord" lords .
+       minor_slave$
+A "minor_slave" element is an element that is not a "slice_slave" and does not have a
+"major" lord. Major lords are "super_lord"s and "multipass_lord"s. A "minor_slave"
+element will some have attributes that are controlled by "overlay_lords", "group_lords",
+"girder_lords", or "ramper_lords".
+       free$
+A "free" element is one that has no lords except for perhaps "ramper_lords". Additionally,
+there still might be field overlap from other elements.
+
+"super_slave" elements always appear in the tracking part of the branch. The other types can be
+in either the tracking or control parts of the branch.
+
+  \footnotesize
+
+      \multicolumn6c"ele%lord_status"  
+      \cmidrule(lr)2-7
+      "ele%"slave_status
+       
+      %                         NL  GR  GI  O   M   S
+      "free$"             X X X X X X  
+      "minor_slave$"      X X X X X X  
+      "multipass_slave$"  X         X  
+      "slice_slave$"      X           
+      "super_slave$"      X            
+  
+      \multicolumn6c"lord%lord_status"  
+      \cmidrule(lr)2-7
+      "slave%"slave_status
+       
+      %                         NL  GR  GI  O   M   S
+      "free$"                          
+      "minor_slave$"        X X X      
+      "multipass_slave$"    X   X 1    
+      "super_slave$"        X   X   X  
+    %lord_status/%slave_status combinations. 
+    "X" marks a possible combination.
+    "1" indicates that the slave will have exactly one lord of the type given in the column.
+
+Only some combinations of "%lord_status" values and "%slave_status" values are permissible for
+a given element.  Table~\reff:lord.slave.a lists the valid combinations. Thus, for example, it is
+\em not possible for an element to be simultaneously a "super_lord" and a "super_slave".
+
+multipass combined with superposition] Example of multipass combined with superposition. A
+"multipass_lord" element named "A" controls a set of "multipass_slaves" (only one shown).
+The "multipass_slave" elements are also "super_lord" elements and they will control
+"super_slave" elements in the tracking part of the branch.  \labelf:super.mul
+
+For lord/slave pairs, Table~\reff:lord.slave.b lists the valid combinations of "%lord_status"
+values in the lord element and "%slave_status" values in the slave element. Thus, for example, a
+"super_slave" may only be controlled by a "super_lord". In the example in
+Section~, element "A" would be a "multipass_lord" and "A\1" and
+"A\2" would be "multipass_slave"s. When superposition is combined with multipass, the
+elements in the tracking part of the branch will be "super_slave"s.  These elements will be
+controlled by "super_lord"s which will also be "multipass_slave"s and these
+"super_lord"/"multipass_slave" elements will be controlled by "multipass_lord"s. This is
+illustrated in \figf:super.mul.
+
+The number of slave elements that a lord controls is given by the value of the lord's "%n_slave"
+component. Additionally, the number of lord elements that the slave has is given by the value of the
+slave's.  "%n_lord" component. To find the slaves and lords of a given element, use the routines
+\Hyperrefr:pointer.to.slavepointer_to_slave and
+\Hyperrefr:pointer.to.lordpointer_to_lord. Example:
+  type (lat_struct), target :: lat
+  type (ele_struct), pointer :: this_ele, lord_ele, slave_ele
+  ...
+  this_ele => lat%ele(321)    ! this_ele points to a given element in the lattice
+
+  do i = 1, this_ele%n_lord   ! Loop over all lords of this_ele
+    ! lord_ele points to the i^th lord element of this_ele
+    lord_ele => pointer_to_lord (this_ele, i)  
+    ...
+  enddo
+
+  do i = 1, this_ele%n_slave  ! Loop over all slaves of this_ele
+    ! slave_ele points to the i^th slave element of this_ele
+    slave_ele => pointer_to_slave (this_ele, i) 
+    ...
+  enddo
+For non-ramper elements, the lord/slave bookkeeping is bidirectional. That is, for any given
+element, call it "this_ele", consider the i\Th lord:
+  lord_ele_i => pointer_to_lord (this_ele, i)
+then there will always be some index j such that the 
+element pointed to by
+  pointer_to_slave(lord_ele_i, j)
+is the original element "this_ele". The same is true for the slaves of any given element. That
+is, for the i\Th slave
+  slave_ele_i => pointer_to_slave (this_ele, i)
+there will always be some index j such that the 
+element pointed to by
+  pointer_to_lord(slave_ele_i, j)
+
+The following ordering of slaves and lords is observed:
+       Slaves of a super_lord: 
+The associated "super_slave" elements of a given "super_lord" element are ordered from the
+entrance end of the "super_lord" to the exit end. That is, in the code snippet above,
+"pointer_to_slave (this_ele, 1)" will point to the slave at the start of the "super_lord" and
+" pointer_to_slave (this_ele, this_ele%n_lord)" will point to the slave at the exit end of the
+"super_lord".
+       Slaves of a multipass_lord: 
+The associated "multipass_slave" elements of a "multipass_lord" element are ordered by pass
+number. That is, in the code snippet above, "pointer_to_slave (this_ele, i)" will point to the
+slave of the i\Th pass.
+       Lord of a multipass_slave: 
+A "multipass_slave" will have exactly one associated "multipass_lord" and this lord will be
+the first one. That is, "pointer_to_lord (this_ele, 1)".
+
+The element control information is stored in the "lat%control(:)" array.  Each element of this
+array is a "control_struct" structure
+  type control_struct
+    type (expression_atom_struct), allocatable :: stack(:) ! Evaluation stack
+    type (lat_ele_loc_struct) slave ! Slave location
+    type (lat_ele_loc_struct) lord  ! Lord location
+    integer ix_attrib               ! index of controlled attribute 
+  end type
+Each element in the "lat%control(:)" array holds the information on one lord/slave pair. The
+"%lord" component gives the location of the lord element which is always in the root branch ---
+branch 0. The "%slave" component give the element location of the slave element.  The "%stack"
+and "%ix_attrib" components are used to store the arithmetic expression and attribute index for
+"overlay" and "group" control. The appropriate control_struct for a given lord/slave pair can
+be obtained from the optional fourth argument of the \Hyperrefr:pointer.to.lordpointer_to_lord
+and \Hyperrefr:pointer.to.slavepointer_to_slave functions.  Example: The following prints a list
+of the slaves, along with the attributes controlled and coefficients, on all group elements in a
+lattice.
+  type (lat_struct), target :: lat
+  type (ele_struct), pointer :: lord, slave
+  type (control_struct), pointer :: con
+  ...
+  do i = lat%n_ele_track+1, lat%n_ele_max  ! loop over all lords
+    lord => lat%ele(i) 
+    if (lord%lord_status = group_lord$) then 
+      print *, "Slaves for group lord: ", lord%name
+      do j = 1, lord%n_slave
+        slave => pointer_to_slave (lord, j, con)
+        attrib_name = attribute_name (slave, con%ix_attrib)
+        print *, i, slave%name, attrib_name, con%coef
+      enddo
+    endif
+  enddo
+
+The elements in the "lat%control(:)" array associated with the slaves of a given lord are in the
+same order as the slaves and the index of the associated "lat%control(:)" element of the first
+slave is given by the "%ix1_slave" component of the lord Example:
+  type (lat_struct), target :: lat
+  type (ele_struct), pointer :: lord, slave
+  type (control_struct), pointer :: con1, con2
+  ...
+  lord => lat%ele(i)                    ! Point to some lord
+  do j = 1, lord%n_slave
+    slave => pointer_to_slave (lord, j, con1)
+    con2 => lat%control(lord%ix1_slave+j-1) ! con1 and con2 are the same.
+  enddo
+
+Except for a "slice_slave", the "%ic1_lord", "%n_lord", and "%n_lord_field" components
+of a given slave element, along with the "lat%ic(:)" array, can be used to find the lords of the
+slave.  Simplified, the code for the \Hyperrefr:pointer.to.lordpointer_to_lord function is:
+  function pointer_to_lord (slave, ix_lord, con, ...) result (lord_ptr)
+    implicit none
+    type (lat_struct), target :: lat
+    type (ele_struct) slave
+    type (ele_struct), pointer :: lord_ptr
+    type (control_struct), pointer, optional :: control
+    integer ix_lord, icon
+     
+    icon = lat%ic(slave%ic1_lord + ix_lord - 1)
+    lord_ptr => lat%ele(lat%control(icon)%lord%ix_ele)
+    if (present(con)) con => lat%control(icon)
+  end function
+This method for finding the lords of an element is considered
+"private". That is, no code outside of the official Bmad library
+should rely on this.
+
+"slice_slave" element bookkeeping has is different depending upon whether the element being
+sliced is a "super_slave" or not. If the element being sliced is a "super_slave", a
+"slice_slave" element that is created is, for bookkeeping purposes, considered to be a slave of
+the "super_slave"'s lords. In this case, the bookkeeping is exactly the same as that of any
+"super_slave", and "pointer_to_lord" will return a pointer to one of the "super_slave"'s
+lords.
+
+On the other hand, if a non "super_slave" element is being sliced, the "%lord" pointer
+component of the "slice_slave" will be set to point to the element being sliced.
+
+----------------------------------------------------------------------------
+
+The term "lattice bookkeeping" refers to the updating of the appropriate parameter values when a
+given parameter in the lattice is changed. For example, if the accelerating gradient of an
+"lcavity" element is modified, the reference energy parameter of all elements downstream of the
+"lcavity" will need to be changed and this can also alter the transfer maps of the "lcavity"
+and downstream elements. Bmad divides the lattice bookkeeping into a "core" part and everything
+else. The core part itself is divided into five parts:
+       Attribute bookkeeping 
+This refers to intra-element dependent attribute bookkeeping .
+       Control bookkeeping 
+This refers to Lord/Slave bookkeeping for "overlay"
+ and "group" elements, and for
+"superposition"  and "multipass"
+ lords.
+       Floor Position bookkeeping
+This refers to bookkeeping to keep track of an elements global "floor" position
+stored in the "ele%floor" structure.
+       Length bookkeeping
+This refers to bookkeeping to keep track of the longitudinal s-position of an element
+stored in the "ele%s" component.
+       Reference Energy bookkeeping
+This refers to the reference energy assigned to each element .
+"ele%value(E_tot$)" and "ele%value(p0c$)"
+
+Lattice elements have a "bookkeeper_status" component which is of type "bookkeeper_status_struct"
+which looks like
+  type bookkeeper_status_struct
+    integer attributes      ! Intra element dependent attribute status
+    integer control         ! Lord/slave bookkeeping status
+    integer floor_position  ! Global (floor) geometry status
+    integer length          ! Longitudinal position status
+    integer ref_energy      ! Reference energy status
+    integer mat6            ! Linear transfer map status
+    integer rad_int         ! Radiation integrals cache status
+  end type
+All components of this structure give the status of some lattice bookkeeping aspect. The first five
+components of this structure correspond to the five core bookkeeping parts discussed above. The
+other two components are discussed below.
+
+Possible values for the status components are
+  super_ok$
+  ok$
+  stale$
+The "set_flags_for_changed_attribute" routine sets the appropriate status components of an
+element to "stale$" which marks that element for the appropriate bookkeeping. When the
+bookkeeping is done by "lattice_bookkeeper", the "stale$" status components are set to
+"ok$". The "super_ok$" value is reserved for use by any program that needs to do its own
+custom bookkeeping. How this works is as follows: The Bmad bookkeeping routines will never convert
+a status component with value "super_ok$" to "ok$" without first doing some needed
+bookkeeping. Thus if a program sets a status component to "super_ok$" and then later on finds
+that the status component is set to "ok$", the program knows that bookkeeping has been done. An
+example will make this clear. Suppose a program needs to keep track of a collection of high order
+transfer maps between various points in a lattice. Suppose that the constant calculation of these
+maps would slow the program done so it is desired to recalculate a given map only when necessary. To
+implement this, the program could set the "ele%status%mat6" attribute of all the element to
+"super_ok$" when the maps are calculated. If the program subsequently finds a
+"ele%status%mat6" attribute of an element set to "ok$" it knows that it should recalculate
+any transfer maps that span that element.
+
+It is guaranteed that when "lattice_bookkeeper" is run, all five core status components will not
+be "stale$".  The routines used by "lattice_bookkeeper" are:
+  \Hyperrefr:attribute.bookkeeperattribute_bookkeeper      ! Intra-element attributes
+  \Hyperrefr:control.bookkeepercontrol_bookkeeper        ! Lord/slave control
+  \Hyperrefr:s.calcs_calc                    ! Longitudinal element s-position
+  \Hyperrefr:lat.geometrylat_geometry              ! Global (floor) positions.
+  \Hyperrefr:lat.compute.ref.energy.and.timelat_compute_ref_energy_and_time  ! Reference energy 
+In general, these routines should not be called directly since the correct way to do things is not
+always straight forward. See the code for "lattice_bookkeeper" for more details.
+
+After the core bookkeeping is done, a program can call \Hyperrefr:lat.make.mat6lat_make_mat6 to
+remake the transfer matrices.  "lat_make_mat6" will remake the transfer matrices if either the
+"ele%status%mat6" flag is "stale$" or the reference orbit around which the existing transfer
+matrix was computed has shifted.  "lat_make_mat6" will set the "ele%status%mat6" flag to
+"ok$" for all elements whose transfer matrices are recomputed.
+
+----------------------------------------------------------------------------
+Historically, as the code for lattice bookkeeping  was being developed
+calls to bookkeeping routines were added to calculational
+routines such as the tracking routine \Hyperrefr:track1track1 and the routine for calculating
+the linear transfer map \Hyperrefr:make.mat6make_mat6.  This "automatic" bookkeeping system is
+inefficient since there is no good way to keep track of what element attributes have been modified
+which leads to redundant bookkeeping calculations. Eventually, as Bmad developed and became more
+complicated, it was found that the unnecessary bookkeeping load was generally causing a significant
+slowdown in program execution time --- even in programs where no element attributes were changed. To
+avoid this, an "intelligent" bookkeeping system was developed which could be switched on by setting
+the parameter:
+  bmad_com%auto_bookkeeper = .false.
+To keep things back compatible with existing programs, the automatic bookkeeping system was set as
+the default. However, given the fact that the automatic bookkeeping system has known deficiencies,
+and given the overhead with maintaining two bookkeeping systems, the automatic bookkeeping system
+has been retired and old programs needed to be upgraded if needed. Rule: A program that does not
+"directly modify" element attributes does not have to modified. Modification of element attributes
+via Bmad routines (for example, using the "set_on_off" routine) is "indirect". A direct modification
+is something like the following appearing in the program:
+  lat%ele(ie)%value(hkick$) = ...
+
+To use intelligent bookkeeping, a program must set the global "bmad_com%auto_bookkeepper" to
+false. This only needs to be done once at the start of the program before "bmad_parser" is called. 
+If lattice parameters are not modified in the program, this is the only thing that needs to
+be done.
+
+When a set of attributes needs to be modified, the
+\Hyperrefr:set.flags.for.changed.attributeset_flags_for_changed_attribute routine must be called
+for each element attribute that is set. After all the attributes have been set,
+\Hyperrefr:lattice.bookkeeperlattice_bookkeeper is called to do the core bookkeeping. Example
+  type (lat_struct) lat
+  ...
+  bmad_com%auto_bookkeeper = .false.    ! Done once. Put this before the call to bmad_parser.
+  ...
+  lat%ele(i)%value(gradient$) = 1.05e6  ! Change, say, the gradient of an RFCavity
+  call set_flags_for_changed_attribute (lat%ele(i), lat%ele(i)%value(gradient$))
+
+  ... Set attributes of other elements ...
+
+  call lattice_bookkeeper (lat)         ! Do once after all attribute sets done.
+The argument list for "set_flags_for_changed_attribute" is 
+  set_flags_for_changed_attribute (ele, attribute)
+The "attribute" argument may be either real, integer, or logical.
+
+The "set_flags_for_changed_attribute" routine sets flags in the "ele%status" structure
+.
+
+----------------------------------------------------------------------------
+
+The "lat%particle_start" component is a "coord_struct" structure for holding the information
+obtained from "particle_start" statements  in a Bmad lattice file.
+
+This component is not used in any standard Bmad calculation. It is up to an individual program to
+use as desired. Use \Hyperrefr:init.coordinit_coord to initalize a particle position. Example:
+  type (lat_struct) lat
+  type (coord_struct) orbit_start
+  ...
+  call bmad_parser("lat.bmad", lat)  ! Read in a lattice.
+  ...
+  ! orbit_start is initalized for tracking from the beginning of the lattice
+  call init_coord(orbit_start, lat%particle_start, lat%ele(0), downstream_end$)
+
+----------------------------------------------------------------------------
+
+Custom parameters defined for the lattice as a whole ( are stored in
+"lat%custom". The following shows how to print a table of the custom parameters
+  type (lat_struct) lat
+  character(80) aname
+  ...
+  if (allocated(lat%custom)) then
+    do i = 1, size(lat%custom)
+      aname = attribute_name(def_parameter$, i+custom_attribute0$)
+      if (aname(1:1) == "!") cycle    ! Ignore non-existant parameters
+      print "(a, es12.4)", "  parameter[" // trim(aname) // "] = ", lat%custom(i)
+    enddo
+  endif

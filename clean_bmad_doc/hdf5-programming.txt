@@ -1,0 +1,152 @@
+chapter HDF5
+
+"HDF5", which stands for "Hierarchical Data Format" version 5\citeb:hdf5, is a set of file
+formats designed to store and organize large amounts of data. HDF5 has been developed by scientists
+from a number of institutions including the National Center for Supercomputing Applications, the
+University of Illinois at Urbana-Champaign, and Sandia National Laboratories. Tools for viewing and
+editing HDF5 files are available from the HDF Group\citeb:hdf5. Programs include "h5dump" and
+"HDFView" which can be used to directly view files. Interfaces so that HDF5 files can accessed
+via Java or Python also exist.
+
+Bmad uses HDF5 for storing beam particle (positions, spin, etc.) and "grid_field"
+ data. Storage details are given in sections and
+ respectively. While "HDF5" defines how data is formatted, "HDF5" does not
+define the syntax for how data is to be stored. For that, Bmad uses the syntax defined by the
+"Beam Physics" extension to the "openPMD" standard\citeb:openpmd. To understand the rest of
+this chapter, the reader should familiarize themselves with the "openPMD" and "Beam Physics"
+standards.
+
+The code for reading and writing beam data to/from HDF5 files is contained in the routines
+\Hyperrefr:hdf5.read.beamhdf5_read_beam and \Hyperrefr:hdf5.write.beamhdf5_write_beam.
+
+As per the "openPMD"/"Beam Physics" standard, particle beam data is stored in a tree structure
+within a data file. The root ""group"" (tree node) for each bunch of the beam has the path
+within the file:
+  /data/%T/particles/
+where "%T" is an integer.
+
+For any bunch, parameters ("attributes") stored in the bunch root group are:
+  speciesType     ! The name of the particle species using the "SpeciesType" syntax.
+  totalCharge     ! Total bunch charge.
+  chargeLive      ! Charge of live particles.
+  numParticles    ! Number of particles.
+The "SpeciesType" syntax defined by the "SpeciesType" extension to the "openPMD" standard
+is similar to the Bmad standard  but there are differences. For one, the
+"SpeciesType" standard does not have an encoding for the charge state of atoms and
+molecules. Another difference is that for fundamental particles the names are case sensitive while
+for Bmad they are not (Note that atom and molecule names in Bmad are case sensitive).
+
+What per-particle data is stored is determined by whether the bunch particles are photons or
+not. The following particle parameters are common for both types:
+\tt
+  \em Beam Physics Parameter \em Bmad Equivalent     \em Notes                       
+  time                         -%vec(5) / (c %beta)    time - ref_time. See \Eqzbctt  
+  timeOffset                   %t - time (beam physics) reference time                   
+  totalMomentumOffset          %p0c                                                      
+  sPosition                    %s                       See Fig.~\reff:local.coords    
+  weight                       %charge                  Macro bunch charge               
+  branchIndex                  %ix_branch                                                
+  elementIndex                 %ix_ele                                                   
+  locationInElement            %location                See below                        
+  particleStatus               %state   See the %state table in  
+The "Bmad Equivalent" column gives the conversion between the Beam Physics parameters and the
+"coord_struct"  structure components (the "coord_struct" structure
+contains the particle position information).  Parameters with a "%" suffix are "coord_struct"
+components and "%vec(5)" corresponds to the phase space z coordinate. The "particleState" is an integer
+which corresponds to the "coord_struct" "%state" component. A value of 1 indicates that the particle is alive
+(corresponding to the value of "alive$") and any other value indicates that the particle is dead.
+
+The "locationInElement" Beam Physics parameter is related to the "coord_struct" "%location" parameter via
+the following transformation:
+\vspace-1ex
+\tt
+  \em locationInElement Value \em %location Value   
+  -1                            upstream_end$          
+   0                            inside$                
+   1                            downstream_end$         
+
+For photons, additional per-particle data is:
+\vspace-1ex
+\tt
+  \em Beam Physics Parameter     \em Bmad Equivalent   
+  velocity/x, y, z                 (%vx, %vy, %vz)     
+  position/x, y, z                 (%x, %y, %z)        
+  pathLength                       %path_len             
+  photonPolarizationAmplitude/x, y %field                
+  photonPolarizationPhase/x, y     %phase                 
+For clarity's sake, the "%vec(1)" through "%vec(6)" phase space coordinate components in the
+"coord_struct" have been replaced by "%x", "%vx", \ldots, "%z", "%vz" in the above table
+
+For non-photons, additional per-particle data is:
+\vspace-1ex
+\tt
+  \em Beam Physics Parameter    \em Bmad Equivalent      
+  momentum/x, y, z                %p0c\times(%px, %py, sqrt((1 + %pz)^2 - %px^2 - %py^2)) 
+  totalMomentum                   %p0c\times%pz         
+  position/x, y, z                (%x, %y, 0)             
+  spin/x, y, z                    %spin                    
+  chargeState                     Derived from %species     
+For clarity's sake, the "%vec(1)" through "%vec(6)" phase space coordinate components in the
+"coord_struct" have been replaced by "%x", "%px", \ldots, "%z", "%pz" in the above
+table. Notice that the Beam Physics "z" position (not to be confused with phase space "z") is
+always zero by construction as shown in Fig.~\reff:local.coords. 
+
+The code for reading and writing "grid_field" data to/from HDF5 files is contained in the
+routines \Hyperrefr:hdf5.read.grid.fieldhdf5_read_grid_field and
+\Hyperrefr:hdf5.write.grid.fieldhdf5_write_grid_field.
+
+As per the "openPMD"/"Beam Physics" standard, "grid_field" ( data is
+stored in a tree structure within a data file. The root ""group"" (tree node) for each "grid_field"
+has the path within the file:
+  /ExernalFieldmesh/%T/
+where "%T" is an integer.
+
+For any "grid_field", parameters stored in the "grid_field" root group are:
+\vspace-1ex
+\tt
+  \em Parameter in File      \em Bmad Equivalent       
+  gridGeometry                 %geometry                  
+  masterParameter              %master_parameter          
+  componentFieldScale          %field_scale               
+  fieldScale                   \left{ \text
+                                    %field_scale\timesmaster param value If master parameter set. 
+                                    %field_scale Otherwise.
+  harmonic                     %harmonic                  
+  RFphase                      \left{ \text
+                                    %harmonic\times%phi0_fieldmap For "lcavity" elements 
+                                    %harmonic\times(0.25 - %phi0_fieldmap) For all others.
+  eleAnchorPt                  %ele_anchor_pt             
+  gridOriginOffset             %r0                        
+  gridSpacing                  %dr                        
+  interpolationOrder           %interpolation_order       
+  gridLowerBound               %ptr%pt lower bound       
+  gridSize                     %ptr%pt size              
+  fundamentalFrequency         ele%value(rf_frequency$)   
+  gridCurvatureRadius          ele%value(rho$)             
+The "Bmad Equivalent" column gives the conversion between the Beam Physics parameters and the
+"grid_field_struct" structure components (that have a "%" prefix). The value for
+"gridCurvatureRadius" is set to the value of "rho" of the associated lattice element if
+"%curved_ref_frame" is True. 
+
+Notice that the "masterParameter" attribute is not part of the standard. If not present, which
+could happen if a file is created by non-Bmad code, the default is a blank string indicating no
+master parameter. If "masterParameter" is set in the data file, there is a potential problem in
+that it may not be possible to calculate "%field_scale" if the value of the master parameter is
+not equal to the value when the data was written. To get around this, if the non-standard
+"masterParameter" is present, the value of the non-standard "componentFieldScale" (which has a
+default value of one) will be used to set "%field_scale" and the "fieldScale" parameter will
+be ignored. If "masterParameter" is not present, "componentFieldScale" is ignored and
+"%field_scale" is set from the value of "fieldScale".
+
+When reading a data file, the setting of "grid_field%field_type" is determined by what data is
+stored in the file. If both electric and magnetic field data is present, "%field_type" is set to
+"mixed$". Otherwise, "%field_type" is set to "magnetic$" if magnetic field data is present
+or "electric$" if electric field data is present.
+
+The correspondence between the "gridGeometry" parameter and the "grid_field%geometry"
+component is \vspace-1ex
+\tt
+  \em gridGeometry Value      \em %geometry Value       
+  "rectangular"                 xyz$                       
+  "cylindrical"                 rotationally_symmetric_rz$  
+

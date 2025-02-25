@@ -1,0 +1,103 @@
+chapter C++ Interface
+
+To ease the task of using \cpp routines with Bmad, there is a
+library called "cpp_bmad_interface" which implements a set of \cpp
+classes in one--to--one correspondence with the major Bmad
+structures. In addition to the \cpp classes, the Bmad library
+defines a set of conversion routines to transfer data values between
+the Bmad Fortran structures and the corresponding \cpp classes.
+
+The list of all classes is given in the file
+  cpp_bmad_interface/include/cpp_bmad_classes.h
+The general rule is that the equivalent class to a Bmad structure
+named "xxx_struct" will be named "CPP_xxx". Additionally, for
+each Bmad structure, there is a opaque class named "Bmad_xxx_class"
+for use in the translation code discussed below. The names of these
+opaque classes have the form "Bmad_xxx_class" and are used to define
+pointer instances in routine argument lists.
+
+----------------------------------------------------------------------------
+
+Generally, The \cpp classes have been set up to simply mirror the
+corresponding Bmad structures. For example, the "CPP_lat" class
+has a string component named ".version" that mirrors the
+"%version" component of the "lat_struct" structure. There are
+some exceptions. For example, structure components that are part of
+"PTC"  are not present in the classes.
+
+While generally the same component name is used for both the Bmad
+structures and the \cpp classes, in the case where there is a \cpp
+reserved word conflict, the \cpp component name will be different.
+
+A header file "bmad_enums.h" defines corresponding Bmad
+parameters for all \cpp routine. The Bmad parameters are in a
+namespace called "Bmad". The convention is that the name of a
+corresponding \cpp parameter is obtained by dropping the ending
+"$" (if there is one) and converting to uppercase. For example,
+"electron$" on the Fortran side converts to "Bmad::ELECTRON" in
+\cpp. 
+
+All of the \cpp class components that are arrays or matrices are zero
+based so that, for example, the index of the ".vec[i]" array in a
+"CPP_coord" runs from 0 through 5 and not 1 through 6 as on the
+Fortran side. Notice that for a "lat_struct" the "%ele(0:)"
+component has a starting index of zero so there is no off--by--one
+problem here.  The exception to this rule is the "%value(:)" array
+of the "ele_struct" which has a span from 1 to
+"num_ele_attrib$". In this case, To keep the conversion of the of
+constructs like "ele%value(k1$)" consistant, the corresponding
+"ele.value[]" array has goes from 0 to "Bmad::NUM_ELE_ATTRIB"
+with the 0th element being unused.
+
+----------------------------------------------------------------------------
+
+  subroutine f_test
+    use bmad_cpp_convert_mod
+    implicit none
+
+    interface
+      subroutine cpp_routine (f_lat, c_coord) bind(c)
+        import f_lat, c_ptr
+        type (lat_struct) :: f_lat
+        type (c_ptr), value :: c_coord
+      end subroutine
+    end interface
+
+    type (lat_struct), target :: lattice   // lattice on Fortran side 
+    type (coord_struct), target :: orbit
+    type (c_ptr), value :: c_lat
+    ! ... 
+    call lat_to_c (c_loc(lattice), c_lat)    ! Fortran side convert
+    call cpp_routine (c_lat, c_loc(orbit))   ! Call C++ routine
+    call lat_to_f (c_lat, c_loc(lattice))    ! And convert back
+  end subroutine
+
+  #include "cpp_bmad_classes.h"
+
+  using namespace Bmad;
+
+  extern "C" cpp_routine (CPP_lat& c_lat, Bmad_coord_class* f_coord,  f_lat) 
+    CPP_coord c_coord;
+    coord_to_c (f_coord, c_coord);        // C++ side convert
+    // ... do calculations ...
+    cout << c_lat.name << "  " << c_lat.ele[1].value[K1] << endl;
+    coord_to_f (c_coord, f_coord);        // And convert back
+  
+A simple example of a Fortran routine calling a \cpp routine is shown
+in \figsf:fortran and \reff:cpp. Conversion between structure and
+classes can happen on either the Fortran side or the \cpp side. In
+this example, the "lat_struct" / "CPP_lat" conversion is on the
+Fortran side and the "coord_struct" / "CPP_coord" is on the \cpp
+side. 
+
+On the Fortran side, the interface block defines the argument list of
+the \cpp routine being called.
+
+On the \cpp side, "f_coord" is an instance of the
+"Bmad_coord_class" opaque class.
+
+A \cpp routine calling a Fortran routine has a similar structure to
+the above example. The interface block in \figf:fortran can be used
+as a prototype. For additional examples of conversion between Fortran
+and \cpp, look at the test code in the directory
+  cpp_bmad_interface/interface_test

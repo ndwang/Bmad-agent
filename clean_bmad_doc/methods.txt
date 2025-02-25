@@ -1,0 +1,654 @@
+chapter Tracking, Spin, and Transfer Matrix Calculation Methods
+
+Bmad allows for a number of methods that can be use to "track" a particle through a lattice
+element. Here "track" can mean one of three things:
+  1) Calculate a particle's phase space coordinates at the exit 
+     end of the element given the coordinates at the entrance end.
+  2) Calculate the linear transfer map (Jacobian) through an element
+     about a given reference orbit.
+  3) Calculate the a particle's spin orientation at the exit end 
+     of the element given the coordinates at the beginning.
+The different tracking methods that are available have different advantages and disadvantages in
+terms of speed, symplecticity, etc.  What tracking method is used, is selected on an
+element--by--element basis using the attributes:
+  tracking_method      = <Switch>   ! phase space tracking method.
+  mat6_calc_method     = <Switch>   ! 6x6 transfer matrix calculation.
+  spin_tracking_method = <Switch>   ! Spin tracking method.
+Example:
+  q2: quadrupole, tracking_method = symp_lie_ptc
+  q2[tracking_method] = symp_lie_ptc
+  quadrupole::*[tracking_method] = symp_lie_ptc
+The first two lines of this example have exactly the same effect in terms of setting the
+"tracking_method". The third line shows how to set the "tracking_method" for an entire class
+of elements.
+
+These switches are discussed in more detail in the following sections.
+
+----------------------------------------------------------------------------
+
+The "tracking_method" attribute of an element sets the algorithm that is used for single particle
+tracking through that element.  Table~\reft:track.methods gives which methods are available for
+each type of element. Note: Table~\reft:track.methods pertains to charged-particle tracking only.
+When tracking photons, only "bmad_standard" and "custom" tracking method are available.
+
+A note on terminology: Adaptive step size control used with the "Runge_Kutta" integrator means
+that instead of taking fixed step sizes the integrator chooses the proper step size so that the
+error in the tracking is below the maximum allowable error set by "rel_tol_adaptive_tracking" and
+"abs_tol_adaptive_tracking" tolerances. The advantage of step size control is that the integrator
+uses a smaller step size when needed (the fields are rapidly varying), but makes larger steps when
+it can. The disadvantage is that a step is more computationally intensive since the error in a step
+is estimated by repeating a step using two mini steps. Except for testing purposes, it is
+recommended that adaptive stepping be used over fixed step tracking since experience has shown that
+adaptive stepping is almost always faster.  It is also recommended that "runge_kutta" be used
+over "time_runge_kutta" since "runge_kutta" does not have the overhead of switching between
+time-coordinates and z-coordinates. The exceptions are cases where "time_runge_kutta" must be
+used like with an "e_gun" where the particles start with zero momentum and in cases where
+particles may reverse their longitudinal direction (EG: dark current electrons).
+
+  \includegraphics[width=4in]dark-current.pdf
+Dark current tracking. Example of where a time based tracker ("time_runge_kutta") is useful for
+simulating particles that can reverse their longitudinal velocity. Here the tracks drawn are from a
+simulation of "dark current" electrons generated at the walls of an RF cavity due to the large
+electromagnetic fields.  
+
+     "Bmad_Standard"
+Uses formulas for tracking. The formulas generally use the paraxial approximation. The emphasis here
+is on speed. It is important to note that field maps  are \em ignored by
+"bmad_standard" tracking. The tracking is non-symplectic but the non-symplectic errors tend to
+be small so that "bmad_standard" can be used in the vast majority of cases .
+
+     "Custom"
+This method will call a routine "track1_custom" which must be supplied by the programmer
+implementing the custom tracking. The default "track1_custom" supplied with the Bmad release
+will print an error message and stop the program if it is called which probably indicates a program
+linking problem. See "s:custom.ele" for more details.
+
+     "fixed_step_runge_kutta"
+The "fixed_step_runge_kutta" method is similar to "runge_kutta" tracking except that
+"fixed_step_runge_kutta" does not use adaptive step size control but instead takes steps of fixed
+size using the setting of "ds_step" or "num_steps" for the element being tracked through
+.  Generally, using adaptive step control will be much more efficient so it is
+recommended that "fixed_step_runge_kutta" \em not be used unless there is a compelling reason
+not to. This method is non-symplectic .
+
+     "fixed_step_time_runge_kutta"
+The "fixed_step_time_runge_kutta" method is similar to "time_runge_kutta" tracking except that
+"fixed_step_time_runge_kutta" does not use adaptive step size control but instead takes steps of
+fixed size using the setting of "ds_step" or "num_steps" for the element being tracked through
+.  Generally, using adaptive step control will be much more efficient so it is
+recommended that "fixed_step_time_runge_kutta" \em not be used unless there is a compelling
+reason not to. This method is non-symplectic .
+
+     "Linear"
+The "linear" method just tracks particles using the 0th order vector with the 1st order 6x6
+transfer matrix of an element. Depending upon how the transfer matrix was generated this may or may
+not be symplectic. Since there would be a circular dependency to have the orbital tracking dependent
+upon the transfer matrix and the transfer matrix dependent upon the determination of the reference
+orbit, the calculation of the transfer matrix when the "tracking_method" is set to "linear"
+will always use the zero orbit as the reference orbit.
+
+Additionally, a "linear" tracking method may not be used with "mat6_calc_method" set to
+"tracking" since this would also give a circular dependency. Note: setting the
+"tracking_method" to "linear" does not affect PTC calculations . In
+particular, Taylor maps will not be affected.
+
+     "MAD"
+This uses the MAD 2nd order transfer map. This method is not able to handle element misalignments or
+kicks, and becomes inaccurate as the particle energy deviates from the reference energy. MAD
+tracking should only be used for testing purposes. Note: Thanks to CERN and Frank Schmidt for
+permission to use the MAD tracking code within Bmad.
+
+     "runge_kutta"
+This uses a 4\Th order Runge Kutta integration algorithm with adaptive step size control.  This is
+essentially the Cash-Karp formulation. This method will be slow compared to non-Runge-Kutta methods
+so only use this if it is not possible to use something like "bmad_standard".  This method is
+accurate but non-symplectic . "Warning:" When using "custom" fields, if the
+fields do not obey Maxwell's equation, there is the possibility of the "runge_kutta" tracking
+halting mid-way through an element. See section~ for more details.
+
+     "Symp_Lie_Bmad"
+Symplectic tracking using a Hamiltonian with Lie operation techniques.  This is similar to
+"Symp_Lie_PTC" (see below) except this uses a Bmad routine. By bypassing some of the generality
+inherent in PTC , "Symp_Lie_Bmad" achieves about a factor of 10 improvement
+in speed over "Symp_Lie_PTC".
+
+     "Symp_Lie_PTC"
+Symplectic tracking using a Hamiltonian with Lie operator techniques.  This uses \'Etienne Forest's
+PTC  software for the calculation. This method is symplectic but can be
+slow. Exceptions: The tracking is not symplectic when tracking through and element with an
+associated electric field and when tracking through a "taylor" element.
+
+     "Taylor"
+The tracking uses a Taylor map. The map is either explicitly given in the lattice file, that is, the
+element must be of type "taylor" , or the Taylor map is generated from the PTC
+ package. Generating the map may take time but once you have it it should be
+very fast. One possible problem with using a Taylor map is that you have to worry about the accuracy
+if you do tracking at points that are far from the expansion point about which the map was
+made. This method is non-symplectic away from the expansion point. Whether the Taylor map is
+generated taking into account the offset an element has is governed by the
+"taylor_map_includes_offsets" attribute .
+
+The order of a Taylor map is set by the "parameter[taylor_order]"
+parameter .
+
+     "Time_Runge_Kutta"
+This method uses time as the independent variable instead of the longitudinal z position. The
+advantage of this method is that it can handle particles which reverse direction longitudinally.
+One use for this method is "dark current" tracking where, as illustrated in \figf:dark.current,
+low energy particles generated at the vacuum chamber walls can be found traveling in all
+directions. Notice that "time_runge_kutta" is different from using "absolute time tracking" as
+explained in. This method is non-symplectic .
+
+----------------------------------------------------------------------------
+
+\rule0pt80pt 
+\em Element Class
+ 
+                                    BS   C   L   M   RK    SLB   SLP    T   TRK
+  "ab_multipole and multipole"    D X X            X   X       
+  "ac_kicker"                     D X X    X              X    
+  "beambeam"                      D X X                        
+  "bends: rbend and sbend"        D X X X          X   X      
+  "converter"                     D X                          
+  "crab_cavity"                   D X X                        
+  "custom"                          D X    X              X    
+  "drift"                         D X X X  X       X   X  X    
+  "e_gun"                           X    X^b&             D    
+  "ecollimator and rcollimator"   D X X    X       X   X  X    
+  "elseparator"                   D X X X  X       X   X  X    
+  "em_field"                        X      D       X   X  X    
+  "fiducial"                      D X              X           
+  "floor_shift"                   D X              X           
+  "fork"                          D X X                      
+  "gkicker"                       D X X            X   X     
+  "hkicker"                       D X X    X       X   X  X    
+  "instrument, monitor, and pipe" D X X    X       X   X  X    
+  "kicker"                        D X X    X       X   X  X    
+  "lcavity and rfcavity"          D X X    X       X   X  X    
+  "marker"                        D X X            X   X       
+  "match"                         D X                  X      
+  "octupole"                      D X X    X       X   X  X   
+  "patch"                         D X    X^c&      X   X      
+  "photonic elements"             D X                        
+  "quadrupole"                    D X X X  X   X   X   X  X   
+  "rf_bend"                         X X    X              X  
+  "sad_mult"                      D X X            X   X     
+  "sextupole"                     D X X X  X       X   X  X   
+  "solenoid"                      D X X X  X   X   X   X  X   
+  "sol_quad"                      D X X    X   X   X   X  X   
+  "taylor"                          X X            X   D      
+  "vkicker"                       D X X    X       X   X  X   
+  "wiggler" (map type)              X X    X   X   X   X  X  
+  "wiggler" (periodic type)       D X X  X^d&X^d&X^d&D^d&     
+  
+  \multicolumn10l^aIncludes fixed step versions.                    
+  \multicolumn10l^bOnly if the beginning energy is non-zero.        
+  \multicolumn10l^cOnly available for non-reflection patch elements.
+  \multicolumn10l^dSee for more details.  
+
+Table of valid tracking_method switches. "D" denotes the
+default method. "X" denotes a valid method. Photonic
+elements are elements in Table~\reft:photon.classes that cannot be used for
+charged particle tracking (Table~\reft:particle.classes).
+
+----------------------------------------------------------------------------
+
+The "mat6_calc_method" attribute sets how the 6x6 Jacobian transfer matrix for a given element is
+computed. Table~\reft:mat6.methods gives which methods are available for each type of element.
+Note: Table~\reft:mat6.methods is for charged-particle tracking only. When tracking photons,
+transfer matrices (which are not very useful) are not computed.
+
+If an element's "static_linear_map" parameter is set to "True" (the default is "False"),
+this prevents the linear map, which consists of the transfer matrix and the zeroth order part of the
+map, from being recomputed. For example, if somewhere in a lattice a steering is changed, this will
+shift the reference orbit and the linear transfer map in elements where the reference orbit changes
+will, in general, vary. However, having "static_linear_map" set to "True" will prevent this
+variation.
+
+In addition to the "mat6_calc_method" switch, two element attributes that can affect the way the
+transfer matrix is calculated are "symplectify" and "taylor_map_includes_offsets". These are
+discussed in sections and respectively.
+
+For methods that do not necessarily produce a symplectic matrix the "symplectify" attribute of an
+element can be set to "True" to solve the problem. See.
+
+Symplectic integration is like ordinary integration of a function f(x) but what is integrated here
+is a Taylor map. Truncating the map to 0\Th order gives the particle trajectory and truncating to
+1\St\ order gives the transfer matrix (Jacobian).  The order at which a Taylor series is truncated
+at is set by "taylor_order" (see. Like ordinary integration there are various
+formulas that one can use to do symplectic integration.
+
+     "Auto"
+With "auto" the "mat6_calc_method" appropriate for the element's setting of
+"tracking_method" is used. The correspondence is:
+Element's "tracking_method" "Mat6_calc_method" used
+
+\vn
+  "bmad_standard"         "bmad_standard" 
+  "linear"                "bmad_standard" 
+  "custom"                "custom" 
+  "mad"                   "mad" 
+  "symp_lie_bmad"         "symp_lie_bmad" 
+  "symp_lie_ptc"          "symp_lie_ptc" 
+  "taylor"                "taylor" 
+  All "Runge-Kutta" types "tracking" 
+
+when the "mat6_calc_method" is set to "auto".
+
+     "Bmad_Standard"
+Uses formulas for the calculation. The formulas generally use the paraxial approximation. The
+emphasis here is on speed.
+
+     "Custom"
+This method will call a routine "make_mat6_custom" which must be supplied by the programmer
+implementing the custom transfer matrix calculation. The default "make_mat6_custom" supplied with
+the Bmad release will print an error message and stop the program if it is called which probably
+indicates a program linking problem.  See "s:custom.ele" for more details.
+
+     "MAD"
+This uses the MAD 2nd transfer map. This method is not able to handle element misalignments or
+kicks, and becomes inaccurate as the particle energy deviates from the reference energy. MAD
+tracking is generally only used for testing purposes. Thanks must be given to CERN and Frank Schmidt
+for permission to use the MAD tracking code within Bmad.
+
+     "Symp_Lie_Bmad"
+A symplectic calculation using a Hamiltonian with Lie operator techniques.  This is similar to
+"Symp_Lie_PTC" (see below) except this uses a Bmad routine. By bypassing some of the generality
+inherent in PTC, "Symp_Lie_Bmad" achieves about a factor of 10 improvement in speed over
+"Symp_Lie_PTC". However, "Symp_Lie_Bmad" cannot generate maps above first order.
+
+     "Symp_Lie_PTC"
+Symplectic integration using a Hamiltonian and Lie operators.  This uses the PTC
+ software for the calculation.  This method is symplectic but can be
+slow. Exceptions: The tracking is not symplectic when tracking through and element with an
+associated electric field and when tracking through a "taylor" element.
+
+     "Taylor"
+This uses a Taylor map generated from \'Etienne's PTC package. Generating the map may take time but
+once you have it it should be very fast. One possible problem with using a Taylor map is that you
+have to worry about the accuracy if you do a calculation at points that are far from the expansion
+point about which the map was made. This method is non-symplectic away from the expansion
+point. Whether the Taylor map is generated taking into account the offset an element has is governed
+by the "taylor_map_includes_offsets" attribute . "bmad_standard" and
+"taylor" tracking methods are identical. Note: Taylor maps for "match", and "patch"
+elements are limited to first order.
+
+The order of a Taylor map is set by the "parameter[taylor_order]"
+parameter .
+
+     "Tracking"
+This uses the tracking method set by "tracking_method" to track 6 particles around the central
+orbit. This method is susceptible to inaccuracies caused by nonlinearities. Furthermore this method
+is almost surely slow. While non--symplectic, the advantage of this method is that it is directly
+related to any tracking results. Note: a "linear" tracking method may not be used with
+"mat6_calc_method" set to "tracking" since this would give a circular dependency. The two
+parameters that affect this calculation are "bmad_com%d_orb(6)"  which
+sets the six deltas used for displacing the initial particle coordinates from the reference orbit.
+
+\rule0pt80pt
+ 
+                                    BS   C   M  Stat SLB   SLP   Tlr  Trk
+  "ab_multipole and multipole"    D X   X      X   X  X   
+  "ac_kicker"                       X   X      X   X  D   
+  "beambeam"                      D X   X             X   
+  "bends: rbend and sbend"        D X X X      X   X  X  
+  "converter"                     D X                     
+  "crab_cavity"                     X   X             D   
+  "custom"                          D   X             X   
+  "drift"                         D X X X      X   X  X   
+  "e_gun"                           X   X             D   
+  "ecollimator and rcollimator"   D X   X      X   X  X   
+  "elseparator"                   D X X X      X   X  X   
+  "em_field"                        X   X      X   X  D   
+  "fiducial"                      D X   X      X      X   
+  "floor_shift"                   D X   X      X      X   
+  "hkicker"                       D X   X      X   X  X   
+  "instrument, monitor, and pipe" D X   X      X   X  X   
+  "kicker"                        D X   X      X   X  X   
+  "lcavity and rfcavity"          D X   X      X   X  X   
+  "marker"                        D X   X      X   X  X   
+  "match"                         D X   X             X   
+  "octupole"                      D X   X      X   X  X  
+  "patch"                         D X   X      X   X  X  
+  "quadrupole"                    D X X X  X   X   X  X  
+  "rf_bend"                       D X   X             X 
+  "sad_mult"                      D X   X      X   X  X  
+  "sextupole"                     D X X X      X   X  X  
+  "solenoid"                      D X X X  X   X   X  X  
+  "sol_quad"                      D X X X  X   X   X  X  
+  "taylor"                          X   X      X   D     
+  "vkicker"                       D X   X      X   X  X  
+  "wiggler" (map type)            D X   XX^a&X^a&X^a& X  
+  "wiggler" (periodic type)         X   XX^a&X^a&D^a& X  
+  \multicolumn9l^aSee for more details 
+ 
+available mat6_calc_method switches. When tracking photons, transfer
+matrices are not computed.  "D" denotes the default method. "X" denotes an available method.
+
+----------------------------------------------------------------------------
+
+The "spin_tracking_method" attribute of an elements sets the algorithm that is used for tracking
+a particle's spin  through that element.  Table~\reft:spin.methods gives which
+methods are available for each type of element. Note: This table is only for charged-particle tracking
+since photons do not have spin.
+
+Possible "spin_tracking_method" settings are:
+
+     "Custom" 
+This method will call a routine "track1_spin_custom" which must be supplied by the programmer
+implementing the custom spin tracking calculation. See "s:custom.ele" for more details.
+
+     "Sprint" 
+The "sprint" algorithm  uses first order transfer spin maps to track the
+spin through lattice elements. This method is very fast at the cost of accuracy for particles away
+from the zero orbit. The algorithm is also limited in what elements it can handle and it ignores
+higher order multipoles that may be present.
+
+     "Symp_Lie_PTC" 
+Symplectic integration using a Hamiltonian and Lie operators.  This uses \'Etienne's PTC software
+for the calculation.  This method is symplectic but can be slow.
+
+     "Tracking" 
+How spin is tracked here will depend also on the setting of "tracking_method". If
+"tracking_method" is set to "runge_kutta" or "time_runge_kutta" the spin will be tracked
+along with the phase space particle coordinates using the local fields. For "tracking_method" set
+to "symp_lie_ptc", the spin tracking will use "PTC".  For all other "tracking_method"s, the
+spin will be tracked using the ""bmad_standard"" spin tracking method which involves Romberg
+integration of the spin rotation matrix.
+
+The "runge_kutta" and "time_runge_kutta" spin tracking uses the same fourth order integrator
+as is used for the orbital coordinates to track the spin rotation vector.
+
+Since speed may be an issue, Bmad has an global parameter called "spin_tracking_on" which is
+part of the "bmad_com" instance  that determines whether spin is tracked or
+not. Note: There is also another "bmad_com" parameter called "spin_baier_katkov_flipping_on"
+which can influence spin tracking.
+
+The "spin_fringe_on" element attribute  can be used to toggle whether the
+fringe fields of an element affect the spin.
+
+Example:
+  q: quadrupole, spin_tracking_method = symp_lie_ptc
+
+\rule0pt80pt
+ 
+                                     C  Spt SLP Trk 
+  "ab_multipole and multipole"    X     D   
+  "ac_kicker"                     X     D   
+  "beambeam"                      X     D   
+  "bends: rbend and sbend"        X X X D  
+  "converter"                     X     D   
+  "crab_cavity"                   X     D   
+  "custom"                        D     X   
+  "drift"                         X X X D   
+  "e_gun"                         X     D   
+  "ecollimator and rcollimator"   X X X D   
+  "elseparator"                   X   X D   
+  "em_field"                      X     D   
+  "fiducial"                      X   X D   
+  "floor_shift"                   X   X D   
+  "hkicker"                       X X X D   
+  "instrument, monitor and pipe"  X X X D   
+  "kicker"                        X X X D   
+  "lcavity and rfcavity"          X   X D   
+  "marker"                        X   X D   
+  "match"                         X     D   
+  "octupole"                      X X X D  
+  "patch"                         X   X D  
+  "quadrupole"                    X X X D  
+  "sad_mult"                      X     D   
+  "sextupole"                     X X X D  
+  "solenoid"                      X X X D  
+  "sol_quad"                      X   X D  
+  "taylor"                              D  
+  "vkicker"                       X X X D  
+  "wiggler"                       X   X D  
+
+available "spin_tracking_method"\ switches. "D" denotes the default method. 
+"X" denotes an available method. Note: Photon tracking does not involve spin.
+
+"Integration methods" are tracking methods that involve integrating through an element's magnetic
+and electric fields.  Integration methods are split into two classes: Those that can track Taylor
+maps and those that simply track a particle's position.  The Taylor map methods are
+  symp_lie_bmad   ! Only to first order
+  symp_lie_ptc    ! Uses PTC
+  taylor          ! Uses PTC
+See section for more information on Taylor maps and symplectic integration. The
+latter two methods involve using the PTC library .
+
+The methods that do not involve Taylor maps are
+  fixed_step_runge_kutta
+  fixed_step_time_runge_kutta
+  runge_kutta
+  time_runge_kutta
+
+there are a number of element attributes that can affect the calculation. They are
+  ds_step             = <Real>     ! Integration step length 
+  num_steps           = <Integer>  ! Number of integration steps. 
+  integrator_order    = <Integer>  ! Integrator order 
+  field_calc          = <Switch>   ! How the field is calculated 
+
+Example:
+  q1: quadrupole, l = 0.6, tracking_method = bmad_standard, 
+        mat6_calc_method = symp_lie_ptc, ds_step = 0.2, field_calc = custom
+
+When doing beam tracking through an element , Coherent Synchrotron Radiation
+(CSR) and Space Charge (SC) effects can be included by setting the appropriate method switches in
+that element. These switches are:
+  csr_method          = <Switch>   ! Coherent Synchrotron Radiation 
+  space_charge_method = <Switch>   ! Space charge method
+Note: For CSR or SC effects to be included in tracking the "bmad_com" logical
+"csr_and_space_charge_on" must be set to "True" .
+
+The possible settings for "csr_method" are
+  off             ! No CSR. Default.
+  1_dim           ! One dimensional calculation .
+The "1_dim" setting cannot be used when "space_charge_method" is set to  "cathode_fft_3d".
+
+The possible settings of "space_charge_method" are
+  off             ! No SC. Default.
+  slice           ! SC using slices .
+  fft_3d          ! SC using a 3D grid .
+  cathode_fft_3d  ! Same as fft_3d with cathode image charge included .
+The "cathode_fft_3d" setting can only be used with "csr_method" set to "off". Additionally,
+the "cathode_fft_3d" setting can only be used with the element "tracking_method" set to
+"time_runge_kutta" or "fixed_step_time_runge_kutta".
+
+Example:
+  q1: quadrupole, l = 0.6, csr_method = 1_dim, space_charge_method = slice, ...
+
+Also see the "space_charge_com" structure  which contains parameters used in
+space charge and CSR calculations.
+
+Note: There is also high energy space charge calculation that can be used with single particle
+tracking and is discussed in.
+
+One way to create a transfer map through an element is to divide the element up into slices and then
+to propagate the transfer map slice by slice.  There are several ways to do this integration. The
+"runge_kutta" type methods integrate the equations of motion to give the 0\Th order Taylor map
+using Lie algebraic techniques, on the other hand, can generate Taylor maps to any order. The
+"ds_step" attribute determines the slice thickness.  Alternatively, "num_steps" attribute can
+be used in place of "ds_step" to specify the number of slices.  This is applicable to
+"symp_lie_bmad" and "symp_lie_ptc" integration. Example:
+  q: quadrupole, l = 0.6, ds_step = 0.1  ! 10 cm step size.
+  sbend::*[ds_step] = 0.2                ! Set the step_size for all sbend elements.
+
+When tracking using maps or element-by-element with PTC there are a few points to keep in
+mind. First is that "PTC" tracks through a lattice element step by step. This is true for both
+map creation and symplectic integration. This means that the setting of the element parameter
+"integrator_order" 
+or "num_steps" (or "ds_step") for each element will affect the accuracy and speed of the
+computations. Bmad tries to choose reasonable default settings for the integrator order and number
+of steps however the calculation is not perfect. To make sure that the integrator order and number
+of steps is set properly, vary both and choose values (which can be different for different
+elements) such that the number of steps and integrator order is minimal (to minimize computation
+time) while at the same time is large enough so that results do not change significantly if the
+number of steps or is varied. Generally it is much better to use a large integrator order and a
+small step size rather than vice versa with the proviso that for elements with a longitudinally
+varying field (think wigglers or undulators), the step size must be small compared to the typical
+longitudinal length scale over which the field is varying (this length scale is the pole period
+length with with wigglers and undulators).
+
+The default value for "ds_step" for a given element is calculated based upon the element's field
+strength. One should consider the default as more of a guesstimate.
+
+The "runge_kutta" and "time_runge_kutta" tracking uses adaptive step control independent of
+the setting of the elements "ds_step" parameter. These methods use three "bmad_com" parameters
+) namely:
+  bmad_com[rel_tol_adaptive_tracking]
+  bmad_com[abs_to_adaptive_tracking]
+  bmad_com[max_num_runge_kutta_step]
+The estimated error of the integration is then bounded by
+  error < abs_tol + |orbit| * rel_tol
+lowering the error bounds makes for greater accuracy (as long as round-off 
+doesn't hurt) but for slower tracking. 
+
+The "runge_kutta" type tracking methods all use as input the electric and magnetic fields of
+an element. How the EM fields are calculated is determined by the "field_calc" attribute for an
+element.  For all lattice elements, except "wigglers" and "undulators", possible values for
+"field_calc" are:
+  bmad_standard     ! This is the default except for custom elements
+  custom            ! Default for custom elements.
+  fieldmap
+For "wigglers" and "undulators", possible values for "field_calc" are:
+  planar_model
+  helical_model
+  custom
+  fieldmap
+For historical reasons, the default setting for "field_calc" for "wigglers" and
+"undulators" is "planar_model" except if there is a field map present  in
+which case the default is "fieldmap".  Note that with "bmad_standard" tracking, the setting of
+"field_calc" is ignored except in the case of "wigglers" and "undulators" where
+"field_calc" must be set to either "planar_model" or "helical_model".
+
+"Custom" means that the field calculations are done outside of the Bmad software. A program
+doing "custom" field calculations will need the appropriate custom routine .
+Elements that set "field_calc" to "fieldmap" need to have a field map defined
+.
+
+"Warning:" When tracking a particle through a custom field using "runge_kutta", it is
+important that the field obey Maxwell's equations. Fields that do not obey Maxwell's Equations may
+cause the "runge_kutta" adaptive step size control algorithm to take smaller and smaller steps
+until the step size becomes so small the tracking will stop. What happens is that the step size
+control algorithm takes a step and then takes two half steps over the same region and from this
+estimates the error in the calculation. If the error is larger than the allowed tolerance the
+control algorithm shortens the step and tries again. A field that does not obey Maxwell's equations
+can fool the control algorithm into thinking that the error is always larger than the allowed
+tolerance for any finite step size. A typical situation is where the field has an unphysical step
+across some boundary.
+
+The "integrator_order" element attribute is the order of the integration formula for
+"Symp_Lie_PTC" and is used for constructing Taylor maps. Possible values are
+  integrator_order = 2, 4, 6, or 8
+Essentially, an integrator order of n means that the error in an integration step scales as
+dz^n+1 where dz is the slice thickness. For a given number of steps a higher order will give
+more accurate results but a higher order integrator will take more time per step. It turns out that
+for wigglers, after adjusting "ds_step" for a given accuracy, the order 2 integrator is the
+fastest. This is not surprising given the highly nonlinear nature of a wiggler. Note that
+"symp_lie_bmad" always uses an order 2 integrator independent of the setting of
+"integrator_order". The setting of "8" is not implemented for all elements. If "8" is set
+for a given element type that does not support it, a value of "6" will be used instead.
+
+When tracking uses the "PTC" library , there are two global parameters that
+can be set in the lattice file that affect the calculation. These are:
+  ptc_com[exact_model]    = <Logical>  ! "exact" tracking? Default: False
+  ptc_com[exact_misalign] = <Logical>  ! "exactly" misalign elements? Default: True
+The default for "exact_model" is "True" and the default for "exact_misalign" is "True".
+
+The "exact_model" parameter sets whether PTC uses an "exact" model for
+tracking. Essentially this means that the paraxial approximation  is made
+for "exact_model" set to "False" and is not made if set to "True". This can be
+important, for example, for bend tracking when the bend radius is small.
+
+In PTC, exact modeling can be set on an element-by-element basis. Currently Bmad does not support
+specifying element-by-element setting of exact modeling. However, PTC does not have a non-exact
+tracking option for elements that have an electric field. In this case, PTC tracking will always be
+exact independent of the setting of "exact_model".  Additionally, for elements with an
+electric field, tracking will not be symplectic.
+
+The "exact_misalign" parameter determines whether misalignments are handled exactly or
+whether approximations are made that will speed up the calculation.
+
+In addition to the above parameters, how the Hamiltonian is split when tracking with "PTC" can be
+set for individual elements using the "ptc_integration_type" parameter. Possible settings of this
+parameter are
+  drift_kick    ! See Eq. (125) of \citeb:geo.int
+  matrix_kick   ! See Eq. (132) of \citeb:geo.int. Default
+  ripken_kick   ! See Eq. (130) of \citeb:geo.int
+Example:
+  q2: quad, l = 0.6, k1 = 0.34, ptc_integration_type = drift_kick
+A discussion of the different types of integration schemes is given by Forest\citeb:geo.int. The
+equation that shows the appropriate splitting of the Hamiltonian for each integration type is
+referenced in the above list. The "ripken_kick" type is for benchmarking with the "SixTrack"
+program and is not otherwise generally useful. The difference between "drift_kick" and
+"matrix_kick" is that with "drift_kick" the quadrupolar part of the magnetic multipole is is
+included in the applied kick between drifts while in the "matrix_kick" method the quadrupolar
+component is used for the "matrix" tracking between kicks. With the "matrix_kick" method the
+tune of a machine tends to be insensitive to how many integration steps (set by "ds_step" or
+"n_steps") are used.
+
+PTC does not implement "matrix_kick" tracking for elements with an electric field. In this case,
+the setting of "ptc_integration_type" is ignored and tracking will be "drift_kick". Thus, if
+an electric field is introduced into an element, more integration steps may be required to get the
+correct tune.
+
+When selecting tracking methods for lattice elements, there are several factors to consider,
+including symplecticity. Despite its emphasis in accelerator textbooks, symplecity (or the lack
+therof) is typically only relevant for long-term tracking when there is minimal radiation emission
+over many turns. That is, the potential problem with non-symplectic tracking is the buildup of
+errors over many turns. Thus, computations that involve only tracking through the lattice from
+beginning to end -- like calculating Twiss functions or tracking through a linac -- generally do not
+benefit from symplectic tracking. More important in these cases is the speed of the calculation, 
+which can be obtained with the cost of non-symplecticity.
+
+The motion of particles that radiate is not symplectic. Thus, symplectic tracking for the
+non-radiative part of the motion may not be needed if radiation is large enough. For example, for
+simulations of the Cornell CESR ring with electron and positron beam energies of order 1~GeV to
+10~GeV and with damping times on the order of 10,000 turns, the "bmad_standard" tracking has
+proved quite adequate. However in other cases with radiation, the symplectic error may cause an 
+extra damping or anti-damping effect, giving equilibrium beam sizes that are an under/overestimate 
+of the actual beam sizes. When opting for speed versus symplecticity in long term tracking over 
+many turns, care should be taken to ensure that the effects of the non-symplecticity are minimal.
+
+The "symplectify" attribute
+  symplectify = <Logical>
+is used to make the transfer matrix for an element symplectic. The linear transport matrix may be
+non--symplectic for a number of reasons.  For example, the linear matrix that comes from expanding a
+Taylor Map around any point that is not the origin of the map is generally not symplectic. The
+transfer matrix for an element can be symplectified by setting the "symplectify" attribute to
+True. See section~ for details on how a matrix is symplectified. The default
+value of "symplectify", if it is not present, is "False". If it is present without a value
+then it defaults to true. Examples:
+  s1: sextupole, l = 0.34                       ! symplectify = False
+  s1: sextupole, symplectify = True, l = 0.34   ! symplectify = True
+  s1: sextupole, symplectify, l = 0.34          ! symplectify = True
+
+reference momentum at the downstream end of the element is different
+from the upstream end, the transfer matrix is never symplectic. In
+this case, "symplectification" involves first transforming the
+transfer matrix so that the reference momentum is the same upstream
+and downstream, then performing symplectification, and finally back
+transforming the reference momentum to their original values.
+
+The "taylor_map_includes_offsets" attribute sets whether the Taylor map
+generated for an element includes the affect due to the elements
+(mis)orientation in space. That is, the affect of any pitches, offsets
+or tilt . The default is "True" which means that
+the Taylor map will include such effects. 
+
+How "taylor_map_includes_offsets" is set will not affect the results of
+tracking or the Jacobian matrix calculation. What is affected is the
+speed of the calculations. With "taylor_map_includes_offsets" set to "True"
+the Taylor map will have to be recalculated each time an element is
+reoriented in space. On the other hand, with "taylor_map_includes_offsets" set
+to "False" each tracking and Jacobian matrix calculation will
+include the extra computation involving the effect of the
+orientation. Thus if an element's orientation is fixed it is faster to
+set "taylor_map_includes_offsets" to "True" and if the orientation is
+varying it is faster to set "taylor_map_includes_offsets" to "False".
+
+If the global parameter "bmad_com%conserve_taylor_maps"
+ is set to True (the default), then, if an
+element is offset within a program, and if "taylor_map_include_offsets" is set
+to True for that element, Bmad will toggle "taylor_map_include_offsets" to
+False to conserve the map.

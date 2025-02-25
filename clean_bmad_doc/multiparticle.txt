@@ -1,0 +1,410 @@
+chapter Multiparticle Simulation
+
+Bmad has routines for tracking two types of objects called ""particles"" and
+""macroparticles"". "Particles" are characterized by a six-vector representing the
+particle's phase space coordinates and a pair of complex numbers characterizing the particle's spin.
+A macroparticle is like a particle with the addition of a 6\times 6 "sigma" matrix
+characterizing the size of the macroparticle.
+
+Macroparticle tracking was implemented in Bmad in order to simulate particle bunches.  The idea was
+that far fewer macroparticles than particles would be needed to characterize a bunch. In practice,
+it was found that the complexity of handling the macroparticle sigma matrix more than offset the
+reduction in the number of particles needed. Hence, while the basic macroparticle tracking routines
+still exist, macroparticle tracking is not currently maintained and the use of this code is
+discouraged. However macroparticle tracking could be revived in the future if there is a
+demonstrated need for it.
+
+Particle tracking can be divided into "single particle" tracking and "beam" tracking. Single
+particle tracking is simply tracking a single particle. Beam tracking is tracking an ensemble of
+particles divided up into a number of bunches that make up a "beam".
+
+\textit[Developed by Michael Saelim]
+
+To better visualize the evolution of a particle beam, it is sometimes convenient to initialize the
+beam with the particles regularly spaced. The following two algorithms are implemented in Bmad for
+such a purpose.
+
+See Chapter~"c:beam.init" for details on the standard input format used by Bmad based programs for
+reading in bunch initialization parameters.
+
+----------------------------------------------
+
+To observe nonlinear effects on the beam, it is sometimes convenient to initialize a bunch of
+particles in a way that puts more particles in the tails of the bunch than one would normally have
+with the standard method of seeding particles using a Gaussian distribution. In order to preserve
+the emittance, a distribution with more particles in the tail needs to decrease the charge per tail
+particle relative to the core.  This feature, along with a regular distribution, are contained in
+the following ""ellipse"" distribution algorithm.
+
+Consider the two dimensional phase space (x, p_x). 
+The transformation to action-angle coordinates,
+(J, \phi), is
+  J= \frac12[\gamma x^2 + 2 \alpha \, x \, p + \beta p^2] 
+  \tan\phi= \frac-\beta \, (p + \alpha \, x)x
+The inverse is
+    x  p
+  = \sqrt2J 
+    \sqrt\beta 0  -\frac\alpha\sqrt\beta 
+    -\frac1\sqrt\beta 
+    \cos\phi  
+    \sin\phi 
+In action-angle coordinates, the normalized Gaussian phase space 
+distribution, \rho(J, \phi), is
+  \rho(J,\phi) = \frac12\pi\varepsilon e^-\fracJ\varepsilon.
+where the emittance \varepsilon is just the average of J over the distribution
+  \varepsilon = \langle J \rangle \equiv \int dJ \, d\phi \, J\rho(J,\phi).
+The beam sizes are:
+  \sigma_x^2 \equiv \langle x^2 \rangle = \varepsilon\beta  
+  \sigma_p^2 \equiv \langle p^2 \rangle = \varepsilon\gamma,
+and the covariance is
+  \langle x \, p \rangle = -\varepsilon\alpha.
+
+The "ellipse" algorithm starts by partitioning phase space into regions bounded by ellipses of
+constant J = B_n, n = 0, \ldots N_J.  The boundary values B_n are chosen so that, except for
+the last boundary, the \sqrtB_n are equally spaced
+  B_n = 
+    \frac\varepsilon2 \, \left( \fracn_\sigma \, nN \right)^2 
+                  \textfor  0 \le n < N_J 
+    \infty \textfor  n = N_J
+where n_\sigma is called the ""boundary sigma cutoff"".  Within each region, an elliptical
+shell of constant J_n is constructed with N_\phi particles equally spaced in \phi. The charge
+q_n of each particle of the n\Th ellipse is chosen so that the total charge of all the particles
+of the ellipse is equal to the total charge within the region
+  N_\phi \, q_n = 
+  \int_B_n-1^B_n \!\! dJ \int_0^2\pi \!\! d\phi \, \rho(J,\phi) 
+  = 
+    \exp \left( -\fracB_n-1\varepsilon \right) - 
+    \exp \left( -\fracB_n\varepsilon \right)
+The value of J_n is chosen to coincide with the average J within the region
+  N_\phi \, q_n \, J_n = 
+  \int_B_n-1^B_n \!\! dJ \int_0^2\pi \!\! d\phi \, J \, \rho(J,\phi) 
+  = \varepsilon (\xi + 1) e^-\xi 
+    \biggr\vert_\fracB_n\varepsilon^\fracB_n-1\varepsilon
+The "ellipse" phase space distribution is thus
+  \rho_model(J, \phi) = q_tot \, 
+  \sum_n=1^N_J q_n \, \delta(J - J_n) \, 
+  \sum_m=1^N_\phi \, \delta(\phi - 2\pi \fracmN_\phi)
+where q_tot is the total charge. At a given point in the lattice, where
+the Twiss parameters are known, the input parameters needed to construct
+the "ellipse" phase space distribution is n_\sigma, N_J, N_\phi, 
+and q_tot.
+
+The "ellipse" distribution is two dimensional in nature but can easily be 
+extended to six dimensions.
+
+----------------------------------------------
+
+The Kapchinsky-Vladimirsky ("KV") distribution can be thought of as a four dimensional analog of
+the "ellipse" distribution with only one elliptical shell. Consider a 4D phase space (x,x',
+y,y').  Using this framework, a 4D Gaussian distribution is
+  \rho(J_x, \phi_x, J_y, \phi_y)= 
+    \frac1(2\pi)^2 \varepsilon_x \varepsilon_y\; 
+    exp(-\fracJ_x\varepsilon_x)\; exp(-\fracJ_y \varepsilon_y) 
+ = \frac1(2\pi)^2 \varepsilon_x \varepsilon_y\; 
+    exp(-\fracI_1\varepsilon) ,
+where the orthogonal action coordinates are:
+  I_1= \left(  \fracJ_x\varepsilon_x + \fracJ_y\varepsilon_y \right) \varepsilon 
+  I_2= \left( -\fracJ_x\varepsilon_y + \fracJ_y\varepsilon_x \right) \varepsilon
+with \varepsilon = (\frac1\varepsilon_x^2 + \frac1\varepsilon_y^2)^-1/2.  
+The reverse transformation is:
+   J_x = \left( \fracI_1\varepsilon_x - \fracI_2\varepsilon_y \right) 
+      \varepsilon  
+   J_y = \left( \fracI_1\varepsilon_y + \fracI_2\varepsilon_x \right) 
+      \varepsilon.
+
+The "KV" distribution is
+  \rho(I_1,I_2,\phi_x,\phi_y) = \frac1A \delta(I_1 - \xi),
+where A = \frac\varepsilon_x \varepsilon_y\varepsilon^2 \xi (2\pi)^2 
+is a constant which normalizes the distribution to 1.  
+By choosing a particular \xi, and iterating over the domain of the three remaining
+coordinates, one can populate a 3D subspace of constant density.
+
+The range in I_2 to be iterated over is constrained by J_x, J_y \geq 0.  
+Thus I_2 is in the range [-\frac\varepsilon_x\varepsilon_y I_1, 
+\frac\varepsilon_y\varepsilon_x I_1]. 
+This range is divided into N regions of equal size, with a ring of 
+particles placed in the middle of each region.  
+The angle variables are also constrained to \phi_x, \phi_y \in [0, 2\pi], 
+with each range divided into M_x and M_y regions, respectively.  
+Each of these regions will have a particle placed in its center.
+
+The weight of a particle is determined by the total weight of the region 
+of phase space it represents.  
+Because the density \rho is only dependent on I_1,
+   q= \int_0^\infty dI_1 \int_I_2^I_2 + \Delta I_2 
+     dI_2 \int_\phi_x^\phi_x + \Delta \phi_x d\phi_x 
+    \int_\phi_y^\phi_y + \Delta \phi_y d\phi_y \; \frac1A \delta(I_1 - \xi) 
+  = \frac1A \Delta I_2 \Delta \phi_x \Delta \phi_y.
+To represent the distribution with particles of equal weight, 
+we must partition (I_2,\phi_x,\phi_y)-space into regions of equal volume.
+
+The weight of each particle is
+  q = \frac1N M_x M_y = \frac1N_tot
+where N_tot is the total number of particles
+
+\textit[Developed by Michael Ehrlichman]
+
+Touschek scattering occurs when a single scattering event between two particles in the same beam
+transfers transverse momentum to longitudinal momentum, and the resulting change in longitudinal
+momentum results in the loss of one or both particles.  In the case of storage rings, these losses
+impose a beam lifetime.  In low-emittance storage rings, Touschek scattering can be the dominant
+mechanism for particle loss.  In the case of linear accelerators, these losses generate radiation in
+the accelerator tunnel.  When the scattered particles collide with the beam chamber, x-rays are
+produced which can damage equipment and impose a biohazard.  Studies of Touschek scattering
+typically look at beam lifetime and locations where scattering occurs and where particles are lost.
+
+A commonly utilized theory for studying Touschek scattering is from Piwinski \citeb:piwinski.  A
+basic outline of the derivation is,
+* Scatter two particles from a bunch in their COM frame using the relativistic
+Moller cross-section.
+* Boost from COM frame to lab frame.  Changes to longitudinal momentum end up 
+amplified by a factor of \gamma.
+* Integrate over 3D Gaussian distribution of particle positions and angles.
+During the derivation many approximations are made which lead to a relatively simple formula.  The
+integration is set up such that only those collisions which will result in particle loss are
+counted.  The formula takes the momentum aperture as a parameter.  The resulting formula is
+reproduced here to give the reader an idea of what influences the scattering rate, and how one might
+go about evaluating the formula,
+R=\fracr_e^2 c\beta_x\beta_y\sigma_h N_p^28\sqrt\pi\beta^2\gamma^4\sigma_x\beta^2
+\sigma_y\beta^2\sigma_s\sigma_p\int_\tau_m^\infty\igg(
+\left(2+\frac1\tau\right)^2\left(\frac\tau/\tau_m1+\tau-1\right)+1
+-\frac\sqrt1+\tau\sqrt\tau/\tau_m
+-\frac12\tau\left(4+\frac1\tau\right)\ln\frac\tau/\tau_m1+\tau\igg)
+\frac\sqrt\tau\sqrt1+\taue^-B_1\tauI_0\left[B_2\tau\right]d\tau,
+where \tau_m=\beta^2\delta_m^2 and \delta_m is the momentum aperture.  This formula gives the
+rate at which particles are scattered out of the bunch.  It is assumed that two particles are lost
+per scattering event, one with too much energy and one with too little energy.  If a machine with an
+asymmetric momentum aperture is being studied, then the formula should be evaluated twice, once for
+each aperture, and the results averaged.  Refer to \citeb:piwinski for definitions of the
+parameters involved.  This formula is implemented in BMAD as part of the \tt touschek_mod module.
+
+Different formulas for calculating the Touschek scattering rate exist elsewhere in the literature.
+For example, Wiedemann~\citeb:wiedemann, presents a formula with a simpler integrand.  This
+formula, originally from a paper by LeDuff~\citeb:leduff, is derived in a fashion similar to
+Piwinski except that the formula does not take dispersion into account and uses a non-relativistic
+scattering cross-section.  Since Piwinski's formula is the most robust, it is the one used in Bmad.
+
+Particles are lost from Touschek scattering due to two effects.  In storage rings, there is a
+momentum aperture defined by the RF system that is often referred to as the RF bucket.  If the
+\delta p imparted by a Touschek scattering event exceeds this RF bucket, then the particle will no
+longer undergo synchrotron oscillations with the rest of the bunch and will coast through the
+accelerator.  Second, if the Touschek scattering event occurs in a dispersive region, the scattered
+particles will take on a finite J and undergo betatron oscillations.  These oscillations can be
+large in amplitude and may cause the particles to collide with the beam pipe.  To first order, the
+amplitude of J due to a scattering event that imparts a momentum deviation of \Delta p is,
+  J\approx\gamma_0\cal H_0\frac\Delta p^22,
+where \gamma_0 is relativistic \gamma and \cal H_0 is the dispersion invariant.
+
+\em Note: The macroparticle tracking code is not currently maintained in favor of tracking an
+ensemble of particles where each particle is specified by a position without a sigma matrix. The
+following is present for historical reference only.
+
+A macroparticle\citeb:transport.appendix is represented by a centroid position rbar and a 6
+\times 6 sig matrix which defines the shape of the macroparticle in phase space. \sigma_i =
+\sqrtsig(i,i) is the RMS sigma for the i\Th phase space coordinate. For example \sigma_z =
+\sqrtsig(5,5).
+
+sig is a real, non-negative symmetric matrix. The equation that defines the ellipsoid at a
+distance of n--sigma from the centroid is
+  (r - rbar)^t sig\inv (r - rbar) = n
+where the t superscript denotes the transpose. Given the sigma matrix at some point s = s_1, the
+sigma matrix at a different point s_2 is
+  sig_2 = M_12 \, sig_1 \, M_12^t
+where M_12 is the Jacobian of the transport map from point
+s_1 to s_2.
+
+The Twiss parameters can be calculated from the sigma matrix. The dispersion is given by
+  \sigma(1,6)= \eta_x \, \sigma(6,6) \CRNO
+  \sigma(2,6)= \eta'_x \, \sigma(6,6) 
+  \sigma(3,6)= \eta_y \, \sigma(6,6) \CRNO
+  \sigma(4,6)= \eta'_y \, \sigma(6,6) \nonumber
+Ignoring coupling for now, the betatron part of the sigma matrix can be
+obtained from the linear equations of motion. For example, using
+  x = \sqrt2 \, \beta_x \, \epsilon_x \cos \phi_x + \eta_x \, p_z
+Solving for the first term on the RHS, squaring and averaging over all particles gives
+  \beta_x \, \epsilon_x = \sigma(1,1) - \frac\sigma^2(1,6)\sigma(6,6)
+It is thus convenient to define the betatron part of the sigma matrix
+  \sigma_\beta(i,j) \equiv \sigma(i,j) - \frac\sigma(i,6) \, \sigma(j,6)\sigma(6,6)
+and in terms of the betatron part the emittance is
+  \epsilon_x^2 = \sigma_\beta(1,1) \, \sigma_\beta(2,2) - \sigma_\beta^2(1,2)
+and the Twiss parameters are
+  \epsilon_x 
+    \beta_x   -\alpha_x 
+    -\alpha_x \gamma_x
+    \sigma_\beta(1,1) \sigma_\beta(1,2) 
+    \sigma_\beta(1,2) \sigma_\beta(2,2) 
+
+If there is coupling, the transformation between the 4\times 4
+transverse normal mode sigma matrix sig_a and the 4\times 4
+laboratory matrix sig_x is
+  sig_x = V \, sig_a V^t
+where V is given by \Eqvgicc1.
+
+The sigma matrix is the same for all macroparticles and is
+determined by the local Twiss parameters:
+  \sigma(1,1)= \epsilon_x \, \beta_x \CRNEG
+  \sigma(1,2)= -\epsilon_x \alpha_x  \CRNEG
+  \sigma(2,2)= \epsilon_x \, \gamma_x = 
+      \epsilon_x \, (1 + \alpha_x^2) / \beta_x \CRNEG
+  \sigma(3,3)= \epsilon_y \, \beta_y 
+  \sigma(3,4)= -\epsilon_y \alpha_b \CRNEG
+  \sigma(3,4)= \epsilon_y \, \gamma_y = 
+      \epsilon_y \, (1 + \alpha_b^2) / \beta_y \CRNEG
+  \sigma(i,j)= 0 \quad \textotherwise \nonumber
+The centroid energy of the k\Th macroparticle is
+  E_k = E_b + \frac(n_mp - 2 \, k + 1) \, \sigma_E \, N_\sigma En_mp
+where E_b is the central energy of the bunch, n_mp is the number of macroparticles, \sigma_E
+is the energy sigma, and N_\sigma E is the number of sigmas in energy that the range of
+macroparticle energies cover. The charge of each macroparticle is, within a constant factor, the
+charge contained within the energy region E_k - dE_mp/2 to E_k + dE_mp/2 assuming a Gaussian
+distribution where the energy width dE_mp is
+  dE_mp = \frac2 \, \sigma_E \, N_\sigma En_mp
+
+Synchrotron Radiation kick is calculated by dividing longitudinally a bunch into a number of
+bins. To smooth the computed densities, each particle of the bunch is considered to have a
+triangular density distribution.  \labelf:csr.bin
+
+The electric field E felt by particle A due to particle B can be described using the
+Li\'enard-Wiechert formula \citeb:csr. The field is singular as the distance between particles
+goes to zero so one approach to handling this is to decompose the field into two parts: One part,
+called the "space charge" (SC) or "Coulomb" term, E_SC is the field that would result if
+the particles where moving without acceleration along a straight line. The "Coherent Synchrotron
+Radiation" (CSR) term E_CSR is everything else E_CSR \equiv E - E_SC.
+Generally, the longitudinal component of the SC kick is negligible compared to the CSR kick at large
+enough particle energies.
+
+The SC term is singular at small distances while the CSR term is not. This being the case, it is
+possible to model the CSR term using a 1-dimensional formalism where the beam is approximated as a
+line charge\citeb:csr,b:csr2. In this formalism, the CSR kick is strictly longitudinal.
+
+Transport through a lattice element with SC and CSR involves a beam of particles. The lattice
+element is divided up into a number of slices. Transport through a slice is a two step process. The
+first step is to give all the particles a kick due to SC and CSR. The second step is transport of
+all particles from one slice to the next without any interaction between particles. User settable
+parameters pertinent to the CSR calculation are listed in.
+
+When an element's "csr_method" is set to "1_dim" , The particle-particle
+CSR kick is calculated by dividing the bunch longitudinally into a number of bins. To smooth the
+computed bin densities, each particle of the bunch is considered to have a triangular density
+distribution as shown in \figf:csr.bin.  The particle density of a bin is calculated by summing
+the contribution from all the particles. The contribution of a given particle to a given bin is
+calculated from the overlap of the particle's triangular density distribution with the bin. For the
+CSR kick, the density is actually calculated for a second set of staggered bins that have been
+offset by 1/2 the bin width with respect to the first set. This gives the density at the edges of
+the original set of bins. The density is considered to vary linearly between the computed density
+points. For a description of the parameters that affect the CSR calculation see
+Section~.
+
+When an element's "space_charge_method" is set to "slice" , the
+calculation of the SC kick uses, the same particle binning as is used with the "1_dim" CSR
+calculation . The kick is divided into longitudinal and a transverse parts. The
+transverse part uses the same Bassetti--Erskine complex error function formula\citeb:talman as
+with the beam-beam interaction  except here, since all the particles are
+moving in the same direction, the kicks due to the electric and magnetic fields generated by a given
+particle tend to cancel
+  K_y(\textCS) + i \, K_x(\textCS)=
+  \fracr_e \, \rho(z)\gamma^3 \, e \cdot
+  \sqrt\frac2 \, \pi \, (\sigma_x + \sigma_y)\sigma_x - \sigma_y \labelfsp1r 
+  \qquad \left{ w \left[ \fracx + i \, y\sqrt2 (\sigma_x^2 - \sigma_y^2) \right] -
+  \exp \left[ -\fracx^22 \, \sigma_x^2 - \fracy^22 \, \sigma_y^2 \right] \cdot
+  w \left[ \fracx \, \frac\sigma_y\sigma_x + i \, y \, \frac\sigma_x\sigma_y
+  \sqrt2 (\sigma_x^2 - \sigma_y^2) \right] \right}
+  \nonumber
+where K(\textCS) is the CS kick per unit length of travel of the beam, \rho(z) is
+the density of particles per unit length evaluated at the z position of the kicked
+particle, e is the charge on the electron,  and w is the complex error function.
+
+The longitudinal SC kick is given by Eq.~(31) of Sagan\citeb:csr 
+ d K_\mbox\tiny SC =
+  \frac r_c m c^2 \, \mboxsign(\zeta)\rho(z')dz'
+  \sigma_x \, \sigma_y \, \exp
+  \left[ \fracx^22 \, \sigma_x^2 + \fracy^22 \, \sigma_y^2 \right] +
+  \frac\sigma_x^2 + \sigma_y^2\sigma_x + \sigma_y \, \gamma |\zeta| + \gamma^2\zeta^2\ ,
+where \zeta is the longitudinal distance between the kick point and the slice doing the kicking.
+There are two simulation modes for the longitudinal SC kick. In both these modes, the kick is
+evaluated at the center plane of each slice. The kick is a sum kicks from all the slices. Since the
+thickness of the slices is, in general, not negligible, the integral over a slice is used to
+calculate the kick. The total kick K_\mbox\tiny SC(j) at slice j is
+  K_\mbox\tiny SC (j) = 
+  \sum_i \int_\zeta_ij-dz_s/2^\zeta_ij+dz_s/2 d\zeta \, dK_\mbox\tiny SC
+where the sum is over all slices i, \zeta_ij is the distance between slices i and j, and
+dz_s is the slice thickness. An analytic expression of the above integral is easily
+calculated assuming that the charge density \rho(z) is linearly varying within a given slice.  For
+brevity's sake, the calculation is not explicitly presented here. Once the kick at the slice center
+planes is calculated, the kick given to a particle is calculated using linear interpolation.
+
+One mode for calculating the transverse SC kick which is computationally fast, ignores the
+transverse dependence of the kick and just evaluates the kick on the beam centerline. The other
+simulation mode represents the kick due to a given slice using a Pad\'e approximant of form
+  \int_\zeta_ij-dz_s/2^\zeta_ij+dz_s/2 d\zeta \, dK_\mbox\tiny SC
+  \simeq \frac1a_00 + a_20 x^2 + a_40 x^4 + a_02 y^2 + a_04 y^4 + a_22 x^2 \, y^2
+the "a_mn" are calculated from an analytic formula derived from integrating \Eqkelsz. The
+reason for using this form is that it is a reasonable approximation even for very large x or y
+in that the actual and approximate kick both go to zero in this limit. That this Pad\'e
+approximant is reasonable is dependent upon the fact that all the a_mn for a slice are either
+all positive or all negative. Kicks from different slices can be combined using standard
+Differential Algebra techniques to give a summed kick in the same form as above. To avoid
+divergences, for a given j where the kick is evaluated, all the kicks from slices with negative
+coefficients are combined together and all the kicks from slices with positive coefficients are
+combined together and the total kick is then the sum of the "positive kick" part and the
+"negative kick" part. The kick applied to a particle is calculated by first evaluating the kick,
+at the particle's x and y, at the neighboring slices and then using linear interpolation.
+
+Note: Match elements  can have orbit shifts which are not well handled by the CSR
+algorithm. For this reason, match elements are ignored in the CSR calculation.
+
+When an element's "space_charge_method" is set to "fft_3d" or "cathode_fft_3d"
+, the space charge calculation uses code from the OpenSC package developed by
+Rob Ryne and Christopher Mayes \citeb:opensc. The method works by calculating the field due to the
+particles deposited on a 3D grid using an integrated Green function method for the Poisson equation. The steps are:
+
+* Deposit weighted charged particles on a 3D rectangular grid.
+* Calculate the space charge fields on this grid by FFT convolution. 
+* Interpolate the field to an arbitrary point within its domain.
+
+The FFT convolution is done using FFTs from the FFTW package, is parallelized using OpenMP.
+Special options allow the consideration of image charges at a cathode.
+This method will be able to handle lower energy bunches than the "slice" method 
+the disadvantage is that the "fft_3d" and "cathode_fft_3d" methods will be slower.
+
+Note: The mesh size is set by the "csr_pram" parameter "space_charge_mesh_size"
+.
+
+Bmad has a code module for simulating the effect of space charge (SC) at high energies. This is
+separate from the regular space charge calculation of. Thus it should be noted that
+turning on of both the regular space charge and the high energy space charge in the same element
+will result in double counting of the space charge effect.
+
+The advantage of the high energy space charge algorithm is that the kick on a given particle is
+computed assuming a Gaussian beam with the beam size calculated using emittances supplied by the
+user. Thus the high energy space charge calculation can be done in single particle tracking
+ as opposed to the beam tracking that must be used for the regular space charge
+calculation. The other advantage is that the high energy space charge calculation is quick since it
+is assumed that the kick is small enough so that the kick is only applied once per lattice
+element. The disadvantage of the high energy space charge calculation is that there is the
+assumption that the beam distribution is Gaussian which is generally acceptable for storage rings at
+relatively high energy but will not accurate in other situations.
+
+If a Bmad based program has been constructed to use the high energy space charge module (the
+documentation for the program should indicate if this is true), the high energy space charge force
+can be turned on or off by setting the "bmad_com[high_energy_space_charge_on]" parameter
+. 
+
+The high energy space charge kick is computed assuming a gaussian bunch shape 
+  K_y + i \, K_x=
+  \fracr_e \, N\gamma^3 \, \sigma_z \, \exp \left[ \frac-z^22 \, \sigma_z^2 \right] \cdot
+  \sqrt\frac\sigma_x + \sigma_y\sigma_x - \sigma_y \labelfsp1r2 
+  \qquad \left{ w \left[ \fracx + i \, y\sqrt2 (\sigma_x^2 - \sigma_y^2) \right] -
+  \exp \left[ -\fracx^22 \, \sigma_x^2 - \fracy^22 \, \sigma_y^2 \right] \cdot
+  w \left[ \fracx \, \frac\sigma_y\sigma_x + i \, y \, \frac\sigma_x\sigma_y
+  \sqrt2 (\sigma_x^2 - \sigma_y^2) \right] \right}
+  \nonumber 
+where N is the number of particles in the bunch. This equation is similar to \Eqfsp1r except
+that \rho(z) has been replaced assuming that the longitudinal distribution is Gaussian. For
+particles close to the bunch core the kick is linear with displacement giving rise to a tune shift
+\citeb:decking.
+
+The high energy space charge calculation ignores any CSR effects and ignores any longitudinal kicks
+and is thus not a good approximation at lower energies. See the discussion in \citeb:csr for more
+details.
+

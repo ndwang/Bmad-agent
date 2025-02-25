@@ -1,0 +1,208 @@
+chapter Bmad Concepts and Organization
+
+This chapter is an overview of some of the nomenclature used by Bmad. Presented are the basic
+concepts, such as "element", "branch", and "lattice", that Bmad uses to describe such
+things as LINACs, storage rings, X-ray beam lines, etc.
+
+---------------------------------------------------------------------------
+
+The basic building block Bmad uses to describe a machine is the "lattice" "element". An
+element can be a physical thing that particles travel "through" like a bending magnet, a
+quadrupole or a Bragg crystal, or something like a "marker" element  that is used
+to mark a particular point in the machine.  Besides physical elements, there are "controller"
+elements (Table~\reft:control.classes) that can be used for parameter control of other elements.
+
+Chapter~ lists the complete set of different element types that Bmad knows about.
+
+In a lattice "branch" , The ordered array of elements are assigned a number
+(the element index) starting from zero. The zeroth "beginning_ele"  element,
+which is always named "BEGINNING", is automatically included in every branch and is used as a
+marker for the beginning of the branch.  Additionally, every branch will, by default, have a final
+marker element  named "END".
+
+---------------------------------------------------------------------------
+
+The next level up from a "lattice" "element" is the "lattice" "branch". A "lattice"
+"branch" contains an ordered sequence of lattice elements that a particle will travel through. A
+branch can represent a LINAC, X-Ray beam line, storage ring or anything else that can be represented
+as a simple ordered list of elements.
+
+Chapter~ shows how a "branch" is defined in a lattice file with "line",
+"list", and "use" statements.
+
+A "lattice" , has an array of "branches". Each "branch" in this array
+is assigned an index starting from 0. Additionally, each "branch" is assigned a name which is the
+"line" that defines the branch .
+
+Branches can be interconnected using "fork" and "photon_fork" elements . This
+is used to simulate forking beam lines such as a connections to a transfer line, dump line, or an
+X-ray beam line. A "branch" from which other "branches" fork but is not forked to by any
+other "branch" is called a "root" branch. A branch that is forked to by some other branch
+is called a "downstream" branch.
+
+---------------------------------------------------------------------------
+
+an array of "branches" that can be interconnected together to describe an entire machine
+complex. A "lattice" can include such things as transfer lines, dump lines, x-ray beam lines,
+colliding beam storage rings, etc. All of which can be connected together to form a coherent whole. In
+addition, a lattice may contain "controller elements" (Table~\reft:control.classes) which can
+simulate such things as magnet power supplies and lattice element mechanical support structures.
+
+Branches can be interconnected using "fork" and "photon_fork" elements . This
+is used to simulate forking beam lines such as a connections to a transfer line, dump line, or an
+X-ray beam line. The "branch" from which other "branches" fork but is not forked to by any
+other "branch" is called a "root" branch.
+
+A lattice may contain multiple "root" "branches". For example, a pair of intersecting storage
+rings will generally have two "root" branches, one for each ring. The "use" statement
+ in a lattice file will list the "root" "branches" of a lattice. To connect
+together lattice elements that are physically shared between branches, for example, the interaction
+region in colliding beam machines, "multipass" lines  can be used.
+
+The root branches of a lattice are defined by the "use"  statement. To further
+define such things as dump lines, x-ray beam lines, transfer lines, etc., that branch off from a
+root branch, a forking element is used.  "Fork" elements can define where the particle beam can
+branch off, say to a beam dump. "photon_fork" elements can define the source point for X-ray
+beams.  Example:
+  erl: line = (..., dump, ...)               ! Define the root branch 
+  use, erl
+  dump: fork, to_line = d_line               ! Define the fork point
+  d_line: line = (..., q3d, ...)             ! Define the branch line
+
+Like the root branch Bmad always automatically creates an element with "element index" 0 at the
+beginning of each branch called "beginning". The longitudinal "s" position of an element in a
+branch is determined by the distance from the beginning of the branch.
+
+Branches are named after the line that defines the "branch". In the above example, the branch
+line would be named "d_line". The root branch, by default, is called after the name in the
+"use" statement .
+
+The "branch qualified" name of an element is of the form
+  branch_name>>element_name
+where "branch_name" is the name of the branch and "element_name" is the "regular" name of
+the element. Example:
+  root>>q10w
+  xline>>cryst3
+When parsing a lattice file, branches are not formed until the lattice is expanded
+. Therefore, an "expand_lattice" statement is required before branch qualified
+names can be used in statements. See for more details.
+
+---------------------------------------------------------------------------
+
+ \includegraphics[width=6.0in]superimpose-ip.pdf
+Superposition Example. A) Interaction region layout with quadrupoles overlapping a solenoid. B) The
+Bmad lattice representation has a list of split elements to track through and the undivided "lord"
+elements. Pointers (double headed arrows), keep track of the correspondence between the lords and
+their slaves.
+ 
+---------------------------------------------------------------------------
+
+A real machine is more than a collection of independent lattice elements. For example, the field
+strength in a string of elements may be tied together via a common power supply, or the fields of
+different elements may overlap.
+
+Bmad tries to capture these interdependencies using what are referred to as "lord" and
+"slave" elements. The "lord" elements may be divided into two classes. In one class are the
+"controller" elements.  These are "overlay" , "group" ,
+"ramper" , and "girder"  elements that control the
+attributes of other elements which are their slaves.
+
+The other class of "lord" elements embody the separation of the physical element from the track
+that a particle takes when it passes through the element. There are two types
+
+An example will make this clear.  "Superposition"  is the ability to overlap
+lattice elements spatially. \figf:super.ip shows an example which is a greatly simplified version
+of the IR region of Cornell's CESR storage ring when CESR was an e+/e-- collider. As shown in
+\figf:super.ipA, two quadrupoles named "q1w" and "q1e" are partially inside and partially
+outside the interaction region solenoid named "cleo". In the lattice file, the IR region layout
+is defined to be
+ \small
+  cesr: line = (... q1e, dft1, ip, dft1, q1w ...)
+  cleo: solenoid, l = 3.51, superimpose, ref = ip
+ 
+The line named "cesr" ignores the solenoid and just contains the interaction point marker element
+named "ip" which is surrounded by two drifts named "dft1" which are, in turn, surrounded by
+the "q1w" and "q1e" quadrupoles. The solenoid is added to the layout on the second line by
+using superposition. The "ref = ip" indicates that the solenoid is placed relative to "ip". The
+default, which is used here, is to place the center of the superimposed "cleo" element at the
+center of the "ip" reference element.  The representation of the lattice in Bmad will contain
+two branch "sections" ("sections" is explained more fully later): One section, called the
+"tracking section", contains the elements that are needed for tracking particles. In the current
+example, as shown in \figf:super.ipB, the first IR element in the tracking section is a quadrupole
+that represents the part of "q1e" outside of the solenoid. The next element is a combination
+solenoid/quadrupole, called a "sol_quad", that represents the part of "q1e" inside "cleo",
+etc.  The other branch section that Bmad creates is called the "lord section" This section
+contain the undivided "physical" "super_lord" elements  which, in this case are
+"q1e", "q1w", and "cleo". Pointers are created between the lords and their "super_slave"
+elements in the tracking section so that changes in parameters of the lord elements can be
+transferred to their corresponding slaves.
+
+"super_lord"s are used when there are overlapping fields between elements, the other case where
+there is a separation between the physical (lord) element and the (slave) element(s) used to track
+particles through comes when a particle passes through the same physical element multiple times such
+as in an Energy Recovery Linac or where different beams pass through the same element such as in an
+interaction region. In this case, "multipass_lords" representing the physical elements and
+"multipass_slaves" elements which are used for tracking can be defined .
+Superposition and multipass can be combined in situations where there are overlapping fields in
+elements where the particle passes through
+
+Each lattice element is assigned a "slave_status" indicating what kind of slave it is and a
+"lord_status" indicating what kind of lord it is. Normally a user does not have to worry about
+this since these status attributes are handled automatically by Bmad.  The possible
+"lord_status" settings are:
+       girder_lord 
+A "girder_lord" element is a "girder" element  . 
+       multipass_lord
+"multipass_lord" elements are created when
+multipass lines are present . 
+       overlay_lord 
+An "overlay_lord" is an "overlay" element . 
+       group_lord 
+A "group_lord" is a "group" element .
+       super_lord 
+A "super_lord" element is created when elements are
+superimposed on top of other elements .
+       not_a_lord
+This element does not control anything.
+Any element whose "lord_status" is something other than
+"not_a_lord" is called a "lord" element. In the "tracking part"
+of the branch, "lord_status" will always be
+"not_a_lord". In the "lord section" of the branch, under normal
+circumstances, there will never be any "not_a_lord" elements.
+
+Lord elements are divided into two classes.  A "major" lord represents a physical element which
+the slave elements are a part of.  "super_lord"s and "multipass_lord"s are "major" lords.
+As a consequence, a "major" lord is a lord that controls nearly all of the attributes of its
+slaves.  The other lords --- "girder_lord"s, "group_lord"s and "overlay_lord"s --- are
+called "minor" lords.  These lords only control some subset of a slaves attributes.
+
+The possible "slave_status" settings are
+       multipass_slave
+A "multipass_slave" element is the slave of a "multipass_lord"
+.
+       slice_slave
+A "slice_slave" element represents a longitudinal slice of another element.
+Slice elements are not part of the lattice but rather are created on-the-fly
+when, for example, a program needs to track part way through an element.
+       super_slave 
+A "super_slave" element is an element in the tracking part of the branch that 
+has one or more "super_lord" lords .
+       minor_slave
+"minor_slave" elements are elements that are not "slice_slave"s and are only controlled
+by "minor" lords ("overlay_lord"s, "group_lord"s, or "girder_lord"s).
+       free
+A "free" element is an element with no lords.
+
+For historical reasons, each "branch" in a lattice has a "tracking section" and a "lord
+section" and the "tracking section" is always the first (lower) part of the element array and the
+"lord section" inhabits the second (upper) part of the array.  All the \vnlord" elements are put
+in the "lord section" of branch 0 and all the other \vnlord sections" of all the other branches
+are empty.
+
+As a side note, \'Etienne Forest's PTC code (\srefs:ptc.intro") uses separate structures to
+separate the physical element, which PTC calls an "element" from the particle track which PTC
+call a "fibre".  [Actually, PTC has two structures for the physical element, "element" and
+"elementp". The latter being the "polymorph" version.] This "element" and "fibre"
+combination corresponds to Bmad "multipass_lord" and "multipass_slave" elements. PTC does not
+handle overlapping fields as Bmad does with "superposition" .
+

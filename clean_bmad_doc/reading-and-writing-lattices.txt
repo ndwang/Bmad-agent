@@ -1,0 +1,83 @@
+chapter Reading and Writing Lattices
+
+----------------------------------------------------------------------------
+
+There are two subroutines in Bmad to read in a Bmad standard lattice file:
+\Hyperrefr:bmad.parserbmad_parser and \Hyperrefr:bmad.parser2bmad_parser2. "bmad_parser"
+is used to initialize a "lat_struct"  structure from scratch using the
+information from a lattice file. Unless told otherwise, after reading in the lattice,
+"bmad_parser" will compute the 6x6 transfer matrices for each element and this information will
+be stored in the "digested file"  that is created.  Notice that
+"bmad_parser" does \em not compute any Twiss parameters.
+
+\Hyperrefr:bmad.parser2bmad_parser2 is typically used after "bmad_parser" if there is
+additional information that needs to be added to the lattice. For example, consider the case where
+the aperture limits for the elements is stored in a file that is separate from the main lattice
+definition file and it is undesirable to put a "call" statement in one file to reference the
+other.  To read in the lattice information along with the aperture limits, there are two
+possibilities: One possibility is to create a third file that calls the first two:
+ ! This is a file to be called by bmad_parser
+ call, file = ""lattice_file""
+ call, file = ""aperture_file""
+and then just use "bmad_parser" to parse this third file. The
+alternative is to use "bmad_parser2" so that the program code looks
+like:
+  ! program code to read in everything
+  type (lat_struct) lat
+  call bmad_parser ('lattice_file', lat)       ! read in a lattice.
+  call bmad_parser2 ('aperture_file', lat)     ! read in the aperture limits.
+
+----------------------------------------------------------------------------
+
+Since parsing can be slow, once the "bmad_parser" routine has transferred the information from a
+lattice file into the "lat_struct" it will make what is called a digested file. A digested file
+is an image of the "lat_struct" in binary form. When "bmad_parser" is called, it first looks
+in the same directory as the lattice file for a digested file whose name is of the form:
+  ""digested_"" // LAT_FILE 
+where "LAT_FILE" is the lattice file name. If "bmad_parser" finds the digested file, it checks
+that the file is not out--of--date (that is, whether the lattice file(s) have been modified after
+the digested file is made).  "bmad_parser" can do this since the digested file contains the names
+and the dates of all the lattice files that were involved. Also stored in the digested file is the
+"Bmad "version number"". The Bmad version number is a global parameter that is increased (not
+too frequently) each time a code change involves modifying the structure of the "lat_struct" or
+"ele_struct". If the Bmad version number in the digested file does not agree with the number
+current when "bmad_parser" was compiled, or if the digested file is out--of--date, a warning will
+be printed, and "bmad_parser" will reparse the lattice and create a new digested file.
+
+Since computing Taylor Maps can be very time intensive, "bmad_parser" tries to reuse Taylor Maps
+it finds in the digested file even if the digested file is out--of--date. To make sure that
+everything is OK, "bmad_parser" will check that the attribute values of an element needing a
+Taylor map are the same as the attribute values of a corresponding element in the digested file
+before it reuses the map. Element names are not a factor in this decision.
+
+This leads to the following trick: If you want to read in a lattice where there is no corresponding
+digested file, and if there is another digested file that has elements with the correct Taylor Maps,
+then, to save on the map computation time, simply make a copy of the digested file with the digested
+file name corresponding to the first lattice.
+
+\Hyperrefr:read.digested.bmad.fileread_digested_bmad_file
+\Hyperrefr:write.digested.bmad.filewrite_digested_bmad_file The digested file is in binary
+format and is not human readable but it can provide a convenient mechanism for transporting lattices
+between programs. For example, say you have read in a lattice, changed some parameters in the
+"lat_struct", and now you want to do some analysis on this modified "lat_struct" using a
+different program.  One possibility is to have the first program create a digested file
+  call write_digested_bmad_file ('digested_file_of_mine', lat)
+and then read the digested file in with the second program
+  call read_digested_bmad_file ('digested_file_of_mine', lat)
+An alternative to writing a digested file is to write a lattice file
+using "write_bmad_lattice_file"
+
+----------------------------------------------------------------------------
+
+\Hyperrefr:write.bmad.lattice.filewrite_bmad_lattice_file To create a Bmad lattice file from a
+"lat_struct" instance, use the routine
+\Hyperrefr:write.bmad.lattice.filewrite_bmad_lattice_file.  \mad--8, \mad--X, or "SAD"
+compatible lattice files can be created from a "lat_struct" variable using the routine
+\Hyperrefr:write.lattice.in.foreign.formatwrite_lattice_in_foreign_format:
+  type (lat_struct) lat             ! lattice
+  ...
+  call bmad_parser (bmad_lat_file, lat)               ! Read in a lattice
+  call write_lattice_in_foreign_format ("lat.mad", "MAD-8", lat)  ! create MAD file
+Information can be lost when creating a \mad or "SAD" file.  For example, neither \mad nor
+"SAD" has the concept of things such as "overlay"s and "group"s.
+

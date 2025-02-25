@@ -1,0 +1,365 @@
+chapter Tracking of X-Rays
+
+Bmad can track both charged particles and X-rays. This chapter deals
+with X-rays. Charged particles are handled in chapter~.
+
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+
+Bmad can track photons either "coherently" or "incoherently".
+In both cases, the photon has a transverse electric field 
+  (E_x, E_y)
+E_x and E_y are complex and therefore have both amplitude and phase information. When photons
+are tracked incoherently, the phase information is not used for calculating X-ray intensities.
+
+In addition to coherent and incoherent tracking, partially coherent simulations can be done by using
+sets of photons with the photons in any one set treated as coherent and the photons between sets
+being treated as incoherent.
+
+-------------------------------------------------------------------------
+
+In a simulation with incoherent photons, some number of photons,
+N_0, will be generated and the i\Th photon (i = 1, \ldots, N_0)
+will have a initial "electric field" components E_x0(i),
+E_y0(i) assigned to it. The field amplitude E_0 will be
+\sqrtE_x0^2 + E_y0^2.
+
+At some an observation point, the power S per unit area falling on
+some small area dA due to either x or y component of the
+electric field is
+  S_x,y = \frac\alpha_pN_0 \, dA \, \sum_j \in \texthits E_x,y^2(j)
+where \alpha_p is a constant that can be chosen to fit the
+simulation against experimental results, and the sum is over photons
+who intersect the area. The factors of N_0 and dA in the above
+equation make, within statistical fluctuations, S independent of
+N_0 and, for dA small enough, S will be independent of dA as
+it should be. The total power is just S_x + S_y.
+
+When traveling through vacuum, the electric field of a photon is a
+constant.  As an example, consider a point source radiating uniformly
+in 4\pi solid angle with each photon having the same initial field
+E_0. An observation area dA situated a distance R from the
+source will intercept N_0 \, dA / 4 \, \pi \, R^2 photons which
+gives a power of
+  S_w = \frac\alpha_p \, E_0^24 \, \pi \, R^2
+which falls off as 1/R^2 as expected.
+
+At some places the light may be split into various "channels". An
+example is Laue diffraction where X-rays can excite the \alpha and
+\beta branches of the dispersion surface. Or a partially silvered
+mirror where some of the light is reflected and some is transmitted.
+In such a case, the probability P_i of a photon traveling down the
+i\Th channel is
+  P_i \, \what E_i^2 = \fracS_iS_0
+where S_i is the power flowing into channel i, S_0 is the power
+flowing into the junction, and \what E_i = E_i / E_0 is the ratio of
+the electric field amplitudes of any photon just before and just after being
+shunted into the i\Th channel. The probabilities must be properly
+normalized
+  \sum P_i = 1
+
+If the ratio of the electric field of any photon just before and just
+after being shunted into the i\Th channel is not a constant, than
+\what E_i must be adjusted so that \what E_i^2 is equal to the average of
+\what E_i^2(j) for all photons j channeled into channel i.
+
+As long as \Eqsrpss1 and \eqp1 are satisfied, the choice of the
+P_i, and \what E_i are arbitrary. This freedom allows simulation to be
+optimized for efficiency. For example, In an actual experiment much of
+the light can be lost never to reach a detector and be counted. To
+decrease the simulation time, simulated photons may be limited to be
+generated with a direction to be within some solid angle \Omega_1 if
+photons with a direction outside this solid angle will not contribute
+to the simulation results. In this case, there are two channels.
+Channel 1 consists of all photons whose direction is within
+\Omega_1 and channel 2 is all the other photons. To limit the
+photons to channel 1, P_1 is taken to be 1 and P_2 is taken to be
+0. Additionally, if the light, say, is being generated isotropically
+from a surface into a \Omega_0 = 2 \, \pi solid angle then
+  \what E_1 = \sqrt\frac\Omega_1\Omega_0
+\what E_2 is infinite here but since no photons are generated in channel 2
+this is not a problem.
+
+-------------------------------------------------------------------------
+
+In a simulation with coherent photons, some number of photons,
+N_0, will be generated and the i\Th photon (i = 1, \ldots, N_0)
+will have an initial electric field E_x0(i), E_y0(i) assigned to
+it. These quantities will be complex.
+
+At some an observation point, the field E at
+some small area dA due to either x or y component of the
+electric field is
+  E = \frac\alpha_pN_0 \, dA \, \sum_j \in \texthits E(j)
+where \alpha_p is a constant that can be chosen to fit the
+simulation against experimental results, and the sum is over photons
+who intersect the area. In the above equation E(j) is either the x
+or y component of the electric field as is appropriate. The factors
+of N_0 and dA in the above equation make, within statistical
+fluctuations, E independent of N_0 and, for dA small enough, E
+will be independent of dA as it should be.
+
+When traveling through a a vacuum, the photons travel ballistically in
+straight lines. This is justified by using the stationary phase
+approximation with Kirchhoff's integral. the electric field of a
+photon varies with the propagation length. There is nothing physical
+in this and is just a way to make the bookkeeping come out
+correctly. As an example, consider a point source radiating uniformly
+in 4\pi solid angle with each photon having the same initial field
+component (either x or y) E_1.  An observation area dA
+situated a distance R from the source will intercept N_0 \, dA / 4
+\, \pi \, R^2 photons and each photon will have a field of E_1 \, R
+\, \exp(i \, k \, R) where k is the photon wave number (all photons
+must have the same k to be coherent). This gives an electric field
+at the observation point of
+  E = \frac\alpha_p \, E_1 \, \exp(i \, k \, R)4 \, \pi \, R
+which falls off as 1/R as expected.
+
+At a "diffraction_plate" element where diffraction effects are to
+be simulated, the following procedure is used:
+  *
+The electric field components are multiplied by the propagation length L:
+  E \rightarrow E \, L
+The propagation length is reset to zero so that the at the next point
+where the propagation length is factored into the electric field the
+propagation length will be the length starting at the aperture.
+  *
+Depending upon the program, the photon is is either given a random
+direction over 2 \, \pi solid angle or the photon's direction
+is restricted to be within some solid angle chosen to increase
+the probability that the photon will make it through some downstream aperture.
+
+If the photon is restricted to some aperture dependent solid angle of area \Omega,
+the photon's electric field is scaled by
+  E \rightarrow E \, \frac\Omega4 \, \pi
+
+  *
+The electric field components are scaled by
+  E \rightarrow E \, \frack4 \, \pi \, i \, (\cos\theta_1 + \cos\theta_2)
+where \theta_1 and \theta_2 are the direction cosines of the
+incoming and outgoing directions of the photon with respect to the
+longitudinal reference axis.
+This algorithm is designed so that the resulting fields at points
+downstream from the aperture as computed from a simulation will, to
+within statistical errors, be the same as one would get using
+Kirchoff's integral. That is, the simulation is constructed to be a
+Monte Carlo integration of Kirchhoff's integral.
+
+What is, and what is not considered a place where there are
+diffraction effects is dependent upon the problem. For example, there
+are diffraction effects associated with light reflecting from a mirror
+(or any other object) of finite size. If these effects are important
+to the experiment, then a procedure similar to the one above must be
+followed. 
+
+At places where there are no diffraction effects a simulation can
+treat the photons ballistically or can use the aperture procedure
+outlined above. While in theory it is possible to choose what to do, in
+practice the aperture procedure increases the number of photons that
+must be tracked for a given resolution. Thus, from a practical standpoint
+the ballistic alternative should always be used.
+
+As explained in, at some places the light may be split
+into various "channels". With coherent photons, the analog to \Eqrpss1 is
+  P_i \, \what E_i = \fracE_iE_0
+where here \what E_i can be complex to take into account phase shifts.
+The same considerations about choosing the P_i and \what E_i apply to
+coherent photons as incoherent photons. In particular, \what E_1 for the
+case of isotropic emission from a surface as in the example in
+ (cf. \Eqroo) is
+  \what E_1 = \frac\Omega_1\Omega_0
+
+-------------------------------------------------------------------------
+
+When there is partial coherence the photons must be divided into
+sets. All of the photons of a given set are considered coherent while
+the photons of different sets are treated incoherently.
+
+The procedure is to track all the photons of one set coherently and
+calculate the field using equation \Eqpanda2. The fields of
+different sets are then combined to calculate a power using
+\Eqpanda1.
+
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+
+The general procedure for tracking through an element makes use of
+"element reference" coordinates (also called just "element"
+coordinates). Without any offsets, pitches or tilt , henceforth
+called "misalignments", the "element" coordinates are the same
+as the "laboratory reference" coordinates (or simply "laboratory"
+coordinates) . The "element" coordinates stay fixed
+relative to the element. Therefore, if the element is misaligned, the
+"element coordinates" will follow as the element shifts in the
+laboratory frame as shown in \figf:ele.coord.
+
+For "crystal" , "mirror" , and "multilayer_mirror"
+ elements, the "kinked" reference trajectory through the element complicates
+the calculation. For these elements, there are three coordinate systems attached to the element as
+shown in \figf:photon.ele.coords. Besides the "element entrance" and "element exit"
+coordinates, there are "element surface" coordinates with z perpendicular to the surface
+pointing inward.
+
+Tracking a particle through an element is therefore a three
+step transformation:
+*
+At the entrance end of the element, transform from the laboratory
+reference coordinates to the element's "entrance" or "surface"
+coordinates.
+*
+Track through the element ignoring any misalignments.
+*
+At the exit end of the element, transform from the element coordinates
+to the "laboratory" "exit" coordinates.
+
+-------------------------------------------------------------------------
+
+  \includegraphics[width=5in]photon-ele-coords.pdf
+The three element coordinate systems for "crystal" (Bragg
+configuration), "mirror", and "multilayer_mirror" elements.  The
+origin O of all three are the same but are shown spread out for
+clarity.  hat n is the normal to the element surface.
+
+-------------------------------------------------------------------------
+
+For elements that have a reference orbit kink
+, the element coordinates here are the
+"surface" coordinates. Otherwise the element coordinates are
+the entrance coordinates.
+
+  *
+Apply offsets, pitches and tilt using the formulas in
+ along with \Eqswws, and \eqswww.
+  *
+Apply the "tilt" to the electric field (\Eqertee).
+  *
+For "crystal", "mirror", and "multilayer_mirror" elements
+rotate to element surface coordinates.
+ *
+Transform the photon's position as if in a drift by a distance -z
+where z is the photon's longitudinal coordinate. That is, z will
+be zero at the end of the transform to element coordinates (remember
+that z is the distance from the start of the element
+).
+
+-------------------------------------------------------------------------
+
+The back transformation from element to laboratory coordinates is
+accomplished by the transformation
+  *
+For "crystal", "mirror", and "multilayer_mirror" elements
+rotate to element from element surface coordinates to element exit coordinates
+  *
+Apply the reverse "tilt" to the electric field (\Eqertee).
+  *
+Apply reverse offsets, pitches and tilt using the formulas in
+ along with \Eqswws, and \eqswww.
+
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+Transformation for Mirror and Crystal Elements Between 
+Laboratory and Element Coordinates
+
+-------------------------------------------------------------------------
+
+With photons, the intensities must also be transformed.  The transformation from the entrance
+laboratory coordinates to the entrance element coordinates is:
+*
+Track as in a drift a distance "z_offset_tot".
+*
+Apply offsets and pitches: The effective "length" of the element is zero 
+so the origin of the element coordinates is the same point around which the element is pitched so
+  x_1   = x_0 - x_\textoff \CRNO
+  p_x1= p_x0 - (1 + p_z0) \, x'_pitch \CRNO
+  y_1   = y_0 - y_\textoff 
+  p_y1= p_x0 - (1 + p_z0) \, y'_pitch \CRNO
+  z_1   = z_0 + x'_pitch \, x_1 + y'_pitch \, y_1 \nonumber
+where x_\textoff \equiv "x_offset", x'_pitch \equiv "x_pitch", etc.
+*
+Apply "ref_tilt" and "tilt":
+    R (\theta_tot) \,   
+    R (\theta_tot) \, 
+    R (\theta_tot) \,   \beginpmatrix E_x1  E_y1 \endpmatrix \nonumber
+where E is shorthand notation for
+  E \equiv E \, e^i \, \phi
+with E being the field intensity and \phi being the field phase angle.
+In the above equations R is the rotation matrix
+  R(\theta) = \beginpmatrix \cos\theta \sin\theta  -\sin\theta \cos\theta \endpmatrix
+with \theta_tot being 
+  \theta_tot  = 
+    "ref_tilt" + "tilt" + "tilt_corr" "for crystal elements" 
+    "ref_tilt" + "tilt" "for mirror elements"
+The "tilt_corr" correction is explained in.
+
+-------------------------------------------------------------------------
+
+The back transformation from exit element coordinates to exit laboratory coordinates is accomplished
+by the transformation
+  *
+Apply "ref_tilt" and "tilt": "ref_tilt" rotates the exit laboratory coordinates with
+respect to the exit element coordinates in the same way "ref_tilt" rotates the entrance
+laboratory coordinates with respect to the entrance element coordinates. The forward and back
+transformations are thus just inverses of each other.  With "tilt", this is not true. "tilt",
+unlike "ref_tilt", does not rotate the output laboratory coordinates.  There is the further
+complication in that "tilt" is a rotation about the \em entrance laboratory coordinates. The
+first step is to express "tilt" with respect to the exit coordinates. This is done with the help
+of the S matrix of \Equstt with \alpha_t given by \Eqagg. The effect of the "tilt" can
+be modeled as a rotation vector e_in in the entrance laboratory coordinates pointing along
+the z-axis
+ e_in = (0, 0, \texttilt)
+In the exit laboratory coordinates, the vector e_out is
+  e_out = S \, e_in
+The z component of e_out combines with "ref_tilt" to give
+the transformation
+    R (-\theta_t) \,   \beginpmatrix x_1  y_1 \endpmatrix \CRNO
+    R (-\theta_t) \,   \beginpmatrix p_x1  p_y1 \endpmatrix 
+    R (-\theta_t) \,   \beginpmatrix E_x1  E_y1 \endpmatrix \nonumber
+where \theta_t is \textref_tilt + e_out,z. The x and y components
+of e_out give rotations around the x and y axes
+  p_x3= p_x2 - e_out,y \CRNO
+  p_y3= p_y2 + e_out,x 
+  z_3   = z_2 + x_2 \, e_out,y - y_2 \, e_out,x
+  *
+Apply pitches: Since pitches are defined with respect to the entrance laboratory coordinates, they
+have to be translated to the exit laboratory coordinates
+  P_out = S \, P_in
+where P_in = (x'_pitch, y'_pitch, 0) is the pitch vector in the entrance laboratory frame
+and P_out is the vector in the exit laboratory frame. The transformation is then
+  p_x4= p_x3 - P_out,y \CRNO
+  p_y4= p_y3 + P_out,x 
+  z_4   = z_3 + x_3 \, P_out,y - y_3 \, P_out,x
+  *
+Apply offsets: Again, offsets are defined with respect to the entrance laboratory coordinates. Like
+pitches, the translation is
+  O_out = S \, O_in
+where O_in = (x_\textoff, y_\textoff, s_\textoff) is the offset in the
+entrance laboratory frame. The transformation is
+  x_5= x_4 + O_out,x - p_x4 \, O_out,z \CRNO
+  y_5= y_4 + O_out,y - p_y4 \, O_out,z 
+  z_5= z_4 + O_out,z 
+
+-------------------------------------------------------------------------
+
+  \includegraphics[width=5in]crystal-diffraction.pdf
+Reference trajectory reciprocal space diagram for for A) Bragg diffraction and B) Laue
+diffraction. The bar over the vectors indicates that they refer to the reference trajectory. The
+x-z coordinates shown are the element surface coordinates. All points in the diagram are in the
+plane of the paper except for the tip of H.  Kbar_0, and Kbar_H are the wave
+vectors inside the crystal and kbar_0 and kbar_H are the wave vectors outside the
+crystal. The reference photon traveling along the reference trajectory has Kbar_0 and
+Kbar_H originating at the Q point. For Laue diffraction, the crystal faces are assumed
+parallel.  For Bragg diffraction the crystal normal is in the -hat x direction while for Laue
+diffraction the crystal normal is in the -hat z direction
+  
+-------------------------------------------------------------------------
+-------------------------------------------------------------------------
+
+\textit\large [Crystal tracking developed by Jing Yee Chee, Ken Finkelstein, and David Sagan]
+
+Crystal diffraction is modeled using dynamical diffraction theory. The notation here follows
+Batterman and Cole\citeb:batterman.  The problem can be divided up into two parts. First the
+reference trajectory must be calculated. This means calculating the incoming grazing angle
+\theta_B,in and outgoing grazing angle \theta_B,out as well as calculating the
+transformations between the various coordinate systems. This is done in,
+, and.  The second part is the actual tracking of the photon
+and this is covered in and

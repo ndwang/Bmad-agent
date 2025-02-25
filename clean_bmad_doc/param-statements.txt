@@ -1,0 +1,287 @@
+chapter Lattice File Global Parameters
+
+This chapter deals with statements that can be used to set "global" parameter values. That is,
+parameter values that are associated with the lattice as a whole and not simply associated with a
+single element.
+
+Discussed elsewhere are the global structures  "bmad_com" 
+and "ptc_com" .
+
+-----------------------------------------------------------------------------
+
+"Parameter" statements are used to set a number of global variables.  If multiple branches are
+present , these variables pertain to the "root" branch. The variables that
+can be set by "parameter" are
+  parameter[custom_attributeN]        = <string>    ! Defining custom attributes .
+  parameter[default_tracking_species] = <Switch>    ! Default type of tracked particle. 
+                                                    !    Default is ref_particle.
+  parameter[e_tot]                    = <Real>      ! Reference total Energy. 
+                                                    !      Default: 1000 * rest_energy.
+  parameter[electric_dipole_moment]   = <Real>      ! Particle electric dipole moment.
+  parameter[live_branch]              = <Logical>   ! Is branch fit for tracking?
+  parameter[geometry]                 = <Switch>    ! Open or closed
+  parameter[lattice]                  = <String>    ! Lattice name.
+  parameter[machine]                  = <String>    ! Machine name.
+  parameter[n_part]                   = <Real>      ! Number of particles in a bunch.
+  parameter[no_end_marker]            = <Logical>   ! Default: False.
+  parameter[p0c]                      = <Real>      ! Reference momentum.
+  parameter[particle]                 = <speciesID> ! Reference species: positron, proton, etc.
+  parameter[photon_type]              = <Switch>    ! Incoherent or coherent photons?
+  parameter[ran_seed]                 = <Integer>   ! Random number generator init.
+  parameter[taylor_order]             = <Integer>   ! Default: 3
+
+\noindent
+Examples
+  parameter[lattice]      = "L9A19C501.FD93S_4S_15KG"
+  parameter[geometry]     = closed
+  parameter[taylor_order] = 5
+  parameter[E_tot]        = 5.6e9    ! eV
+
+       parameter[custom_attributeN
+Here "N" is an integer between 1 and 40.  For more information on defining custom attributes, see
+.
+
+Name of the machine the lattice simulates. Example: "LHC".
+
+       parameter[live_branch
+Setting "live_branch" to "False" (default is "True") indicates to a program that no
+tracking or other analysis of the root branch should be done. This can be useful if the lattice has
+multiple branches and analysis of the root branch is not necessary. Other branches can also be
+marked as alive/dead using line parameter statements . Note that the Bmad
+library itself ignores the setting of "live_branch" and it is up to the program being run to
+decide if this parameter is ignored or not. In particular, the Tao program 
+\em will respect the setting of "live_branch".
+
+       parameter[default_tracking_species
+The "parameter[default_tracking_species]" switch establishes the default type of particles to be
+tracked. See for the syntax for naming particle species. In addition, this switch
+can be set to:
+  ref_particle     ! default
+  anti_ref_particle
+By default, "default_tracking_species" is set to "ref_particle" so that the particle being
+tracked is the same as the reference particle set by "param[particle]". In the case, for example,
+where there are particles going one way and antiparticles going the another,
+"default_tracking_species" can be used to switch between tracking the particles or antiparticles.
+
+       parameter[e_tot, parameter[p0c]
+The "parameter[e_tot]" and "parameter[p0c]" are the reference total energy and momentum at the
+start of the lattice. Each element in a lattice has an individual reference "e_tot" and "p0c"
+attributes which are dependent parameters. The reference energy and momentum will only change
+between "LCavity" or "Patch" elements. The starting reference energy, if not set, will be set
+to 1000 time the particle rest energy.  Note: "beginning[e_tot]" and "beginning[p0c]"
+ are equivalent to "parameter[e_tot]" and "parameter[p0c]".
+
+       parameter[electric_dipole_moment
+The "electric_dipole_moment" sets the electric dipole moment value \eta for use when tracking
+with spin .
+
+       parameter[geometry
+Valid "geometry" settings are
+  closed  ! Default w/o LCavity element present.
+  open    ! Default if LCavity elements present.
+A machine with a "closed" geometry is something like a storage ring where the particle beam
+recirculates through the machine.  A machine with an "open" geometry is something like a linac.
+In this case, if the reference particle is not a photon, the initial Twiss parameters need to be
+specified in the lattice file using the "beginning" statement . If the
+"geometry" is not specified, "closed" is the default. The exception is that if there is an
+"Lcavity" element present or the reference particle is a photon, "open" will be the default.
+
+Notice that by specifying a "closed" geometry it does \em not mean that the downstream end of
+the last element of the lattice has the same global coordinates  as the global
+coordinates at the beginning. Setting the geometry to "closed" simply signals to a program to
+compute closed orbits and periodic Twiss parameters as opposed to calculating orbits and Twiss
+parameters based upon initial orbit and Twiss parameters at the beginning of the lattice.  Indeed,
+it is sometimes convenient to treat lattices as closed even though there is no closure in the global
+coordinate sense. For example, when a machine has a number of repeating "periods", it may be
+convenient to only use one period in a simulation. Since Bmad ignores closure in the global
+coordinate sense, it is up to the lattice designer to ensure that a lattice is truly geometrically
+closed if that is desired.
+
+       parameter[lattice
+Used to set the lattice name. The "lattice" name is stored by Bmad for use by a program but it
+does not otherwise effect any Bmad routines.
+
+       parameter[n_part
+The "parameter[n_part]" is the number of particle in a bunch. This parameter is used in a number
+of calculations, for example, with intrabeam scattering and to calculate the change in energy
+through an "Lcavity" . Historically, this parameter has been used to set the
+number of strong beam particle with "BeamBeam" elements but it is strongly recommended to use
+the "beambeam" element's "n_particle" parameter instead.
+
+       parameter[no_end_marker
+Setting "parameter[no_end_marker]" to True will suppress the automatic inclusion
+of a marker named "END" at the end of the lattice . 
+
+       parameter[p0c
+See "parameter[e_tot]".
+
+       parameter[particle
+The "parameter[particle]" switch sets the reference species. See for the
+syntax for naming particle species.
+
+The setting of the reference particle is used, for example, to determine the direction of the field
+in a magnet and given the normalized field strength (EG: "k1" for a quadrupole).  Generally, the
+particles that by default are tracked through a lattice are the same as the reference particle. This
+default behavior can be altered by setting "parameter[default_tracking_species]".
+
+       parameter[photon_type
+The "photon_type" switch is used to set the type of photons that are used in tracking. Possible
+settings are:
+  incoherent    ! Default
+  coherent 
+The general rule is use incoherent tracking except when there is a "diffraction_plate" element in
+the lattice.
+
+       parameter[ran_seed
+For more information on "parameter[ran_seed]" see.
+
+       parameter[taylor_order
+The Taylor order  is set by "parameter[taylor_order]" and is the maximum
+order for a Taylor map.
+
+-----------------------------------------------------------------------------
+
+"particle_start" statements are used, among other things to set the starting coordinates
+for particle tracking. If multiple branches are present , these
+variables pertain to the "root" branch.
+  particle_start[x]                   = <Real>   ! Horizontal position.
+  particle_start[px]                  = <Real>   ! Horizontal momentum.
+  particle_start[y]                   = <Real>   ! Vertical position.
+  particle_start[py]                  = <Real>   ! Vertical momentum.
+  particle_start[z]                   = <Real>   ! Longitudinal position.
+  particle_start[pz]                  = <Real>   ! Momentum deviation. Only for non-photons.
+  particle_start[direction]           = +/-1     ! Longitudinal direction of travel.
+  particle_start[E_photon]            = <Real>   ! Energy (eV). Only used for photons.
+  particle_start[emittance_a]         = <Real>   ! A-mode emittance
+  particle_start[emittance_b]         = <Real>   ! B-mode emittance
+  particle_start[emittance_z]         = <Real>   ! Z-mode emittance
+  particle_start[sig_z]               = <Real>   ! Beam sigma in z-direction
+  particle_start[sig_pz]              = <Real>   ! Beam Sigma pz 
+  particle_start[field_x]             = <Real>   ! Photon beam field along x-axis
+  particle_start[field_y]             = <Real>   ! Photon beam field along y-axis
+  particle_start[phase_x]             = <Real>   ! Photon beam phase along x-axis
+  particle_start[phase_y]             = <Real>   ! Photon beam phase along y-axis
+  particle_start[t]                   = <Real>   ! Absolute time
+  particle_start[spin_x]              = <Real>   ! Spin polarization x-coordinate
+  particle_start[spin_y]              = <Real>   ! Spin polarization y-coordinate
+  particle_start[spin_z]              = <Real>   ! Spin polarization z-coordinate
+Normally the absolute time, set by "particle_start[t]", is a dependent
+parameter set by solving \Eqzbctt for t. The exception is when the
+initial velocity is zero. (This can happen if there is an "e_gun"
+ element in the lattice). In this case, z must be
+zero and t is an independent parameter that can be set.
+
+The longitudinal direction of travel is set by "particle_start[direction]".  This can be set
+to +1 (travel in the +s direction) or -1 for the reverse.  +1 is the default. Generally
+"particle_start[direction]" should not be set to -1 since most programs will not be
+constructed to handle this situation. To track a particle in the reverse direction see
+. 
+
+For particles with spin, the spin can be specified using Cartesian coordinates with "spin_x",
+"spin_y", and "spin_z".
+
+For photons, "px", "py", and "pz" are the normalized velocity components
+(Cf.~\Eqxbybzb). For photons "pz" is a dependent parameter which will be set so that \Eqbbb1
+is obeyed.
+
+Note: "particle_start" used to be called "beam_start". Since this was confusing (beam
+initialization parameters are stored in a separate "beam_init_struct" structure
+), the name was changed. Currently the use of the "beam_start" name
+is deprecated but still supported for backwards compatibility.
+
+Example
+  particle_start[y] = 2 * particle_start[x]
+
+-----------------------------------------------------------------------------
+
+The "beam" statement is provided for compatibility with \mad. The syntax is
+  beam, energy = GeV, pc = GeV, particle = <Switch>, n_part = <Real>
+For example
+  beam, energy = 5.6  ! Note: GeV to be compatible with \mad
+  beam, particle = electron, n_part = 1.6e10
+Setting the reference energy using the "energy" attribute is the
+same as using "parameter[e_tot]". Similarly, setting "pc" is
+equivalent to setting "parameter[p0c]". Valid "particle" switches
+are the same as "parameter[particle]".
+
+--------------------------------------------------------------------------
+
+For non--circular lattices, the "beginning" statement can be used to set the Twiss parameters and
+beam energy at the beginning of the first lattice branch.
+  beginning[alpha_a]       = <Real>  ! "a" mode alpha
+  beginning[alpha_b]       = <Real>  ! "b" mode alpha
+  beginning[beta_a]        = <Real>  ! "a" mode beta
+  beginning[beta_b]        = <Real>  ! "b" mode beta
+  beginning[cmat_ij]       = <Real>  ! C coupling matrix. i, j = {"1", or "2"} 
+  beginning[mode_flip]     = <logic> ! Set the mode flip status . Default is False.
+  beginning[e_tot]         = <Real>  ! Reference total energy in eV.
+  beginning[eta_x]         = <Real>  ! x-axis dispersion
+  beginning[eta_y]         = <Real>  ! y-axis dispersion
+  beginning[etap_x]        = <Real>  ! x-axis momentum dispersion.
+  beginning[etap_y]        = <Real>  ! y-axis momentum dispersion.
+  beginning[deta_x_ds]     = <Real>  ! x-axis dispersion derivative.
+  beginning[deta_y_ds]     = <Real>  ! y-axis dispersion derivative.
+  beginning[p0c]           = <Real>  ! Reference momentum in eV.
+  beginning[phi_a]         = <Real>  ! "a" mode phase.
+  beginning[phi_b]         = <Real>  ! "b" mode phase.
+  beginning[ref_time]      = <Real>  ! Starting reference time.
+  beginning[s]             = <Real>  ! Longitudinal starting position.
+  beginning[spin_dn_dpz_x] = <Real>   ! Spin dn/dpz x-coordinate
+  beginning[spin_dn_dpz_y] = <Real>   ! Spin dn/dpz y-coordinate
+  beginning[spin_dn_dpz_z] = <Real>   ! Spin dn/dpz z-coordinate
+The "gamma_a", "gamma_b", and "gamma_c" (the coupling gamma factor) will be kept consistent
+with the values set. If not set the default values are all zero.  "beginning[e_tot]" and
+"parameter[e_tot]" are equivalent and one or the other may be set but not both. Similarly,
+"beginning[p0c]" and "parameter[p0c]" are equivalent.
+
+Setting either momentum dispersion "etap_x" or "etap_y" also sets the corresponding dispersion
+derivative "deta_x_ds" or "deta_y_ds" . If a momentum dispersion is set
+in the lattice file, or during program running the dispersion derivatives are "slaved" to the
+momentum dispersion. That is, if the reference phase space momentum p_z changes, the momentum
+dispersions will be keept constant and the dispersion derivatives will be calculated from
+\Eqdexds. Similarly, if a dispersion derivative is set in the lattice file or during program
+running, the momentum dispersions are slaved to the dispersion derivative. Which is slaved to which is
+determined by the last derivative set. If no derivatives are set, the dispersion derivatives are slaved
+to the momentum dispersions.
+
+For any lattice the "beginning" statement can be used to set the starting floor position of the
+first lattice branch (see~). The syntax is
+  beginning[x_position]     = <Real>  ! X position
+  beginning[y_position]     = <Real>  ! Y position
+  beginning[z_position]     = <Real>  ! Z position
+  beginning[theta_position] = <Real>  ! Angle on floor
+  beginning[phi_position]   = <Real>  ! Angle of attack
+  beginning[psi_position]   = <Real>  ! Roll angle
+If the floor position is not specified, the default is to place
+beginning element at the origin with all angles set to zero.
+
+The "beginning" statement is useful in situations where only parameters for
+the first branch need be specified. If this is not the case, the parameters for
+any branch can be specified using a statement of the form
+  line_name[parameter] = <Value>
+This construct is called a "line parameter" statement Here "line_name" is the name of a line
+and "parameter" is the name of a parameter. The parameters that can be set here are the same
+parameters that can be set with the "beginning" statement with the additional parameters from the
+"parameter" statement:
+  default_tracking_species
+  geometry
+  high_energy_space_charge_on
+  live_branch
+  particle
+  inherit_from_fork
+Example:
+  x_ray_fork: fork, to_line = x_ray
+  x_ray: line = (...)
+  x_ray[E_tot] = 100
+The "inherit_from_fork" logical is used to determine if the reference energy and Twiss parameters as calculated
+from the "fork" element defining the branch is used to set the beginning element of the branch. This parameter
+is ignored if the fork element does not fork to the beginning element of the branch. The default is True. If any reference energy or momentum or any Twiss parameter is set, "inherit_from_fork" is implicitly set to False.
+
+Rules:
+  *
+The floor position of a line can only be set if the line is used for a 
+"root" "branch". 
+  *
+Line parameters statements must come after the associated line. This
+rule is similar to the rule that element attribute redefinitions must
+come after the definition of the element.

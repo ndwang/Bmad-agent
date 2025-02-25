@@ -1,0 +1,70 @@
+chapter Lattice File Conversion
+
+A Bmad Distribution  contains a number of translation programs between Bmad
+and other formats.
+
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+
+Python scripts to convert from MAD8 and MADX are available at:
+  util_programs/mad_to_bmad
+Due to differences in language definitions, conversions must be done with some care. The following
+differences should be noted:
+  *
+Bmad, unlike \mad, does not have any "action" commands. An action command is a command that makes
+a calculation. Examples include \mad's "SURVEY" and "TWISS" commands.
+  *
+In Bmad all variables must be defined before being used  while \mad will simply take
+a variable's value to be zero if it is not defined.
+  *
+Bmad, unlike \mad, does not allow variable values to be redefined.
+
+-----------------------------------------------------------------------------
+
+To convert to MAD8 or MADX, the Tao program can be used. Additionally, there is the program
+  util_programs/bmad_to_mad_sad_elegant
+Since \mad does not have a "wiggler" or a
+"sol_quad" element, this conversion routine makes "equivalent" substitution. For a
+"sol_quad", the equivalent substitution will be a drift-matrix-drift series of elements. For a
+"wiggler", a series of bend and drift elements will be used (the program can also use a
+drift-matrix-drift model here but that is not as accurate). The bends and drifts for the
+"wiggler" model are constructed so that the global geometry of the lattice does not
+change. Additionally the bends and drifts are constructed to most nearly match the wiggler's
+  Transfer matrix
+  $I_2$ and $I_3$ synchrotron radiation integrals 
+Note that the resulting model will not have the vertical cubic nonlinearity that the actual wiggler
+has.
+
+-----------------------------------------------------------------------------
+
+A PTC ""flatfile"" can be constructed using the Tao program with the following commands:
+  Tao> ptc init
+  Tao> write ptc
+
+---------------------------------------------------------------------------
+
+Conversion from "SAD"\citeb:sad to Bmad is accomplished using the Python script
+  util_programs/sad_to_bmad/sad_to_bmad.py
+Currently, the following restrictions on SAD lattices apply:
+  *
+SAD "mult" elements cannot have an associated RF field
+  *
+Misalignments in a "sol" element with "geo" = 1 cannot be handled.
+
+Bmad to "SAD" to conversion can be done with the Tao program or the program 
+  util_programs/bmad_to_mad_sad_elegant
+
+---------------------------------------------------------------------------
+
+Conversion from "Elegant"\citeb:elegant to Bmad is accomplished using the Python script
+  util_programs/elegant_to_bmad/elegant_to_bmad.py
+
+Bmad to "Elegant" to conversion can be done with the Tao program or the program 
+  util_programs/bmad_to_mad_sad_elegant
+
+---------------------------------------------------------------------------
+
+Conversion programs to Astra, Blender, CSRTrack, GPT, and Merlin exist in the "util_programs"
+directory. Some conversion code is still in beta development so if you encounter
+problems please contact a Bmad maintainer. 

@@ -1,0 +1,1084 @@
+chapter Lattice Elements
+
+A lattice is made up of a collection of elements --- quadrupoles,
+bends, etc. This chapter discusses the various types of elements
+available in Bmad.
+
+\tt
+                             
+  AB_Multipole      \refs:ab.m           Mask              \refs:mask       
+  AC_Kicker         \refs:ac.kick        Match             \refs:match      
+  BeamBeam          \refs:beambeam       Monitor           \refs:monitor    
+  Beginning_Ele     \refs:begin.ele      Multipole         \refs:mult       
+  Converter         \refs:converter      Null_Ele          \refs:null.ele   
+  Crab_Cavity       \refs:crab           Octupole          \refs:oct        
+  Custom            \refs:custom         Patch             \refs:patch      
+  Drift             \refs:drift          Photon_Fork       \refs:fork       
+  E_Gun             \refs:e.gun          Pipe              \refs:monitor    
+  Ecollimator       \refs:col            Quadrupole        \refs:quad       
+  ElSeparator       \refs:elsep          Rbend             \refs:bend       
+  EM_Field          \refs:em.field       Rcollimator       \refs:col        
+  Feedback          \refs:feedback       RF_bend           \refs:rf.bend    
+  Fiducial          \refs:fiducial       RFcavity          \refs:rfcav      
+  Floor_Shift       \refs:floor.ele      Sad_Mult          \refs:sad.mult   
+  Foil              \refs:foil           Sbend             \refs:bend       
+  Fork              \refs:fork           Sextupole         \refs:sex        
+  GKicker           \refs:gkicker        Sol_Quad          \refs:sq         
+  HKicker           \refs:hvkicker       Solenoid          \refs:sol        
+  Hybrid            \refs:hybrid         Taylor            \refs:taylor     
+  Instrument        \refs:monitor        Thick_Multipole   \refs:thick.mult 
+  Kicker            \refs:kicker         Undulator         \refs:wiggler    
+  Lcavity           \refs:lcav           VKicker           \refs:hvkicker    
+  Marker            \refs:mark           Wiggler           \refs:wiggler    
+  
+ \captionTable of element types suitable for use with charged particles. Also see
+Table~\reft:control.classes \labelt:particle.classes
+
+Most element types available in \mad are provided in Bmad.  Additionally, Bmad provides a number
+of element types that are not available in \mad.  A word of caution: In some cases where both \mad
+and Bmad provide the same element type, there will be an overlap of the attributes available but
+the two sets of attributes will not be the same.  The list of element types known to Bmad is shown
+in Table~\reft:particle.classes, \reft:photon.classes, and \reft:control.classes.
+Table~\reft:particle.classes lists the elements suitable for use with charged particles,
+Table~\reft:photon.classes which lists the elements suitable for use with photons, and finally
+Table~\reft:control.classes lists the "controller" element types that can be used for parameter
+control of other elements. Note that some element types are suitable for both particle and photon
+use.
+
+\tt
+                                  
+  Beginning_Ele      \refs:begin.ele        Lens               \refs:lens        
+  Capillary          \refs:capillary      Marker               \refs:mark        
+  Crystal            \refs:crystal        Mask                 \refs:mask        
+  Custom             \refs:custom         Match                \refs:match       
+  Detector           \refs:detector       Monitor              \refs:monitor      
+  Diffraction_Plate  \refs:diff.plate     Mirror               \refs:mirror      
+  Drift              \refs:drift          Multilayer_Mirror    \refs:multilayer  
+  Ecollimator        \refs:col            Patch                \refs:patch       
+  Fiducial           \refs:fiducial       Photon_Fork          \refs:fork        
+  Floor_Shift        \refs:floor.ele      Photon_Init          \refs:photon.init 
+  Fork               \refs:fork           Pipe                 \refs:monitor     
+  GKicker            \refs:gkicker        Rcollimator          \refs:col         
+  Instrument         \refs:monitor        Sample               \refs:sample      
+  
+\tt
+                
+  Group          \refs:group      Overlay       \refs:overlay  
+  Girder         \refs:girder     Ramper        \refs:ramper    
+
+For a listing of element attributes for each type of element, see Chapter~.
+
+An "ab_multipole" is a thin magnetic multipole lens up to 21\St order. The basic difference
+between this and a "multipole"  is the input format. See
+section~ for how the multipole coefficients are defined.
+
+General "ab_multipole" attributes are:
+\tt
+  \sl Attribute Class      \s               \sl Attribute Class      \s               
+  an, bn multipoles      \refs:multip   Length                     \refs:l       
+  Aperture limits            \refs:limit    Offsets \& tilt            \refs:offset  
+  Chamber wall               \refs:wall     Reference energy           \refs:energy   
+  Custom Attributes          \refs:cust.att Superposition              \refc:super   
+  Description strings        \refs:alias    Tracking \& transfer map   \refc:methods 
+  Is_on                      \refs:is.on                                               
+  
+\toffset
+See for a full list of element attributes along with a their units.
+
+The length "l" is a fictitious length that is used for synchrotron radiation computations and
+affects the longitudinal position of the next element but does not affect any tracking or transfer
+map calculations.  The "x_pitch" and "y_pitch" attributes are not used in tracking.
+
+When an "ab_multipole" is superimposed  on a lattice, it is treated as a zero
+length element and in this case it is an error for the length of the "ab_multipole" to be set to
+a nonzero value.
+
+Unlike a "multipole", an "ab_multipole" will \em not affect the reference orbit if there is
+a dipole component.
+
+Example:
+  abc: ab_multipole, a2 = 0.034e-2, b3 = 5.7, a11 = 5.6e6/2
+
+An "ac_kicker" element simulates a time dependent kicker element.
+
+General "ac_kicker" attributes are:
+\tt
+  \sl Attribute Class      Section           \sl Attribute Class      Section          
+  Aperture limits            \refs:limit     Is_on                      \refs:is.on   
+  Chamber wall               \refs:wall      Length                     \refs:l       
+  Custom Attributes          \refs:cust.att  Mag \& Elec multipoles     \refs:multip  
+  Description strings        \refs:alias     Offsets, pitches \& tilt   \refs:offset  
+  Field Maps                 \refs:fieldmap  Reference energy           \refs:energy   
+  Fringe Fields              \refs:fringe    Superposition              \refc:super   
+  Hkick \& Vkick             \refs:kick      Symplectify                \refs:symp    
+  Integration settings       \refs:integ     Tracking \& transfer map   \refc:methods 
+  
+\toffset
+See for a full list of element attributes along with a their units.
+
+Attributes specific to a "ac_kicker" element are:
+  t_offset        = <Real>              ! Time offset of field waveform.
+  interpolation   = <switch>            ! cubic (default) or linear.
+  amp_vs_time = {(<time1>, <Amp1>), (<time2>, <Amp2>), ...}  ! Field amp vs Time.
+  frequencies = {(<freq1>, <Amp1>, <phi1>), 
+                              (<freq2>, <Amp2>, <phi2>), ...} ! Freq components.
+Note: The "frequencies" attribute phases "phi1", "phi2", "phi3", etc., have units of
+"radians/2pi".
+
+An "ac_kicker" element is like a "kicker"  element except that the field
+varies in time. The field is calculated in two steps:
+* Calculate the field the same as for a "kicker" element .
+* Scale the field using the function A(\delta t) (discussed below)
+  B(\delta t) = A(\delta t) \, B_0, \qquad E(\delta t) = A(\delta t) \, E_0
+where B and E are the applied magnetic and electric fields, and B_0 and E_0 are the fields
+as calculated as if the element where a "kicker" ignoring the time dependence.
+
+\delta t = t_eff - t_0 where t_eff is the effective time as discussed in
+and t_0 is the value of the "t_offset" attribute.
+
+There are two ways to specify the dimensionless time variation A(\delta t) of the field. One way
+is to specify points (A, \delta t) using the "amp_vs_time" attribute. Example:
+  mk: ac_kicker, l = 0.3, scale_multipoles = F, b1 = 0.27, t_offset = 3.6e-8,
+          amp_vs_time = {(-1.2e-6, 0.02), ... } 
+The element in this example is an AC quadrupole kicker. The times (in seconds) must be in ascending
+order and no two times may be the same. The method used to interpolate between the time points is
+determined by the setting of the "interpolate" parameter which may be one of
+  linear      ! Linear interpolation.
+  cubic       ! Cubic spline interpolation (default).
+For times outside of the range specified by "amp_vs_time", the amplitude will be extrapolated.
+For the cubic spline, extrapolation is only permitted over a distance outside the time range equal
+to the time difference between an end point and the next nearest point.
+
+The second way to specify the waveform is to specify the frequencies in the spectrum using the
+"frequencies" attribute. In this case the amplitude is:
+  A(t) = \sum_i \, A_i \, \cos( 2 \, \pi (f_i \, \delta t + \phi_i))
+Example:
+  mk: ac_kicker, l = 0.3, field_calc = fieldmap, cartesian_map = {...},
+          frequencies = {(3.4e6, 0.34, 0.12), ...}, a0_elec = 1e5
+When using a frequency spectrum, the "interpolate" attribute is ignored. Note: The units of the
+phases "phi" with the "frequencies" attribute are "rad/2pi".
+
+To specify an "amp_vs_time" component after an "ac_kicker" element has been defined, use the
+syntax
+  name[AMP_VS_TIME(i)%time]      ! Time of i^th point.
+  name[AMP_VS_TIME(i)%amp]       ! Amplitude of i^th point.
+where "name" is the name of the element and "i" is the index of the point.
+To specify a "frequencies" component after an "ac_kicker" element has been defined, use the
+syntax
+  name[FREQUENCIES(i)%freq]     ! Frequency of i^th spectrum point.
+  name[FREQUENCIES(i)%amp]      ! Amplitude of i^th spectrum point.
+  name[FREQUENCIES(i)%phi]      ! Phase (rad/2pi) of i^th spectrum point.
+Example:
+  mk: ac_kicker, amp_vs_time = {(-1.2e-6, 0.02), ... } 
+  mk[amp_vs_time(2)%amp] = 0.03  ! Change 2nd point amplitude.
+
+When specifying the time dependent using a set of frequencies, it is generally advisable to use
+absolute time tracking . This can be done in the lattice file by setting
+  bmad_com[absolute_time_tracking] = T
+
+Note: The calculated field will only obey Maxwell's equations in the limit that the time variation
+of the field is "slow":
+  \omega \ll \fraccr
+where \omega is the characteristic frequency of the field variation, c is the speed of light,
+and r is the characteristic size of the "ac_kicker" element. That is, the fields at opposite
+ends of the element must be able to "communicate" (which happens at the speed of light) in a time
+scale short compared to the time scale of the change in the field.
+
+A "beambeam" element simulates an interaction with an opposing
+("strong") beam traveling in the opposite direction. The strong beam
+is assumed to be Gaussian in shape. In the "bmad_standard"
+calculation the beam--beam kick is computed using the
+Bassetti--Erskine complex error function formula\citeb:talman
+
+General "beambeam" attributes are:
+\tt
+  \sl Attribute Class      Section          \sl Attribute Class      Section          
+  Aperture limits            \refs:limit    Is_on                      \refs:is.on   
+  Chamber wall               \refs:wall     Offsets, pitches \& tilt   \refs:offset  
+  Custom Attributes          \refs:cust.att Reference energy           \refs:energy  
+  Description strings        \refs:alias    Superposition              \refc:super   
+  Is_on                      \refs:is.on    Tracking \& transfer map   \refc:methods  
+  
+\toffset
+See for a full list of element attributes along with a their units.
+
+Attributes specific to a "beambeam" element are:
+  sig_x          = <Real>    ! Horizontal strong beam sigma at the center 
+  sig_y          = <Real>    ! Vertical strong beam sigma at the center
+  sig_z          = <Real>    ! Strong beam length
+  charge         = <Real>    ! Strong beam charge. Default = -1
+  n_particle     = <Real>    ! Number of particles in strong beam.
+  n_slice        = <Int>     ! Number of strong beam slices
+  crab_x1        = <Real>    ! Crabbing linear coefficient.
+  crab_x2        = <Real>    ! Crabbing quadratic coefficient.
+  crab_x3        = <Real>    ! Crabbing cubic coefficient.
+  crab_x4        = <Real>    ! Crabbing 4th order coefficient.
+  crab_x5        = <Real>    ! Crabbing 5th order coefficient.
+  crab_tilt      = <Real>    ! Crabbing tilt.
+  species_strong = <Species> ! Strong beam species
+  E_tot_strong   = <Real>    ! Strong beam particle energy
+  beta_a_strong  = <Real>    ! Strong beam $a$-mode beta Twiss parameter
+  alpha_a_strong = <Real>    ! Strong beam $a$-mode alpha Twiss parameter 
+  beta_b_strong  = <Real>    ! Strong beam $b$-mode beta Twiss parameter
+  alpha_b_strong = <Real>    ! Strong beam $b$-mode alpha Twiss parameter
+  bbi_constant               ! See below. Dependent attribute .
+  ks             = <Real>    ! Solenoid strength.
+  bs_field       = <Real>    ! Solenoid field strength.
+  field_master   = <T/F>     ! Is ks or bs_field value the master ?
+  s_beta_ref     = <Real>    ! Reference position of strong beam Twiss.
+  z_crossing     = <Real>    ! Weak particle phase space z when strong beam center reaches IP.
+  repetition_frequency = <Real>  ! Strong beam repetition rate.
+
+The strength of the strong beam is set by:
+  charge * n_particle
+The default The default value of "charge" is -1 which indicates that the strong beam has the
+opposite charge of the weak beam. The default for "n_particle" is 0.
+
+For historical reasons, the global parameter "parameter[n_part]"  will be used in
+place of "n_particle" if "n_particle" has a value of 0.
+
+"sig_z" are the strong beam's longitudinal sigma.  The strong beam is divided up into
+"n_slice" equal charge (not equal thickness) slices. Propagation through the strong beam involves
+a kick at the charge center of each slice with propagation between slice centers. A solenoid field
+can be set for the regions in between the slice centers. The kicks are calculated using the standard
+Bassetti--Erskine complex error function formula\citeb:talman. Even though the strong beam can
+have a finite "sig_z", the length of the "beambeam" element is zero. This is achieved by
+propagating a particle at the beginning and at the end of tracking so that the longitudinal starting
+point and ending points are at the "beambeam" element. Documentation of how a particle is tracked
+through a "beambeam" element is given in.
+
+The "ks" and "bs_field" parameters are the normalized and unnormalized solenoid strengths
+ related through \Eqkqlbp. If the beambeam element is superimposed on top
+of a solenoid, the beambeam element will inherit the solenoid field strength from the solenoid
+element instead.
+
+The strong beam Twiss parameters "beta_a_strong", "beta_b_strong", "alpha_a_strong", and
+"alpha_b_strong" are the Twiss parameters of the strong beam at the s-position given by
+"s_twiss_ref". Additionally, "sig_x", "sig_y" are the transverse sigmas of the strong beam
+at this point. "S_beta_ref" is measured relative to the position of the"beambeam" element.  If
+"beta_a_strong" is zero (the default), the a-mode Twiss parameters as calculated from the
+lattice is used. Similarly, if "beta_b_strong" is zero (the default), the b-mode Twiss
+parameters as calculated from the lattice is used.  To calculate the sigmas of any given slice,
+"sig_x" and "sig_y" are extrapolated using the Twiss parameters at "s_twiss_ref".
+
+The "x_offset", "y_offset", and "z_offset" attributes  are used to offset
+the strong beam. The "x_pitch" and "y_pitch" parameters orient the strong beam with respect to
+the laboratory coordinate system. This will be give the beam--beam interaction a crossing angle. The
+full crossing angle is the angle of the strong beam (set by "x_pitch" and "y_pitch") with
+respect to the trajectory of the weak beam centroid. The weak beam centroid orbit will be the closed
+orbit if the lattice geometry is closed. If the lattice geometry is open, the weak beam centroid
+orbit is determined by the beginning centroid orbit of the weak beam (which can be program
+dependent) and details of the lattice between the beginning of the lattice and the "beambeam"
+element.
+
+To curve the strong beam centroid to simulate crabbing, the following parameters can be used:
+  crab_x1,    crab_x2,     crab_x3
+  crab_x4,    crab_x5,     crab_tilt
+If "crab_tilt" is zero (the default), the strong beam centroid (x_c, y_c) will have y_c zero
+and
+  x_c(z) = \textcrab_x1 \cdot z + \textcrab_x2 \cdot z^2 + \textcrab_x3 \cdot z^3 + 
+                                    \textcrab_x4 \cdot z^4 + \textcrab_x5 \cdot z^5
+where positive x_c and y_c are the same as positive x and positive y for the weak beam and
+z is the longitudinal position with respect to the strong beam center with positive z being
+towards the head of the strong bunch (and remember that since the strong bunch is going in the
+opposite direction, the head of the strong bunch is opposite that of the weak bunch). With a finite
+"crab_tilt", the curvature is rotated around the z axis as shown in figure~\reff:tilt.
+
+The "bbi_constant" is a measure of the beam--beam interaction strength.  It is a dependent
+variable and is calculated from the equation
+  C_bbi = N \, m_e \, r_e / (2 \, \pi \, \gamma \, (\sigma_x + \sigma_y))
+In the linear region, near x = y = 0, the 
+beam--beam kick is approximately 
+  k_x= -4\, \pi \, x \, C_bbi / \sigma_x \CRNO
+  k_y= -4\, \pi \, y \, C_bbi / \sigma_y 
+and the linear beam--beam tune shift is 
+  dQ_x= C_bbi \, \beta_x / \sigma_x \CRNO
+  dQ_y= C_bbi \, \beta_y / \sigma_y \CRNO
+
+The "species_strong" and "E_tot_strong" give the particle species and particle energy of the
+strong beam. This is only relevant if the velocity of the strong beam is not equal to the velocity
+of the weak beam.
+
+The "z_crossing" parameter sets where the center of the strong beam is relative to the plane of the
+beambeam element (the IP) at the time when a weak particle with z = 0 is at the IP. For example,
+if tracking is done with radiation damping on, the (weak beam) closed orbit will have a finite phase
+space z value at the "beambeam" element. To have the weak beam and strong beam centers cross
+the plane of the "beambeam" element at the same time, the value of "z_crossing" should be set
+to the value of the weak beam closed orbit z at the IP.
+
+When with absolute time tracking  is in use, the "repetition_frequency"
+parameter (along with the "z_crossing" parameter) is used to calculate the time that the strong
+bunch crosses the plane of the "beambeam" element. Generally, this frequency should be set equal
+to the fundamental RF frequency or some harmonic thereof. If this frequency is zero (the default),
+Bmad will assume that the repetition frequency is a harmonic of the reference particle oscillation
+time so that in this case a particle's phase space z coordinate will be used.
+
+Example:
+  bbi: beambeam, sig_x = 3e-3, sig_y = 3e-4, x_offset = 0.05, n_particle = 1.3e9
+
+A "beginning_ele" element, named ""BEGINNING"", is placed at the beginning of every branch
+ of a lattice to mark the start of the branch. The "beginning_ele" always
+has element index 0 . The creation of this "beginning_ele" element is
+automatic and it is not permitted to define a lattice with "beginning_ele" elements at any
+other position.
+
+The attributes of the "beginning_ele" element in the root branch are are generally set using
+"beginning"  statements or line parameter  statements.
+[The attributes of other "beginning_ele" elements are set solely with line parameter statements.]
+
+If the first element after the "beginning_ele" element at the start of a branch is reversed
+, the "beginning_ele" element will be marked as reversed so that a
+reflection patch is not needed in this circumstance.
+
+See for a full list of element attributes.
+
+"Rbend"s and "sbend"s are dipole bends. The difference is that "rbend" elements use a
+Cartesian ("rectangular") coordinate system to describe the shape of the magnet while "sbend"
+elements use a polar ("sector") coordinate system. 
+
+For any given "sbend" element it is possible to construct an equivalent "rbend" element that
+has the same shape and vice versa. Given this, and to simplify internal bookkeeping, all "rbend"
+elements are converted to "sbend" elements when a lattice is read in to a program.  In order to
+preserve the information as to whether a bend element was originally specified as an "sbend" or
+an "rbend" in the lattice file, all bend elements have a "sub_key" parameter which is
+appropriately set when the lattice is parsed. This "sub_key" parameter does not affect tracking and
+is only used if a new lattice file is generated by the program.
+
+General "rbend" and "sbend" attributes are:
+\tt
+  \sl Attribute Class      Section           \sl Attribute Class      Section           
+  Aperture limits            \refs:limit     Mag \& Elec multipoles     \refs:multip    
+  Chamber wall               \refs:wall      Offsets, pitches \& tilt   \refs:offset   
+  Custom Attributes          \refs:cust.att  Overlapping Fields         \refs:overlap  
+  Description strings        \refs:alias     Reference energy           \refs:energy    
+  Fringe Fields              \refs:fringe    Superposition              \refc:super    
+  Hkick \& Vkick             \refs:kick      Symplectify                \refs:symp     
+  Is_on                      \refs:is.on     Field Maps                 \refs:fieldmap 
+  Integration settings       \refs:integ     Tracking \& transfer map   \refc:methods  
+  Length                     \refs:l                                                     
+  
+\toffset
+See for a full list of element attributes along with a their units.
+
+Attributes specific to "rbend" and "sbend" elements are:
+  angle              = <Real>   ! Design bend angle. Dependent var .
+  b_field            = <Real>   ! Design field strength (= P_0 g / q) .
+  db_field           = <Real>   ! Actual - Design bending field difference .
+  b_field_tot                   ! Net field = b_field + db_field. Dependent param .
+  b1_gradient        = <Real>   ! Quadrupole field strength .
+  b2_gradient        = <Real>   ! Sextupole field strength .
+  e1, e2             = <Real>   ! Face angles.
+  exact_multipoles   = <Switch> ! Curved coordinate correction? "off" is default.
+  fint, fintx        = <Real>   ! Face field integrals.
+  g                  = <Real>   ! Design bend strength (= 1/rho).
+  dg                 = <Real>   ! Actual - Design bend strength difference .
+  g_tot                         ! Net design strength = g + dg Dependent param .
+  h1, h2             = <Real>   ! Face curvature.
+  hgap, hgapx        = <Real>   ! Pole half gap.
+  k1                 = <Real>   ! Quadrupole strength.
+  k2                 = <Real>   ! Sextupole strength .
+  l                  = <Real>   ! "Length" of bend. See below.
+  l_arc              = <Real>   ! Arc length. For "rbend"s only. 
+  l_chord            = <Real>   ! Chord length. See.
+  l_rectangle        = <Real>   ! "Rectangular" length.
+  l_sagitta                     ! Sagittal length. Dependent param .
+  ptc_field_geometry  = <Switch> ! See below. Default is "sector".
+  ptc_fringe_geometry = <Switch> ! \Srefs:fringe.type
+  rho                = <Real>   ! Design bend radius. Dependent param .
+  roll               = <Real>   ! See \refs:offset.
+  fiducial_pt        = <switch> ! See below. Default is "none".
+  field_master       = <T/F>    ! See \refs:field.master.
+
+    \includegraphics[width=1.05\textwidth]rbend-coords.pdf
+    \includegraphics[width=1.05\textwidth]sbend-coords.pdf
+    \includegraphics[width=1.05\textwidth]sbend-rev.pdf
+  
+Coordinate systems for (a) normal (non-reversed)"rbend", (b) normal "sbend", and (c)
+"reversed sbend" elements. The bends are viewed from "above" (viewed from positive y).
+Normal bends have "g", "angle", and "rho" all positive. Reversed bends have "g",
+"angle", and "rho" all negative. The face angles "e1" and "e2" are drawn for
+"reference_pt" set to "none" or "center". For (a) and (b), as drawn, the "e1" and "e2" face
+angles are both positive. For (c), as drawn, "e1" and "e2" are both negative. In all cases,
+"L" is positive. Notice that for reversed bends, the x-axis points towards the center of the
+bend while for normal bends the x-axis points towards the outside.
+  
+  %
+       angle 
+The total design bend angle. A positive "angle" represents a
+bend towards negative x values (see \figf:local.coords).
+  %
+       B_field, dB_field 
+The "B_field" parameter is the design magnetic bending field which determines the reference orbit
+and the placement of lattice elements downstream from the bend. The "dB_field" parameter is
+the difference between the actual ("total") field and the design field. Thus:
+  Actual B-field = B_field + dB_field
+See the discussion of "g" and "dg" below for more details.
+  %
+       e1, e2 
+The rotation angle of the entrance pole face is "e1" and at the exit face it is "e2". Zero
+"e1" and "e2" for an "rbend" gives a rectangular magnet (\figf:rbend). Zero "e1" and
+"e2" for an "sbend" gives a wedge shaped magnet (\figf:sbend).  An "sbend" with an
+"e1" = "e2" = "angle"/2 is equivalent to an "rbend" with "e1" = "e2" = 0.  This
+formula holds for both positive and negative angles. For "rbend" elements, the above discussion
+is true if "fiducial_pt" is set to "none" or "center". If "fiducial_pt" is set to
+"entrance_end", then the face angles are measured with respect to the entrace coordinates (s_1
+x_1).
+If the "fiducial_pt" is set to "exit_end", the face angles are measured with respect to
+the exit coordinates (s_2, x_2). Thus
+  e1(f_pt=none) = e1(f_pt=entrance_end) - angle/2 = e1(f_pt=exit_end) + angle/2
+  e2(f_pt=none) = e2(f_pt=entrance_end) + angle/2 = e2(f_pt=exit_end) - angle/2
+
+Note: The correspondence between "e1" and "e2" and the corresponding parameters used in the
+SAD program \citeb:sad is:
+  e1(Bmad) =  e1(SAD) * angle + ae1(SAD)
+  e2(Bmad) =  e2(SAD) * angle + ae2(SAD)
+  %
+       exact_multipoles 
+The "exact_multipoles" switch can be set to one of:
+  off                 ! Default
+  vertically_pure    
+  horizontally_pure  
+This switch determines if the multipole fields, both magnetic and electric, and including the
+"k1" and "k2" components, are corrected for the finite curvature of the reference orbit in a
+bend. See for a discussion of what "vertically" pure versus
+"horizontally" pure means. Setting "exact_multipoles" to "vertically_pure" means that the
+individual a_n and b_n multipole components are used with the vertically pure solutions
+  B = \sum_n = 0^\infty \left[ \fraca_nn+1 \nabla \phi_n^r + \fracb_nn+1 \nabla \phi_n^i \right], \qquad
+  E = \sum_n = 0^\infty \left[ \fraca_enn+1 \nabla \phi_n^i + \fracb_enn+1 \nabla \phi_n^r \right]
+and if "exact_multipoles" is set to "horizontally_pure" the horizontally pure solutions
+\psi_n^r and \psi_n^i are used instead of the vertically pure solutions \phi_n^r and
+\phi_n^i.
+
+To use exact multipoles with PTC based tracking , the PTC exact model
+tracking must be turned on. That is, in the lattice file set:
+  ptc_com[exact_model] = T
+With exact model tracking, PTC always assumes that multipole coefficient values correspond to
+"horizontally_pure". In this case, Bmad will convert "vertically_pure" to
+"horizontally_pure" as needed when passing multipole coefficients to PTC. Note that in
+the case where PTC is doing exact model tracking  but the
+"exact_multipoles" switch is set to "off", PTC will still be treating the multipoles
+as "horizontally_pure" even though Bmad tracking will be treating them as straight
+line multipoles. Note: If the bend has an associated electric field, PTC will always be
+doing exact modeling.
+  %
+       fint, fintx,  hgap, hgapx 
+The field integrals for the entrance pole face is given by the product of the "fint" and
+"hgap" parameters with "hgap" being the half gap between poles at the entrance face
+  F_H1 \equiv F_int \, H_gap = \int_pole \! \! ds \, \fracB_y(s) \, (B_y0 - B_y(s))
+  2 \, B_y0^2
+For the exit pole face there is a similar equation using "fintx" and "hgapx" which defines
+F_H2. In the above equation B_y0 is the field in the interior of the dipole. The values of
+"fint", "fintx", "hgap", and "hgapx" are never used in isolation when tracking. Only
+the values for F_H1 and F_H2 matter.
+
+If "fint" or "fintx" is given without a value then a value of 0.5 is used. If "fint" or
+"fintx" is not present, the default value of 0 is used. Note: \mad does not have the "fintx"
+and "hgapx" attributes. \mad just assumes that the values are the same for the entrance and exit
+faces. For compatibility with \mad, if "fint" is given but "fintx" is not, then "fintx" is
+set equal to "fint". Similarly, "hgapx" will be set to "hgap" if "hgapx" is not
+given. Note that this setting of "fintx" or "hgapx" using the value of "fint" or "hgap"
+will only be done before lattice expansion .
+
+Note: To have an effect, both "fint" and "hgap" (or "fintx" and "hgapx") must be non-zero.
+
+Note: The SAD program uses "fb1+f1" for the entrance fringe and "fb2+f1" for the exit
+fringe. The correspondence between the two is
+  F_H1 = fint  * hgap  = (fb1 + f1) / 12
+  F_H2 = fintx * hgapx = (fb2 + f1) / 12
+
+"fint" and "hgap" can be related to the Enge function which is sometimes used to model the
+fringe field. The Enge function is of the form
+  B_y(s) = \fracB_y01 + \exp[P(s)]
+where
+  P(s) = C_0 + C_1 \, s + C_2 \, s^2 + C_3 \, s^3 + \, \ldots
+The C_0 term simply shifts where the edge of the bend is. If all the C_n are zero except for
+C_0 and C_1 then
+  C_1 = \frac12 \,H_gap \, F_int
+  %
+       fiducial_pt 
+The "fiducial_pt" parameter sets a fiducial point which can be used to keep the shape of the bend
+constant when, in a program, the parameters "rho", "g", "b_field" or "angle" are varied.
+Varying these parameters typically happens when doing machine design. Using a fiducial point can be
+helpful when designing a machine usin bend magnets that already exist.
+
+The "fiducial_pt" parameter
+has four possible settings:
+  none          ! No fiducial point (default).
+  entrance_end  ! The entrance point is the fiducial point.
+  center        ! The center of the reference curve is the fiducial point.
+  exit_end      ! The exit point is the fiducial point.
+With "fiducial_pt" set to "none" (the default). The bend shape is not held constant. With the
+other three settings, the bend shape will be held constant as discussed in.
+With "fiducial_pt" set to "entrance_end", the reference trajectory at the entrance end is held
+fixed in both position and orientation with respect to the bend face and "g", "l" and "e2",
+along with the other depdendent parameters, are adjusted to both give the desired change in what was
+varied (which is one of "rho", "g", "b_field" or "angle") and to keep the shape of the
+bend unchanged. See \figf:bend.fid1. Similarly, if "fiducial_pt" is set to "center", the
+center of the reference trajectory is held fixed in both position and orientation and if
+"fiducial_pt" is set to "exit_end", the exit point is held fixed in both position and
+orientation.
+  %
+       g, dg, rho 
+The design bending radius which determines the reference coordinate system is "rho" (see
+). "g" = "1/rho" is the curvature function and is proportional to the design
+dipole magnetic field. "g" is related to the design magnetic field "B_field" via
+  \textg = \fracqp_0 \, \textB_field 
+where q is the charge of the reference particle and p_0 is the reference momentum. It is
+important to keep in mind that changing "g" will change the design orbit  and
+hence will move all downstream lattice elements in space.
+
+The parameter "dg" is the difference between the actual and the design bending strengths. The
+relationship between "dg" and "dB_field" is analogous to the relationship between "g" and
+"B_field" in \Eqgqpb. The actual ("total") field strength is given by the sum:
+  Actual g = g + dg
+Changing "dg" leaves the design orbit and the positions of all downstream lattice elements
+unchanged but will vary a particle's orbit. One common mistake when designing lattices is to vary
+"g" and not "dg" which results in downstream elements moving around. See \Srefs:ex.chicane
+for an example.
+
+Note: A positive "g", which will bend particles and the reference orbit in the -x direction
+represents a field of opposite sign as the field due a positive "hkick".
+  %
+       h1, h2 
+The attributes "h1" and "h2" are the curvature of the entrance and exit pole faces. They are
+present for compatibility with MAD but are not yet implemented in terms of tracking and other
+calculations.
+  %
+       k1, b1_gradient 
+The normalized and unnormalized  quadrupole strength. See \Eqsbbb and \eqkqlbp.
+
+  %
+       k2, b2_gradient 
+The normalized and unnormalized  sextupole strength. See \Eqsbbb and \eqkqlbp.
+  %
+       l, l_arc, l_chord, l_sagitta  
+For compatibility with MAD, for an "rbend", "l" is the chord length and not the arc length as
+it is for an "sbend".  After reading in a lattice, Bmad will internally convert all "rbend"s
+into "sbend"s, and the "l_chord" attribute of the created "sbend" will be set to the input
+"l". The "l" of the created "sbend" will be set to the true path length (see
+above). Alternatively for an "rbend", instead of setting "l", the "l_arc" attribute can be
+used to set the true arc length. 
+
+For "sbend" elements, "l_chord" will be set to the calculated chord length. For both types of
+bends, the "l_sagitta" parameter will be set to the sagitta length (The sagitta is the distance
+from the midpoint of the arc to the midpoint of the chord). "l_sagitta" can be negative and will have
+the same sign as the "g" parameter.
+  %
+       l_rectangle 
+The "l_rectangle" parameter is the "rectangular" length defined to be the distance between the
+entrance and exit points. The coordinate system used for the calculation is defined by the setting
+of "fiducial_pt". \figf:rbend shows "l_rectangle" for "fiducial_pt" set to
+"entrance_end" (the coordinate system corresponds to the entrance coordinate system of the bend).
+In this case, and in the case where "fiducial_pt" is set to "exit_end", the rectangular
+length will be \rho \sin\alpha. If "fiducial_pt" is set to "none" or "center",
+"l_rectangle" is the same as the chord length.
+  %
+       ref_tilt 
+The "ref_tilt" attribute rotates a bend about the longitudinal axis at the entrance face of the
+bend. A bend with "ref_tilt" of \pi/2 and positive "g" bends the element in the -y
+direction ("downward"). See \figf:tilt.bend. It is important to understand that "ref_tilt",
+unlike the "tilt" attribute of other elements, bends both the reference orbit along with the
+physical element. Note that the MAD "tilt" attribute for bends is equivalent to the Bmad
+"ref_tilt". Bends in Bmad do not have a "tilt" attribute.
+
+Important! Do not use "ref_tilt" when doing misalignment studies for a machine. Trying to misalign
+a dipole by setting "ref_tilt" will affect the positions of all downstream elements! Rather, use the
+"roll" parameter.
+
+---------------
+
+The difference between "rbend" and "sbend" elements is the way the "l", "e1", and
+"e2" attributes are interpreted.  To ease the bookkeeping burden, after reading in a lattice,
+Bmad will internally convert all "rbend"s into "sbend"s.  This is done using the following
+transformation on "rbend"s:
+  l_chord(internal) = l(input)
+  l(internal) = 2 * asin(l_chord * g / 2) / g
+  e1(internal) = e1(input) + theta / 2
+  e2(internal) = e2(input) + theta / 2
+
+The attributes "g", "angle", and "l" are mutually dependent. If any two are specified for
+an element Bmad will calculate the appropriate value for the third.  After reading in a lattice,
+"angle" is considered the dependent variable so if "l" or "g" is veried, the value of
+"angle" will be set to "g * l". if "theta" is varied, "l" will be set accordingly.
+
+Since internally all "rbend"s are converted to "sbend"s, if one wants to vary the "g"
+attribute of a bend and still keep the bend rectangular, an overlay  can be
+constructed to maintain the proper face angles.  For example:
+  l_ch = 0.54
+  g_in = 1.52
+  l_coef = asin(l_ch * g_in / 2) / g_in
+  my_bend: rbend, l = l_ch, g = g_in
+  my_overlay: overlay = {my_bend, my_bend[e1]:l_coef, my_bend[e2]:l_coef}, 
+                var = {g}, g = g_in
+Notice that "l_coef" is just "arc_length/2".
+
+In the local coordinate system , looking from "above" (bend viewed from positive
+y), and with "ref_tilt" = 0, a positive "angle" represents a particle rotating clockwise. In
+this case. "g" will also be positive. For counterclockwise rotation, both "angle" and "g"
+will be negative but the length "l" is always positive. Also, looking from above, a positive
+"e1" represents a clockwise rotation of the entrance face and a positive "e2" represents a
+counterclockwise rotation of the exit face. This is true irregardless of the sign of "angle" and
+"g". Also it is always the case that the pole faces will be parallel when
+  e1 + e2 = angle
+
+Example bend specification:
+  b03w: sbend, l = 0.6, k1 = 0.003, fint  ! gives fint = fintx = 0.5
+
+"ptc_field_geometry" determines what reference coordinates PTC uses within a bend for calculating
+higher order fields. This only affects tracking if PTC is being used and if
+"ptc_com[exact_model]" is set to True . Possible values for
+"ptc_field_geometry" are:
+  sector      ! Default
+  straight
+For "sector" reference coordinates, the field coordinate reference frame is with respect to the
+arc of the reference trajectory. For "straight" coordinates the coordinate reference frame is
+with respect to the chord line. For a bend where there are no other fields besides the basic dipole
+field, tracking is essentially unaffected.\footnote
+  
+There will be a small difference due to the fact that with a "straight" geometry tracking uses a
+coordinate system with the z-axis along the chord and with a "sector" geometry an integration step
+uses the curvilinear coordinate system with the z-axis along the arc of the bend. If the length
+of an integration step is made small, this difference will go to zero.
+  
+When there are quadrupole or higher order fields, the fields are centered about the reference frame
+set by "ptc_field_geometry". Since Bmad based tracking does not implement "straight" geometry
+tracking, Bmad and PTC tracking will show marked differences when "ptc_field_geometry" is set to
+"straight".
+
+A "capillary" element is a glass tube that is used to focus x-ray
+beams.
+
+General "capillary" attributes are:
+\tt
+  \sl Attribute Class      Section          \sl Attribute Class      Section          
+  Aperture limits            \refs:limit    Offsets, Pitches \& Tilt   \refs:offset   
+  Capillary Wall             \refs:wall     Reference energy           \refs:energy  
+  Custom Attributes          \refs:cust.att Tracking \& transfer map   \refc:methods  
+  Description strings        \refs:alias                                               
+  
+\toffset
+See for a full list of element attributes along with a their units.
+
+Attributes specific to a "capillary" element are:
+  critical_angle_factor = <Real>    ! Critical angle * Energy (rad * eV)
+
+The critical angle above which photons striking the capillary surface are
+refracted into the capillary material scales as 1/Energy. The
+constant of critical angle * energy is given by the "critical_angle_factor".
+
+The inside wall of a capillary is defined using the same syntax used
+to define the chamber wall for other elements .
+
+The length of the capillary is a dependent variable and is given by
+the value of "s" of the last wall cross-section
+.
+
+An "ecollimator" is a drift with elliptic collimation. An "rcollimator" is a drift
+with rectangular collimation.
+
+Alternatively, for defining a collimator with an arbitrary shape, a "mask" element
+ may be used.
+
+General "ecollimator" and "rcollimator" attributes are:
+\tt
+  \sl Attribute Class      Section          \sl Attribute Class      Section           
+  Aperture limits            \refs:limit    Offsets, Pitches \& Tilt   \refs:offset   
+  Chamber wall               \refs:wall     Overlapping Fields         \refs:overlap  
+  Custom Attributes          \refs:cust.att Reference energy           \refs:energy   
+  Description strings        \refs:alias    Superposition              \refc:super    
+  Hkick \& Vkick             \refs:kick     Symplectify                \refs:symp     
+  Integration settings       \refs:integ    Field Maps                 \refs:fieldmap 
+  Is_on                      \refs:is.on    Tracking \& transfer map   \refc:methods  
+  Length                     \refs:l                                                    
+  
+\toffset
+
+Attributes specific to a "capillary" element are:
+  px_aperture_width2 = <real>  ! px aperture half width
+  px_aperture_center = <real>  ! px aperture center
+  py_aperture_width2 = <real>  ! py aperture half width
+  py_aperture_center = <real>  ! py aperture center
+  z_aperture_width2  = <real>  ! z aperture half width
+  z_aperture_center  = <real>  ! z aperture center
+  pz_aperture_width2 = <real>  ! pz aperture half width
+  pz_aperture_center = <real>  ! pz aperture center
+
+Note: Collimators are the exception to the rule that the aperture is independent of any "tilt"s.
+See for more details. Additionally, the default setting of "offset_moves_aperture"
+is "True" for collimators .
+
+Besides the standard aperture settings \refs:limit that can be used to limit x and y phase
+space coordinates, collimators can be used to limit the other four phase space coordinates as well.  For
+"rcollimator" elements, particles are collimated if "px_aperture_width2" is greater than zero
+and
+  px < px_aperture_center - px_aperture_width2  or
+  px > px_aperture_center + px_aperture_width2
+with similar equations for "py", "z", and "pz". For "ecollimator" elements, if
+"px_aperture_width2" and "py_aperture_width2" are both nonzero, particles are collimated if
+  ((px - px_aperture_center) / px_aperture_width2)^2 + 
+        ((py - py_aperture_center) / py_aperture_width2)^2 < 1
+If one or both of "px_aperture_width2" or "py_aperture_width2" are zero, the computation is the
+same as for an "rcollimator". A similar situation occurs for "z" and "pz". 
+
+Example:
+  d21: ecollimator, l = 4.5, x_limit = 0.09, y_limit = 0.05, 
+              px_aperture_width2 = 0.3, py_aperture_width = 0.1
+
+A "converter" element represents a target (plate) onto which particles are slammed in order to generate
+particles of a different type. For example, a tungsten plate which is bombarded with electrons to
+generate positrons.
+
+General "custom" attributes are:
+\tt
+  \sl Attribute Class      Section           \sl Attribute Class      Section          
+  Aperture limits            \refs:limit     Is_on                      \refs:is.on   
+  Chamber wall               \refs:wall      Length                     \refs:l       
+  Custom Attributes          \refs:cust.att  Offsets, pitches \& tilt   \refs:offset  
+  Description strings        \refs:alias     Reference energy           \refs:energy   
+  Integration settings       \refs:integ     Superposition              \refc:super   
+                                               Tracking \& transfer map   \refc:methods  
+  
+The attributes specific to an "converter" are 
+  distribution    = <Struct>    ! Outgoing particle distribution.
+  pc_out_min      = <Real>      ! Minimum outgoing particle momentum (eV).
+  pc_out_max      = <Real>      ! Maximum outgoing particle momentum (eV).
+  angle_out_max   = <Real>      ! Maximum outgoing angle.
+  species_out     = <SpeciesID> ! Output species.
+  p0c             = <Real>      ! Output ref momentum.
+  E_tot           = <Real>      ! Output ref energy. Dependent var .
+
+The species of the outgoing particles is specified by the "species_out" parameter
+.
+
+The converter must be the last element in a lattice branch  except for possible
+"fork", "photon_fork" or "marker" elements. A "fork" or "photon_fork" element
+ after the converter is used to connect to the line containing the elements that come
+after the converter Example:
+  parameter[particle] = electron
+  parameter[geometry] = open
+  to_after: fork, to_line = after_cvter
+  cvter, species_out = positron, p0c = 3e6, distribution = ...
+  pre_linac: line = (..., cvter, to_after)
+  after_cvter: line = (...)                ! Everything after the converter.
+  after_cvter[beta_a] = 27; after_cvter[beta_b] = 32
+  use, pre_linac
+The line up to the fork element, "pre_linac", has the converter just before the "fork"
+element. The "fork" element, called "to_after", connects to the line named "after_cvter"
+which contains all the elements after the converter. The reference particle and reference momentum
+for the "after_cvter" line is set to "positron" and 3e6 respectively to agree with the setting
+of "species_out" and "p0c" set in the converter element.
+
+Since Bmad cannot calculate the appropriate Twiss and dispersion values after the converter, values
+must be set in the lattice file.  Thus, in the above example, the starting beta function at the
+beginning of the "after_cvter" line is set to be \beta_a = 27~m and \beta_b = 32~m.
+
+The "p0c" and "E_tot" attributes of the converter set the reference momentum or energy at the
+exit end of the converter. At least one of these attributes must be set. If both are set, "E_tot"
+is calculated to be consistent with "p0c".
+
+The "distribution" parameter of a "converter" element specifies the distribution of outgoing
+particles for a given converter thickness. Multiple "distribution" instances with differing
+thicknesses may be present in an element. The actual thickness of the converter will be taken to be
+the element's, length "L" parameter. During tracking, the outgoing distribution will be computed
+by interpolating between the two distributions that bracket the actual thickness. The exception is
+when there is only one"distribution" present. In this case, the calculation will just use that
+distribution for the calculation independent of the element length. Example:
+cvter: converter, ..., distribution = {
+    material = tungsten,      ! Optional. Not used in tracking.
+    thickness = 0.003,        ! Converter thickness for this distribution.
+    sub_distribution = {...}, ! Distribution at one incoming momentum.
+    sub_distribution = {...}, ! Distribution at another incoming momentum.
+    ...                       ! etc.
+  }
+The "material" component is optional and is only for recording the converter material. Each
+"distribution" is made up of a number of "sub_distribution" components. Each one specified the
+outgoing distribution for a given incoming particle momentum. During tracking, interpolation is used
+to compute the distribution appropriate for an incoming particle with a given momentum. It is an
+error in the momentum of the incoming particle is outside the range of the momentums specified
+in the "sub_distributions". A given "sub_distribution" will look like:
+  sub_distribution = {
+    pc_in = 3e8,            ! Incoming momentum*c (eV)>
+    prob_pc_r = {...},      ! Momentum and radius probability table 
+    direction_out = {...},  ! Momentum orientation probability coefs
+  }
+
+A "sub_distribution" has three components: The "pc_in" component specifies the incoming
+particle momentum appropriate for the "sub_distribution", the "prob_pc_r" component holds a
+two-dimensional table of the probability P(p_\txtout, r) (\Eqnnprp), and "direction_out"
+holds the coefficients for calculating the outgoing particle direction. "prob_pc_r" look like:
+  prob_pc_r = {
+    r_values = [0.0, 4.9e-5, 1.25e-4, ...],
+    row = {pc_out = 1.55e6, prob = [0.0, 6.1e-6, 1.23e-5, ...]}, 
+    row = {pc_out = 3.96e6, prob = [0.0, 1.1e-5, ...]},
+    ...                   ! More rows
+  }
+A "probl_pc_r" has one "r_values" component and multiple "row" components. The
+"r_values" component is a vector of radius values for the columns of the probability table.  The
+value for the first column is always zero and the radius values are strictly increasing.  Each
+"row" component represents one row of the table. Each row has a momentum value "pc_out" in eV
+along with a "prob" component which is a vector of probability values. The length of a "prob"
+vector is always equal to the length of the "r_values" vector which is the number of columns in
+the table. The probability value of the first column is always zero which reflects the fact that
+there is vanishing area in an annulus of width dr as r tends to zero.
+
+The "direction_out" component of "sub_distribution" look like:
+  direction_out = {
+    c_x = {...},
+    alpha_x = {...},
+    alpha_y = {...},
+    beta = {...},
+    dxds_min = {...},
+    dxds_max = {...},
+    dyds_max = {...}
+  }
+The "c_x", "alpha_x", "alpha_y", and "beta", components of "direction_out" give the
+coefficients for calculating c_x, \alpha_x, \alpha_y, and \beta respectively in
+\Eqpxsxs. The other three components give, "dxds_min", "dxds_max", and "dyds_max" give
+the range for x' and y' over which \Eqpxsxs is valid. By symmetry, "dyds_min" will be equal
+to "-dydx_max". The form of all these components is similar. For example:
+  dxds_min = {
+    fit_1d_r = {pc_out = 1.5e+06, poly = [-2.48, -658.4, -2.26e5, 1.71e+8]},
+    fit_1d_r = {pc_out = 3.9e+06, poly = [...]}, 
+    ...,
+    C = 2.99394,
+    fit_2d_pc = {k = 1.96e-8, poly = [1.0, -4.10e-10, 3.7e-16, 2.77e-27]},
+    fit_2d_r = {k = 4.2e-4, poly = [-4.50, 400.2, -108985, 9.18e+06]},
+  }
+Here there are multiple "fit_1d_r" components, one for each fit \Gamma_i fit function
+(\Eqgcr).  The "pc_out" sub-component of a "fit_1d_r" component gives the momentum p_i at
+which the fit function fits the data and the "poly" sub-component of "fit_1d_r" gives the
+polynomial coefficients needed for \Eqgcr. The C, "fit_2d_pc" and "fit_2d_r" components
+are used for computing \Xi (\Eqxkpkr). The "k" sub-components of "fit_2d_pc" and
+"fit_2d_r" give k_p and k_r respectively in \Eqxkpkr and the "poly" sub-components of
+"fit_2d_pc" and "fit_2d_r" give the polynomial coefficients w_n and k_n respectively.
+
+To calculate the distributions and output the appropriate "distribution" structures which then
+can be incorporated into a Bmad lattice, there is modeling code that is distributed with
+Bmad. Specifically, it is in the directory
+  $ACC_ROOT_DIR/util_programs/converter_element_modeling
+[See your local Bmad Guru if you don't know how to find this directory.] There is documentation for
+running the program in this directory. The distribution modeling is based upon the "Geant"
+simulation toolkit for the simulation of the passage of particles through matter.
+
+The mechanics of how Bmad generates outgoing particles is discussed in \Srefs:converter.track.
+In a tracking simulation, a single outgoing particle is generated for each incoming particle.  All
+outgoing particles will be assigned a "weight" that represent how many actual outgoing particles
+a single actual incoming particle will generate. For example, if an actual incoming particle with a
+particular momentum would generate, on average, 0.42 particles, the outgoing particle in the
+simulation will have a weight of 0.42.  To make simulations more efficient, the "pc_out_min",
+"pc_out_max", and "angle_out_max" parameters can be set to restrict the momentum and angle
+range of outgoing particles. If the outgoing particles are restricted in momentum or angle, the
+weight of the outgoing particles will be appropriately adjusted such that the weighted distribution
+of outgoing particles within the momentum and/or angle restricted range is independent of the
+whether or not there is are restrictions.  A value of zero (the default) for any one of these
+parameters means that that parameter is ignored.
+
+A "crab_cavity" is an RF cavity that gives a z-dependent kick. This is useful in colliding beam
+machines, where there is a finite crossing angle at the interaction point, to rotate the beams near the IP.
+
+General "crab_cavity" attributes are:
+\tt
+  \sl Attribute Class      Section           \sl Attribute Class      Section             
+  Aperture limits            \refs:limit     Length                     \refs:l          
+  Chamber wall               \refs:wall      Offsets, pitches \& tilt   \refs:offset     
+  Custom Attributes          \refs:cust.att  Reference energy           \refs:energy      
+  Description strings        \refs:alias     Superposition              \refc:super      
+  Hkick \& Vkick             \refs:kick      Symplectify                \refs:symp       
+  Integration settings       \refs:integ     Field Maps                 \refs:fieldmap   
+  Is_on                      \refs:is.on     Tracking \& transfer map   \refc:methods    
+  
+\toffset
+See for a full list of element attributes along with a their units.
+
+The attributes specific to an "crab_cavity" are 
+  gradient        = <Real>    ! Accelerating gradient (V/m).
+  phi0            = <Real>    ! Phase (rad/2\pi) of the reference particle with 
+                              !   respect to the RF. phi0 = 0 is on crest.
+  phi0_multipass  = <Real>    ! Phase (rad/2\pi) with respect to a multipass lord .
+  rf_frequency    = <Real>    ! RF frequency (Hz).
+  harmon          = <Real>    ! Harmonic number
+  harmon_master   = <Logic>   ! Is harmon or rf_frequency the dependent var with ref energy changes?
+  voltage                     ! Cavity voltage. Dependent attribute .
+
+The Hamiltonian  H_\textcrab for a thin crab cavity is\citeb:crab1:
+  H_\textcrab = -r_q \, V\, x \, \sin(k \, t + 2 \, \pi \, \phi_0)
+where x and z are particle coordinates, r_q is the charge relative to the reference
+particle, V is the "effective" cavity voltage, \phi_0 is a user settable
+phase, and k is the wave number
+  k = \frac2 \, \pi \, f_\textrfc
+Which give kicks of
+  \Delta p_x= -\frac1c \, P_0 \, \frac\partial H_\textcrab\partial x = 
+    \fracr_q \, Vc \, P_0 \, \sin(k \, t + 2 \, \pi \, \phi_0) \CRNO 
+  \Delta E= -\frac\partial H_\textcrab\partial t = 
+    r_q \, V \, \, k \, x \, \cos(k \, t + 2 \, \pi \, \phi_0) 
+Note: The sign of H_\textcrab used by Authors in the literature is not standardized. Bmad
+uses the convention such that a particle with the charge of the reference particle and with z and
+V positive will have a positive \Delta p_x.
+
+In the above equations r_q is the relative charge between the reference particle (set by the
+"parameter[particle]" parameter in a lattice file) and the particle being tracked through the
+cavity. For example, if the reference particle and and the tracked particle are the same, r_q is
+unity independent of the type of particle tracked.
+
+The equations of motion can also be derived from analysis of a TM110 cavity mode for particles near
+the centerline\citeb:kim. With this mode, the transverse kick is due to the magnetic field and the
+longitudinal kick is due to the electric field. Using this, the integrated electric and magnetic
+fields needed for spin tracking are:
+  \int \! B_y= \frac-Vc \, \sin(k \, z + 2 \, \pi \, \phi_0) \CRNO 
+  \int \! E_s=  \beta \, V \, \, k \, x \, \cos(k \, z + 2 \, \pi \, \phi_0) 
+where \beta = v/c is the normalized speed of the particle.
+
+  \includegraphics[width=5in]crystal-ele.pdf
+Crystal element geometry.  A) Geometry for Bragg diffraction. The geometry shown is for
+"ref_tilt" = 0 (reference trajectory in the x-z plane). The angle \alpha_H
+("alpha_angle") is the angle of the H vector with respect to the surface normal hat
+n. For \psi ("psi_angle") zero, the incoming reference orbit, the outgoing reference orbit,
+hat n, and H are all coplanar. B) Geometry for Laue diffraction. In this case there are
+three outgoing beams: The Bragg diffracted beam, the forward diffracted beam, and the undiffracted
+beam.
+
+A "crystal" element represents a crystal used for photon diffraction.
+
+General "crystal" attributes are:
+\tt
+  \sl Attribute Class      Section          \sl Attribute Class      Section          
+  Aperture limits            \refs:limit    Surface Properties         \refs:surface  
+  Custom Attributes          \refs:cust.att Symplectify                \refs:symp    
+  Description strings        \refs:alias    Offsets, Pitches \& Tilt   \refs:offset  
+  Reference energy           \refs:energy   Tracking \& transfer map   \refc:methods 
+  Reflection tables          \refs:reflect                                             
+  
+\toffset
+See for a full list of element attributes along with a their units.
+
+Attributes specific to a "crystal" element are:
+  b_param            = <Real>       ! b parameter for photons with the reference energy.
+  crystal_type       = <String>     ! Crystal material  and reflection plane.
+  psi_angle          = <Real>       ! Rotation of H-vector about the surface normal.
+  thickness          = <Real>       ! Thickness of crystal for Laue diffraction.
+  ref_orbit_follows  = <which_beam> ! Reference orbit aligned with what outgoing beam?
+  graze_angle_in     = <Real>       ! Angle between incoming ref orbit and surface.
+  graze_angle_out    = <Real>       ! Angle between outgoing ref orbit and surface.
+
+ is_mosaic          = <Logical>    ! Is a mosaic crystal? Default = False
+ mosaic_thickness   = <Real>       ! Mosaic element thickness
+ mosaic_angle_rms_in_plane  = <Real> ! In-plane mosaic angular half-width.
+ mosaic_angle_rms_out_plane = <Real> ! Out-of-plane angular half-width. 
+
+Dependent variables  specific to a "crystal" element are:
+  alpha_angle                ! Angle of H-vector with respect to the surface normal.
+  bragg_angle                ! Nominal Bragg angle at the reference wave length. 
+  bragg_angle_in             ! Incoming grazing angle for Bragg diffraction.
+  bragg_angle_out            ! Outgoing grazing angle for Bragg diffraction.
+  d_spacing                  ! Lattice plane spacing. 
+  darwin_width_pi            ! Darwin width for pi polarized light (radians).
+  darwin_width_sigma         ! Darwin width for sigma polarized light (radians).
+  dbragg_angle_de            ! Variation of the Bragg angle with energy (radians/eV).
+  l                          ! Length of reference orbit.
+  pendellosung_period_pi     ! Pendellosung period for pi polarized light.
+  pendellosung_period_sigma  ! Pendellosung period for sigma polarized light.
+  ref_wavelength             ! Reference wavelength . Dependent attribute .
+  ref_cap_gamma              ! \Gamma at the reference wavelength.
+  tilt_corr                  ! Tilt correction due to a finite psi_angle.
+  v_unitcell                 ! Unit cell volume. 
+
+The "crystal_type" attribute defines the crystal material and diffraction lattice plane. The
+syntax is ""ZZZ(ijk)"" where "ZZZ" is the material name and "ijk" are the Miller indices
+for the diffraction plane. For example,
+  b_cryst1: crystal, crystal_type = "Si(111)", b_param = -1, ...
+The atomic formula is case sensitive so, for example, ""SI(111)"" is not acceptable. The list of
+known crystal materials is given in. Given the "crystal_type", the spacing
+between lattice planes ("d_spacing"), the unit cell volume ("v_unitcell"), and the structure
+factor\citeb:batterman values can be computed.
+
+The "b_param" is the standard b asymmetry factor
+  b = \frac\sin(\alpha_H + \theta_B)\sin(\alpha_H - \theta_B) 
+where \theta_B is the Bragg angle ("bragg_angle") 
+  \theta_B = \sin^-1 \left( \frac\lambda2 \, d \right)
+and \alpha_H ("alpha_angle") is the angle of the reciprocal lattice H vector with respect
+to the surface normal as shown in \figf:crystalA.  If "b_param" is set to -1 then there is
+Bragg reflection and "alpha_H" is zero. If "b_param" is set to 1 then there is Laue
+diffraction again with "alpha_H" zero. With the orientation shown in \figf:crystalA,
+"alpha_H" is positive.
+
+The "thickness" parameter is used with Laue diffraction and mosaic crystals.
+
+The "ref_orbit_follows" parameter sets how the outgoing reference orbit is constructed. This is
+only relevant with Laue diffraction.  The possible settings of this parameter are:
+  bragg_diffracted      ! Default
+  forward_diffracted
+  undiffracted
+The geometry of this situation is shown in \figf:crystalB. The reference orbit for the
+"undiffracted" beam is just a straight line extension of the incoming reference trajectory. This
+trajectory is that trajectory that photons whose energy is far from the Bragg condition (that is,
+far from the reference energy) will follow. The "forward_diffracted" reference orbit is parallel
+to the "undiffracted" trajectory and is the trajectory of the forward diffracted photons whose
+energy is the reference energy and whose incoming orbit is on the incoming reference trajectory.
+Finally, the "bragg_diffracted" reference orbit (the default) is the backward diffracted orbit.
+
+Note: Changing the setting of "ref_orbit_follows" will change the reference orbit downstream of
+the crystal which, in turn, will change the placement all downstream elements.
+
+The value of the element reference orbit length "l" is calculated by Bmad. "L" will be zero
+for Bragg diffraction. For Laue diffraction, "l" will depend upon the crystal "thickness" and
+the setting of "ref_orbit_follows".
+
+If "psi_angle" is zero, the incoming reference orbit, the outgoing reference orbit, hat n
+and H are all coplanar. A non-zero "psi_angle" Rotates the H vector around the +hat
+x axis of the "Element Reference Frame" (See \figf:crystalA).
+
+To keep the outgoing reference trajectory independent of the value of "psi_angle", the crystal
+will be automatically tilted by the appropriate "tilt correction" "tilt_corr". The calculation
+of "tilt_corr" is outlined in. "tilt_corr" will be zero if
+"psi_angle" is zero.
+
+The reference trajectory for a Bragg "crystal" is that of a zero length bend
+ and hence the length ("l") parameter of a crystal is fixed at zero. If
+the "graze_angle_in" and "graze_angle_out" angles are zero (the default), the orientation of
+the reference trajectory with respect to the crystal surface is specified by the incoming Bragg
+angle "bragg_angle_in" (\theta_g,in) and outgoing Bragg angle "bragg_angle_out"
+(\theta_g,out) as shown in \figf:crystalA. These angles are computed from the photon reference
+energy and the other crystal parameters such that a photon with the reference energy traveling along
+the reference trajectory will be in the center of the Darwin curve . It
+is sometimes convenient to be able to specify the angles that the reference trajectory makes with
+respect to the crystal independent of the Bragg angles. To do this, set "graze_angle_in" and
+"graze_angle_out" to the desired angles.
+
+Notice that due to refraction at the surface, the computed "bragg_angle" from \Eqtsl2d will
+deviate slightly from the average of "bragg_angle_in" and "bragg_angle_out".
+
+The reference trajectory in the global coordinate system  is determined by the
+value of the "ref_tilt" parameter along with the value of "bragg_angle_in" +
+"bragg_angle_out". These bragg angles take into account refraction so that the reference
+trajectory downstream of the crystal will be properly centered with respect to the reference
+photon. A positive "bragg_angle_in" + "bragg_angle_out" bends the reference trajectory in the
+same direction as a positive "g" for a bend element. The
+
+A "crystal" may be offset and pitched (\refs:offset). The incoming local reference coordinates
+are used for these misalignments.
+
+When a crystal is bent , the H vector is assumed follow the surface
+curvature. That is, it is assumed that the lattice planes are curved by the bending.
+
+Example:
+  crystal_ele: crystal, crystal_type = "Si(111)", b_param = -1
+
+The "darwin_width_sigma" and "darwin_width_pi" parameters are the computed Darwin width, in
+radians, for sigma and pi polarized light respectively. Here the Darwin width d\theta_D is defined
+as the width at the \eta = \pm 1 points (cf.~Batterman\citeb:batterman Eq (32))
+  d\theta_D = \frac2 \, \Gamma \, |P| \, \textRe \! \left( [F_H \, F_\Hbar]^1/2 \right)
+                 |b|^1/2 \, \sin\theta_tot
+where
+  \theta_tot = bragg_angle_in + bragg_angle_out 
+
+The "pendellosung_period_sigma" and "pendellosung_period_pi" are the pendellosung periods for
+Laue diffraction. If the crystal is set up for Bragg diffraction then the values for these
+parameters will be set to zero.
+
+The "dbragg_angle_de" parameter is the variation in Bragg angle with respect to the photon energy
+and is given by the formula
+  \fracd\theta_BdE = -\frac\lambda2 \, d \, E \, \cos( \theta_B )
+
+See Section~ for an example lattice that can be used to simulate a Rowland circle
+spectrometer.
+

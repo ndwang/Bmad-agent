@@ -1,0 +1,883 @@
+chapter Spin Dynamics
+
+The propagation of the classical spin vector S is described in the local reference
+frame  by a modified Thomas-Bargmann-Michel-Telegdi
+(T-BMT) equation\citeb:spin.hoff
+  \frac\mathrmd\mathrmds S = 
+  \left{ \frac(1+r_t \dotproduct g)c \, \beta_z \, 
+  \left( \pmb\Omega_BMT + \pmb\Omega_EDM \right) - 
+  g \times hat z \right} \times \mathbfS
+where g is the bend curvature function which points away from the center of curvature
+of the particle's reference orbit (see \figf:local.coords), r_t = (x, y) are the
+transverse coordinates, c \, \beta_z is the longitudinal component of the velocity, and
+hat z is the unit vector in the z-direction. \pmb\Omega_BMT is the usual T-BMT
+precession vector due to the particle's magnetic moment
+  \pmb\Omega_BMT (\mathbfr,P,t)= 
+    - \fracqm \, c \left[ 
+    \left(\frac1\gamma + a \right) \, c \, B -
+    \fraca \, \gamma \, c1 + \gamma \, ( beta \dotproduct B ) \, beta -
+    \left( a + \frac11 + \gamma \right) \, \mathbfbeta \times  E 
+    \right] \labelorpt 
+ = - \fracqm \, c \left[ 
+    \left( \frac1\gamma + a \right) \, c \, B_\perp +
+    \frac(1 + a) \, c\gamma \, B_\parallel -
+    \left( a + \frac11 + \gamma \right) \mathbfbeta \times E 
+    \right] \nonumber
+and \pmb\Omega_EDM is the
+precession vector due to a finite Electric Dipole Moment (EDM) \citeb:silenko\footnote
+  
+Note: The value for the EDM is set by "bmad_com[electric_dipole_moment]" .
+  
+  \pmb\Omega_EDM (\mathbfr,P,t) = 
+  - \fracq \, \eta2 \, m \, c \left[
+  E - \frac\gamma1 + \gamma \, 
+  ( beta \dotproduct E ) \, beta +
+  c \, \mathbfbeta \times B
+  \right]
+Here E (r ,t) and B (r ,t) are the electric and magnetic fields, B_\perp
+and B_\parallel are the components perpendicular and parallel to the particle's momentum,
+\gamma is the particle's relativistic gamma factor, q, and m are the particle's charge and
+mass, beta is the normalized velocity, a = (g-2)/2 is the particle's anomalous magnetic
+moment (values given in Table~\reft:constants), and \eta is the normalized electric dipole
+moment which is related to the dipole moment d via
+  d = \frac\eta2 \, \fracqm \, c \, S
+Note: Some authors define \eta without the factor of c is the denominator.
+
+It is important to keep in mind that the a and g-factors used here are defined using \Eqmgq2m
+which, in the case of nuclei and other composite baryonic particles, differs from the conventional
+definition \Eqmgq2m2. See the discussion after \Eqmgq2m.
+
+Bmad uses a quaternion representation for spin rotations\citeb:quat and for the single resonance
+analysis  it is convenient to use biquaternions which are quaternions with
+complex coefficients. The following is a brief introduction to quaternions and biquaternions. For
+more information, the reader is referred to the literature\citeb:biquat.
+
+WARNING! It is important when looking at software or documentation to keep in mind that there are
+multiple conventions that are used to define quaternions! The ""Hamilton"" convention used here
+is widely used in mathematics, physics and other fields. The ""JPL"" (Jet Propulsion
+Laboratory) and ""STS"" ("space shuttle") conventions are generally confined to use in
+areospace and robotics contexts\citeb:yazell,b:sommer.
+
+A quaternion q is a 4-component object:
+  q = q_0 + q_x \, \cali + q_y \, \calj + q_z \, \calk
+where q_0, q_x, q_y, and q_z are real numbers for quaternions and complex numbers for
+biquaternions. \cali, \calj, and \calk are the \em fundamental quaternion units with the
+properties under multiplication
+  \cali^2 = \calj^2 = \calk^2 = \cali \, \calj \, \calk = -1, \quad 
+  \cali \, \calj = \calk, \quad \calj \, \cali = -\calk, \quad \textetc.
+\cali, \calj, and \calk do not commute among themselves but do commute with real or complex
+numbers. It is important to keep in mind the difference between the quaternion unit \cali
+and the imaginary number i which is not the same.
+
+Explicitly, the product of two bi/quaternions (that is, two quaternions or biquaternions) is
+  b \, a =(a_0 b_0 - a_x b_x - a_y b_y - a_z b_z) +
+                  (a_0 b_x + a_x b_0 + a_y b_z - a_z b_y) \, \cali + 
+                (a_0 b_y - a_x b_z + a_y b_0 + a_z b_x) \, \calj +
+                  (a_0 b_z + a_x b_y - a_y b_x + a_z b_0) \, \calk \nonumber
+
+The q_0 component of a quaternion q is called the "scalar" part and will be denoted by
+S(q).  the q_x \cali + q_y \calj + q_z \calk part is called the "vector" part and will be
+denoted V(q). That is:
+  q = S(q) + V(q)
+A bi/quaternion with S(q) equal to zero is called a ""pure"" quaternion.
+the quaternion product in terms of S and V is
+  p \, q = S(p) S(q) + S(p) V(q) + S(q) V(p) + V(p) V(q)
+and, if V(p) and V(q) are considered as vectors, the last term a \equiv
+V(p) V(q) in the above equation can be written as
+  S(a) = -V(p) \cdot V(q), \qquad V(a) = V(p) \cross V(q)
+
+In the literature, the scalar part is sometimes called the "real" part and the vector part is
+sometimes called the "imaginary" part. In this manual, this nomenclature is avoided to avoid
+confusion with the real and imaginary parts of complex numbers. Here \re(q) and \im(q) are
+defined to be the real and imaginary parts of the biquaternion.
+  \re(q)\equiv \re(q_0) + \re(q_x) \, \cali + \re(q_y) \, \calj + \re(q_z) \, \calk \CRNO
+  \im(q)\equiv -i \left[ \im(q_0) + \im(q_x) \, \cali + \im(q_y) \, \calj + \im(q_z) \, \calk \right]
+
+The dot product (inner product) of two bi/quaternions is defined to be the
+standard Euclidean dot product in 4D:
+  a \dotproduct b = a_0 \, b_0 + a_x \, b_x + a_y \, b_y + a_z \, b_z
+and the bi/quaternion norm ||q|| is given by
+  ||q|| \equiv \sqrtq \dotproduct q = \sqrtq_0^2 + q_x^2 + q_y^2 + q_z^2
+Notice that for quaternions the norm is positive or zero and real. On the other hand, the norm of a
+biquaternion will, in general, be complex. For pure bi/quaternions, the "complex norm"
+is defined by 
+  |q| \equiv \sqrt|q_x|^2 + |q_y|^2 + |q_z|^2
+with the convention that quaternion norm uses double bars and complex norm uses a single bar. For
+pure quaternions the two are equal.
+
+The ""quaternion conjugate"", \ARq, valid for both quaternions and biquaternions, is defined
+by\footnote
+  
+Different symbols are used in the literature. Here the use of "*" to denote the quaternion
+conjugate is avoided to avoid confusion with complex conjugate.  Notice that even with
+biquaternions, there is no complex conjugation when computing \ARq.
+  
+  \ARq = q_0 - q_x \, \cali - q_y \, \calj - q_z \calk
+The quaternion conjugate has the properties
+  \ARq_1 \, q_2 = \ARq_2 \, \ARq_1, \qquad 
+  \ARS(q) = S(q), \qquad 
+  \ARV(q) = -V(q)
+Along with the properties
+  p \cdot q = \frac12 \, (\ARp q + \ARq p)
+The bi/quaternion inverse q^-1 is related to the quaternion conjugate by
+  q^-1 = \frac\ARq||q||^2
+
+The biquaternion complex conjugate q^* is just the complex conjugate of the components
+  q^* = q_0^* + q_x^* \, \cali + q_y^* \, \calj + q_z^* \, \calk 
+
+When a quaternion represents a rotation, \cali, \calj, and \calk can be thought of as representing unit
+vectors along the three Cartesian axes x, y, and z respectively. A rotation through an angle
+\theta around the unit axis u = (u_x, u_y, u_z) is represented by the quaternion
+  q = \cos\frac\theta2 + (u_x \, \cali + u_y \, \calj + u_z \, \calk) \sin\frac\theta2
+A rotation quaternion q is a "unit" quaternion since its norm is unity ||q|| = 1.
+
+Given an ordinary spatial vector (r_x, r_y, r_z), this vector is represented by a
+pure quaternion r = (0, r_x, r_y, r_z). The rotation of r through a rotation
+represented by quaternion q to position r' is given by
+  r' = q \, r \, \ARq
+The rotation matrix R corresponding to \Eqrqrq so that r' = R \, r is
+  R = \beginpmatrix
+    q_0^2 + q_x^2 - q_y^2 - q_z^2    2 \, q_x \ q_y - 2 \, q_0 \, q_z 2 \, q_x \ q_z + 2 \, q_0 \, q_y 
+    2 \, q_x \ q_y + 2 \, q_0 \, q_z q_0^2 - q_x^2 + q_y^2 - q_z^2    2 \, q_y \ q_z - 2 \, q_0 \, q_x 
+    2 \, q_x \ q_z - 2 \, q_0 \, q_y 2 \, q_y \ q_z + 2 \, q_0 \, q_x q_0^2 - q_x^2 - q_y^2 + q_z^2 
+
+Define functions I_-(n) and I_+(n) which map pure quaternions n = (0, n_x, n_y, n_z) to biquaternions
+n^\mmin and n^\ppls via
+  n^\ppls\equiv I_+(n) \equiv \frac12 + \fraci2  \big( n_x \, \cali + n_y \, \calj + n_z \, \calk \big) \CRNO
+  n^\mmin\equiv I_-(n) \equiv \frac12 - \fraci2 \big( n_x \, \cali + n_y \, \calj + n_z \, \calk \big)
+It will be assumed throughout that n has unit magnitude ||n|| = 1 and has real components (is a quaternion).
+
+For later use, the following identities are useful
+  n^\ppls n^\ppls = n^\ppls, \qquad
+n^\mmin n^\mmin = n^\mmin, \labeln6 
+  n = i (n^\mmin - n^\ppls), \qquad
+n^\ppls n^\mmin = n^\mmin n^\ppls = 0 \CRNO
+  \ARn^\ppls = n^\mmin, \qquad
+\ARn^\mmin = n^\ppls
+  \nonumber
+The relations on the first row mean that I_+(n) and I_-(n) produce "idempotent"
+biquaternions\citeb:biquat.
+
+For any biquaternions q, n^\ppls = I_+(n), and n^\mmin = I_-(n), the biquaternion Q =
+n^\ppls q n^\mmin is pure. This follows from
+  2 \, S(Q) = Q + \ARQ = 
+  n^\ppls (S(q) + \ARS(q)) n^\mmin + n^\ppls (V(q) + \ARV(q)) n^\mmin
+  = 2 \, S(q) \, n^\ppls n^\mmin = 0
+Furthermore, the real and imaginary parts of Q have the following properties
+  \re(Q) \cdot \im(Q) = 0 \CRNO
+  \re(Q) \cdot n = \im(Q) \cdot n = 0 
+  |\re(Q)| = |\im(Q)| \nonumber
+These relations are fairly easy to derive. For example, the last one is proved via
+  4 \, | \re(Q) |^2 = (Q + Q^*) \cdot (Q + Q^*) =
+  n^\ppls q^2 n^\ppls + n^\mmin q^2 n^\mmin =
+  -(Q - Q^*) \cdot (Q - Q^*) =
+  4 \, | \im(Q) |^2
+and since the magnitude of both \re(Q) and \im(Q) must be positive (since \re and \im
+produce real numbers), it follows that |\re(Q)| = |\im(Q)|.
+
+In a storage ring, the "invariant spin field" n(r, s) = (n_x, n_y, n_z)
+\citeb:spin.hoff,b:duan15, which is a function of phase space position r = (x, p_x, y, p_y, z,
+p_z) and longitudinal position s, is the \em continuous function with unit amplitude that
+satisfies
+  n(\Cal M_r r, s) = \Cal M_s(r) \, n(r, s)
+where \Cal M_r is the orbital part of the 1-turn transfer map and \Cal M_s(r), derived from
+T-BMT equation, is the spin part of the map which is a function of r. That is, the invariant
+spin field (ISF) obeys the T-BMT equation. Thus, a particle whose spin points in the direction of
+n(r, s) at some time t will, in the absence of radiation effects, always have its spin
+pointing in the direction of n(r, s). When there are no resonances, n(r, s) is
+unique up to a flip of sign. 
+
+In general, it is not straightforward to calculate n. The exceptional case (besides the cases
+where there is a resonance) is if the particle is on the closed orbit r_0. In this case, since
+\Cal M_r r_0 = r_0, and since \Cal M_s(r) is a rotation matrix, \Eqnmrs can be solved
+to give the invariant spin field on the closed orbit denoted by n_0.  Over one turn, a spin on
+the closed orbit rotates around n_0 by the angle 2 \pi \nu_0 where \nu_0 is the
+closed-orbit spin tune.
+
+Only the fractional part of the closed orbit spin tune \nu_0 is generally well defined. That is,
+it is not in general possible to distinguish between tunes \nu_0+m where m is an
+integer.\footnote
+  
+This is in contrast to the orbital tunes where the integer part is generally well defined (but there
+are exceptions when there is strong coupling). The reason for this is that at all points in the
+ring, the orbital normal mode axes are fairly well defined (see, for example, \Eqavx). This means
+that the phase angle of an oscillating particle with respect to the axes is fairly well defined and
+counting full oscillations is unambiguous. With spin, the closed orbit spin oscillations are in the
+plane transverse to n_0 and here there is no non-arbitrary way to define the transverse plane
+coordinate axes (there is an exception here if n_0 always is pointing in the same general
+direction). This makes the integer part of the spin tune ambiguous.
+  
+Additionally, if n_0 is a valid closed orbit spin field then so is -n_0 and the spin tune
+associated with -n_0 is the negative of the spin tune associated with n_0.
+
+Since the direction of n_0 is arbitrary, Bmad uses the following convention: The range of the
+spin tune is choisen to be [0, \pi]. From the 1-turn spin transport quaternian q (\Eqsqqqqq and
+\eqqt2ui), the equation to calculate the tune is
+  \theta = 2 \cdot \textatan2\left( \bigl| (q_x, q_y, q_z) \bigr|, |q_0| \right)
+where \textatan2 is the standard arc tangent function.
+With this, n_0 is given by
+  n_0 = \frac\sign(q_0)\left| (q_x, q_y, q_z) \right| \, ( q_x, q_y, q_z )
+where \sign is the sign function. With this, the calculation of the tune and n_0 is
+independent of whether q or -q is used.
+
+Once the invariant spin field  has been calculated, various quantities of interest can be
+computed. For example, given some initial distribution of spins in a beam, the maximum possible time
+averaged polarization \left< S \right>_\max is
+  \left< S \right>_\max = \int dr \, \rho(r) \, n(r)
+where the integral is over the beam phase space space density \rho and the longitudinal
+s-dependence is implicit. The above equation neglects any single spin polarization or
+depolarization processes. Notice that what is calculated is a time averaged quantity.
+Instantaneously, the beam can be fully polarized but the average over many turns, at some given
+position s, cannot exceed \left< S \right>_\max.
+
+Another quantity that can be computed from knowledge of n is the equilibrium polarization of a
+beam. The "Baier-Katkov-Strakhovenko" polarization P_bks (generalized from
+"Sokolov-Ternov" to include non-vertical fields) is calculated by ignoring deviations of the beam
+from the closed orbit\citeb:barber99
+  P_bks = \pm \frac85 \, \sqrt3
+  \frac\displaystyle \oint ds \, g^3 \, \whatb \dotproduct n_0
+  \displaystyle \oint ds \, g^3 \left( 1 - \frac29 (n_0 \dotproduct \whats)^2 \right)
+where g = 1/\rho is the bending strength (\rho is the bending radius), \whats is the unit
+vector in the direction of motion, and \whatb is defined to be
+  \whatb \equiv \frac\whats \cross d\whats/ds|d\whats/ds|
+Notice that \whatb is the direction of the magnetic field when \whats is perpendicular to
+the magnetic field and when there is no electric field. In the above equation, the plus sign is for
+positrons (polarized parallel to the field) and the minus sign is for electrons. Since the above
+equation is only valid when the anomalous magnetic moment is small\citeb:jackson, this formula is
+not valid for protons and anti-protons.
+
+The corresponding BKS polarization build-up rate \tau_bks^-1 is
+  \tau_bks^-1 = \frac5 \, \sqrt38 \fracr_e \, \gamma^5 \, \hbarm \frac1C \,
+    \oint ds \, g^3 \, \left( 1 - \frac29 (n_0 \dotproduct \whats)^2 \right)
+
+If the stochastic excitation of the beam is taken into account, the generalized Sokolov-Ternov
+polarization is called the "Derbenev-Kondratenko" formula
+  P_dk = \pm \frac85 \, \sqrt3
+  \frac\displaystyle \oint ds \, \left< g^3 \, \whatb \dotproduct 
+    \left( n - \frac\partial n\partial \delta \right) \right>
+  \displaystyle \oint ds \, \left< g^3 \left( 1 - \frac29 (n \dotproduct \whats)^2 + 
+    \frac1118 \left| \frac\partial n\partial \delta \right|^2 \right) \right>
+where <> denotes an average over phase space, and \delta is the fractional energy deviation
+which, for ultra-relativistic particles, is the same as phase space p_z. Since, away from any
+resonances, n is very close to n_0, and since generally machines are tuned away from any
+resonances, the n - \partialn/\partial\delta and n\cdot\whats terms can be replaced
+by n_0 - \partialn/\partial\delta and n_0\cdot\whats when evaluating P_dk.
+
+The \whatb \dotproduct \partialn/\partial\delta term in \Eqpdk85 is called the
+""kinetic" "polarization"" term.
+
+The time dependence of the polarization is \citeb:barber99)
+  P(t) = P_dk \, \left( 1 - \exp(-t/\tau_dk) \right) + P_0 \, \exp(-t/\tau_dk)
+where P_0 is the initial polarization and the polarization rate \tau_dk^-1 is 
+  \tau_dk^-1 = \frac5 \, \sqrt38 \fracr_e \, \gamma^5 \, \hbarm
+  \frac1C \, \oint ds \, \left< g^3 \, \left( 1 - \frac29 (n \dotproduct \whats)^2 + 
+  \frac1118 \left| \frac\partial n\partial \delta \right|^2 \right) \right>
+
+\tau_dk^-1 can be decomposed into two parts:
+  \tau_dk^-1 = \tau_pol^-1 + \tau_dep^-1
+\tau_pol^-1 is the polarization rate given by the first two terms on the
+RHS in \Eqt583 and the depolarization rate \tau_dep^-1 is given by the third term:
+  \tau_pol^-1= \frac5 \, \sqrt38 \fracr_e \, \gamma^5 \, \hbarm \frac1C \,
+    \oint ds \, \left< g^3 \, \left( 1 - \frac29 (n \dotproduct \whats)^2 \right) \right> 
+    \CRNO
+  \tau_dep^-1= \frac5 \, \sqrt38 \fracr_e \, \gamma^5 \, \hbarm
+    \frac1C \, \oint ds \, \left< g^3 \,
+    \frac1118 \left| \frac\partial n\partial \delta \right|^2 \right>
+\tau_pol^-1 is generally well approximated by the "Baier-Katkov-Strakhovenko" polarization
+rate (\Eqtbks). The difference being that \tau_bks^-1 is evaluated along the closed orbit
+while \tau_pol^-1 involves an average over the transverse beam size.
+
+The calculation of P_dk (\Eqpdk85) and \tau_dep^-1 (\Eqtdep) involve integrating
+\partialn/\partial\delta around the ring. The calculation of \partialn/\partial\delta at
+any point in the ring involves a sum of eigenvectors n_k, k = 1, \ldots, 6 (\Eqndan) with
+pairs of eigenvectors being associated with the three orbital modes of oscillation. Insight into the
+decoherence process can had by considering what P_dk and \tau_dep^-1 would be if only
+one oscillation mode was being excited. This is done by calculating \partialn/\partial\delta with
+\Eqndan by using the two n_k for one particular mode and taking the other n_k to be zero.
+This is then used in \Eqpdk85 and \Eqtdep.
+
+One problem in evaluating \Eqpdk85 is that accurately evaluating the \partialn/\partial\delta
+terms over the transverse bunch distribution is complicated due to lattice nonlinearities. One way
+to evaluate P_dk with nonlinearities included is by tracking a bunch of particles over some
+number of turns. To help minimize the needed tracking, the spin flip process can be neglected. With
+this, and starting with 100% polarization, a turn-by-turn plot of the polarization will give the
+depolarization rate \tau_dep^-1. The integrals of g^3 \, \whatb \dotproduct n and g^3
+\, (1 - 2(n \dotproduct \whats)^2/9) can be well approximated by the integrals over the
+closed orbit ignoring the finite beam size.  Finally, for most rings, the integral of g^3 \whatb
+\dotproduct \partialn/\partial\delta is generally small compared to the integral of g^3 \,
+\whatb \dotproduct n since, in most of the machine, \whatb and n will point in the
+vertical direction and \partialn/\partial\delta will be perpendicular to the vertical (see
+\Eqqq0).  Putting this all together, the equilibrium polarization can be computed from
+  P_dk \approx P_bks \frac\tau_bks^-1\tau_bks^-1 + \tau_dep^-1
+where \tau_dep^-1 is calculated via particle tacking and the other quantities are calculated by
+integrals over the closed orbit ignoring beam size effects.
+
+As mentioned above, at any point in a ring the direction of the closed orbit invariant spin n_0
+is ambiguous since, if n_0 is a valid invariant spin direction, then so is -n_0. The same
+is true of the spin tune \nu_0 and if \nu_0 is the spin tune associated with n_0, -\nu_0
+is the spin tune associated with -n_0. This ambiguity complicates various calculations. For
+example, to do the integral in \Eqpbks, it is necessary to make sure that the direction of
+n_0(s_1), the invariant spin at s_1, must be consistent with the direction of the invariant
+spin at s_2, n_0(s_2). That is, the two must be related via
+  n_0(s_2) = q_21 \, n_0(s_1) \, \ARq_21
+where q_21 is the closed orbit spin transport quaternion from s_1 to s_2. The tune must
+also be computed consistent with the choice of invariant spin direction. This is important when
+calculating sum and difference resonance strengths (\Eqsx12pq1 and \eqx12pq2).
+
+To ensure a consistent invariant spin direction, \Eqn0qn0q is used when calculating integrals
+involving n_0. To ensure a consistent tune, Bmad uses the following convention that the spin
+tune will always be in the range [0, \pi], and the direction of n_0 will be chosen to be
+consistent with this choice in tune (it is left as an exercise for the reader to prove that there
+will always be exactly one spin tune in the range [0, \pi].
+
+When evaluating the equations in the previous section, in many situations it is sufficient to just
+use the value of \partialn/\partial\delta as calculated in the linear regime. In the linear regime,
+\partialn/\partial\delta is only dependent upon the s-position and is independent of the phase space
+position. The calculation of \partialn/\partial\delta starts with the linearized transport equations which
+are characterized by a 6\times6 orbital 1-turn transfer matrix M along with the spin
+transport which can be written in the form
+  q_s(r) = q_0 + q \dotproduct r
+The quaternion map q_s, evaluated at the orbital phase space point r, has a zeroth order
+part q_0 (the spin rotation for a particle on the closed orbit) and the first order part
+q = (q_1, \ldots, q_6) which is a vector of six quaternions and which is
+evaluated in \Eqqqqr by taking the dot product with the vector r.
+
+The closed orbit invariant spin n_0 which has unit amplitude satisfies the equation
+  q_0 \, n_0 \, \ARq_0 = n_0
+The solution to this equation, normalized to one, is
+  n_0 = \frac(q_0,x, q_0,y, q_0,z)\|(q_0,x, q_0,y, q_0,z)\|
+Another way of writing this is using \Eqqt2ui
+  q_0 = \cos(\pi \, \nu_0) + 
+  (n_0,x \, \cali + n_0,y \, \calj + n_0,z \, \calk) \, \sin(\pi \, \nu_0)
+where \nu_0 is the spin tune.
+
+Since q_s is a rotation quaternion, the magnitude of q_s(r) must remain one. Using
+\Eqqqqr in \Eq1qqq, to keep the magnitude equal to one to linear order gives the condition
+  q_0 \dotproduct q_j = 0, \qquad j = 1, \ldots, 6
+for all q_j components of q.
+
+To calculate \partialn/\partial\delta, the first step is to compute the eigenvectors v_k and
+eigenvalues \lambda_k, k = 1, \ldots, 6 of the 1-turn orbital matrix. The
+corresponding spin eigenvectors n_k are computed from the equation
+  q_s(v_k) \,\, (n_0 + n_k) \,\, \ARq_s(v_k) = n_0 + \lambda_k \, n_k
+These eigenvectors are perpendicular to n_0. This can be easily shown by noting that
+n(r) in \Eqnrn0 must have unit magnitude to linear order for any arbitrary choice of
+A_k(r). Using \Eqsqqqr and \eqqnqn, and keeping only linear terms gives
+  \lambda_k \, n_k - q_0 \, n_k \, \ARq_0 = 
+  (q \dotproduct v_k) \, n_0 \, \ARq_0 + 
+  q_0 \, n_0 \, (\ARq \dotproduct v_k)
+This equation is linear in the unknown n_k and so may be solved using standard linear
+algebra techniques. One small problem with \Eqlnqnq is that it is degenerate along the n_0
+axis in the limit when there is no RF voltage since the eigen mode associated with the longitudinal
+motion will have an eigenvalue of one. In this case, round-off errors can cause large
+inaccuracies. To get around this, \Eqlnqnq is projected onto the plane perpendicular to n_0
+by first constructing vectors c_1 and c_2 which are orthogonal to n_0 and orthogonal
+to each other. \Eqlnqnq is projected onto the (c_1, c_2) plane to give
+  \big( \lambda_k \, n_k - q_0 \, n_k \, \ARq_0 \big) \cdot c_m = 
+  \big( (q \dotproduct v_k) \, n_0 \, \ARq_0 + 
+  q_0 \, n_0 \, (\ARq \dotproduct v_k) \big) \cdot c_m,
+  \quad m = 1, 2
+Now using the fact that n_k is perpendicular to n_0 means that n_k can be written as
+a linear combination of c_1 and c_2
+  n_k = a_1 \, c_1 + a_2 \, c_2
+Using this in \Eqlnqnq2 gives linear coupled equations in the unknowns (a_1, a_2) which is easily solved.
+
+Since the eigenvectors v_k span phase space, for any given phase space position r, there
+exist a set of coefficients A_k(r), k = 1, \ldots, 6, such that
+  r = \sum_k = 1^6 A_k(r) \, v_k
+Define the function n by
+  n(r) \equiv n_0 + \sum_k = 1^6 A_k(r) \, n_k
+This function obeys the T-BMT equation and is continuous and thus is the solution (up to a flip in
+sign and a normalization constant) for the invariant spin field. From this, \partial
+n/\partial \delta, which is computed taking the derivative at constant x, p_x, y, p_y,
+and z, is obtained via
+  \frac\partial n\partial \delta = 
+  \sum_k = 1^6 A_k \, n_k
+with the A_k being computed by inverting the equation
+  (0, 0, 0, 0, 0, 1)^t = \sum_k = 1^6 A_k \, v_k
+where the superscript t means transpose. Notice that for \partial n/\partial \delta, as
+well as any other partial derivative, the component in the direction of n_0 will be zero since,
+to first order, the amplitude of n must be constant (since the equation for n is only
+valid to first order, the computed amplitude will have non-zero higher order terms).
+
+A problem arises if the machine that is being simulated does not have any RF cavities or the voltage
+in the cavities is zero. In this case, there are no synchrotron oscillations which results in
+degenerate eigenvectors and the eigenvectors will not span all of phase space. The solution here
+is to reduce the dimensionality of phase space to five by removing the z coordinate. The above
+equations then can be used with the sums over k ranging from 1 to 5. 
+
+It is sometimes informative to compute the contribution of \partial n/\partial \delta due to
+just one or two modes of oscillation. That is, to compute \partial n/\partial \delta with the sum in
+\Eqndan restricted to be over one or two corresponding eigen states that comprise the oscillation
+modes of interest. This information can help guide lattice design.
+
+Another way for analyzing where in the lattice contributions to \partialn/\partial\delta are
+coming from is to consider the spin transport maps for individual elements. These maps will be of
+the form given in \Eqqqqr. The contribution to \partialn/\partial\delta from an element is
+due to the non-zero terms in q = (q_1, \ldots, q_6). If terms are selectively
+zeroed, and this significantly changes the polarization, this is a clue for designing a lattice. For
+example, if setting q_1 and q_2 to zero for a set of elements in a certain region of the
+machine leads to significantly greater polarizations, this indicates that the polarization is
+sensitive to horizontal excitation in this region. Similarly, zeroing elements in q_3 and
+q_4 is associated with vertical excitation and q_5 and q_6 is associated with
+longitudinal excitation. With the slim formalism , the 2\times6 matrix
+G can be decomposed into three 2\times2 sub-matrices:
+  G = \left( G_x, G_y, G_z \right)
+Zeroing q_1 and q_2 is equivalent to zeroing G_x, etc.
+
+Resonances occur when the spin tune \nu_s is an integer ("imperfection" resonances) and when the spin
+tune \nu_s in combination with the three orbital tunes \nu_x, \nu_y, and \nu_z is an integer
+("intrinsic" or "spin-orbit" resonances)
+  \nu_s + m_x \, \nu_x + m_y \, \nu_y + m_z \, \nu_z = m_0
+where m_x, m_y, m_z, and m_0 are integers. As discussed below, 
+in the linear approximation ,
+resonances only occur if one and exactly one of the m_x, m_y, or m_z has a value of one and
+the other two are zero.
+
+Generally, in rings where the synchrotron radiation is large (think electrons), the depolarization
+due to radiation will tend to dominate . For rings where the synchrotron radiation is
+small (think protons), resonances will be more important. Notice that synchrotron radiation, being a
+stochastic process results in depolarization. Resonances, on the other hand, are not stochastic and
+even if a resonance tilts the polarization direction there can be the possibility of recovery.
+
+To calculate the effect of a resonance it is helpful to know the resonance strength.  The resonance
+strength calculation can be motivated by considering the Single Resonance Model
+(SRM)\citeb:spin.hoff where it is assumed that only one orbital mode is excited and that there is
+a single dominating resonance. In this case the spin equation of motion is
+  \fracd sd \theta = \f\Omega \cross s, \qquad 
+  \f\Omega = \beginpmatrix
+    \epsilon_r \, \cos \Phi 
+    \epsilon_r \, \sin \Phi 
+    \nu_0
+where \epsilon_r is the resonance strength, \nu_0 is the closed orbit spin tune and \theta is
+the longitudinal angle with \theta = 2 \, \pi representing one turn in the circular accelerator.
+In the above equation the phase \Phi is related to the orbital mode tunes Q via
+  \Phi = (j_0 + j_x Q_x + j_y Q_y + j_z Q_z) \theta + \Phi_0 \equiv
+  \kappa \theta + \Phi_0
+with j_0, j_x, j_y, and j_z being integers and \Phi_0 being the starting phase. \Eqstos
+defines \kappa. \Eqstos can be solved by transforming to a coordinate system rotating about the
+z-axis with a rotational frequency \kappa. This is called the ""resonance"" coordinate
+system or the ""rotating"" coordinate system. In this frame, the spin vector s_R is
+  s_R = q_z(-\Phi/2) \,\, s \,\, \ARq_z(-\Phi/2) 
+where
+  q_z(\phi) \equiv \big( \cos (\phi/2) +  \sin (\phi/2) \big) \, \calk
+
+Using \Eqrqsq in \Eqstos gives
+  \fracd s_Rd \theta = \f\Omega_R \cross s_R, \qquad
+  \f\Omega_R = \beginpmatrix
+    \epsilon_r 
+    0 
+    \delta 
+  \qquad
+  \delta = \nu_0 - \kappa
+Spins rotate around around \f\Omega_R. A spin initially aligned along the z-axis will be 
+tilted a maximum of \tan^-1(2\epsilon_r/\delta) away from the z-axis. This shows that the
+characteristic frequency width of the resonance is set by \delta \approx \epsilon_r. That is,
+the frequency width scales linearly with \epsilon_r.
+
+In the rotating coordinate system, a spin oriented parallel to \f\Omega_R remains parallel to
+\f\Omega_R so \f\Omega_R is in the direction of the invariant spin field. Transforming back
+to the laboratory frame and normalizing to one, n is
+  n (\Phi) = \frac\sign(\delta)\Lambda \, 
+    \epsilon_r \, \cos \Phi 
+    \epsilon_r \, \sin \Phi 
+    \delta
+  \qquad
+  \Lambda = \sqrt\delta^2 + \epsilon_r^2
+where the sign factor \sign(\delta) is chosen so that on the closed orbit with \epsilon_r = 0
+the n axis is in the positive z-direction.
+
+\Eqnsdl shows that resonance occurs when \delta = 0 or \nu_0 = \kappa.  The use of a
+sinusoidal perturbation in the single resonance model results in the suppression of all other
+resonances.  In an actual machine, the presence of a perturbation at some specific point in the
+machine will produce a comb of resonances of the form m_0 \pm Q.
+
+At resonance, with \delta = 0, \Eqstos2 shows that if a spin in the resonance coordinate system
+is initially aligned along the n_0 axis (s_R = (0, 0, 1)), After N turns, in the linear
+approximation, the spin will be
+  s_R(N,n_0) = (0, -N \cdot 2 \, \pi \, \epsilon_r, 1)
+\Eqsr0n gives a physical interpretation to the resonance strength \epsilon_r. The resonance
+strength is the angle (modulo 2 \, \pi) that a spin is tipped away from n_0 in one turn. The
+linear approximation will be valid for N such that N \, \epsilon_r \ll 1. For the linear
+approximation to be valid for any positive N, \epsilon_r must satisfy \epsilon_r \ll 1.
+
+Within the linear approximation, the resonance strength \epsilon_r (\Eqstos) can be related to
+the first order spin transport (\Eqqqqr). The analysis starts by inversion of \Eqsr0n and
+letting N go to infinity
+  \epsilon_r = \lim_N \rightarrow \infty \, \frac12 \, \pi \, N \, 
+  \left| s_R(N,n_0) - n_0 \right|
+Here the restriction N \ll 1 / \epsilon_r can be ignored since the analysis below will use the
+linearized spin transport and it is the nonlinear terms in the spin transport which makes the
+restriction necessary. In fact, with linear spin transport, the magnitude of s_R is not
+constant and at resonance is unbounded. \EqeN12n will still be valid even when there are multiple
+resonances present since \EqeN12n must be evaluated on a particular resonance and, it will be
+seen, the contribution to \EqeN12n from non-resonant resonances is zero.
+
+s_R(N, n_0) is the spin after N turns given an initial spin of n_0.  s_R(N,
+n_0) can be computed via
+  s_R(N, n_0) = Q_N \, n_0 \, \ARQ_N
+The rotation quaternion Q_N over N turns is the product of one-turn rotation quaternions q_s(r)
+with an extra factor of q_0^-N to convert from laboratory coordinates to resonance coordinates since
+q_s is the transport in laboratory coordinates (by definition, resonance coordinates are the same as 
+laboratory coordinates at N = 0).
+  Q_N = q_0^-N \, q_s(r_N-1) \ldots q_s(r_1) \, q_s(r_0)
+In the above equation, r_j is the orbital position after j turns. 
+Using \Eqqqqr and expanding to linear order in q gives
+  Q_N = q_0^-1 \, \left( 
+  q_0 + \sum_j = 0^N-1 \, q_0^-j
+  \left( q \cdot r_j \right) q_0^j
+  \right)
+Using this with \EqsQnQ in \EqeN12n and keeping only linear terms, gives
+  \epsilon_r = \left|
+    q_0^-1 \, Z \, n_0 + 
+    n_0 \, \ARZ \, q_0
+    \right| \labeleqZnn
+where
+  Z = \lim_N \rightarrow \infty 
+  \frac12 \pi N 
+  \sum_j = 0^N-1 \, q_0^-j \left( q \cdot r_j \right) q_0^j
+To evaluate Z, the quantity q_0^j is decomposed into two parts using the fact that \kappa
+= \nu_0 + \delta
+  q_0^j = e^ i \pi j (\nu_0 + \delta) + i \Phi_0 \, n_0^\mmin + 
+             e^-i \pi j (\nu_0 + \delta) - i \phi_0 \, n_0^\ppls
+where n_0^\mmin \equiv I_-(n_0) and n_0^\ppls \equiv I_+(n_0) are
+given by \Eqn1in.
+
+For a particular mode k of oscillation, r_j is given by \Eqx2jv. The end result will be
+independent of \phi_0 in \Eqx2jv so without loss of generality, \Phi_0 will be set to zero.
+Using this along with the above equations gives
+  Z = \lim_N \rightarrow \infty 
+    \frac\sqrtJ2 \pi N 
+    \sum_j = 0^N-1 \ig[
+   n_0^\ppls (q \cdot v_k)   n_0^\mmin \, e^ i2\pi j (Q_k + \nu_0 + \delta) + 
+     n_0^\mmin (q \cdot v_k^*) n_0^\ppls \, e^-i2\pi j (Q_k + \nu_0 + \delta) +  
+    \nonumber [-2ex]
+   n_0^\mmin (q \cdot v_k)   n_0^\ppls \, e^ i2\pi j (Q_k - \nu_0 - \delta) +
+     n_0^\ppls (q \cdot v_k^*) n_0^\mmin \, e^-i2\pi j (Q_k - \nu_0 - \delta) + 
+   n_0^\mmin (q \cdot v_k)   n_0^\mmin \, e^i2\pi j Q_k + 
+     n_0^\ppls (q \cdot v_k^*) n_0^\ppls \, e^-i2\pi j Q_k + \CRNO
+   n_0^\ppls (q \cdot v_k)   n_0^\ppls \, e^i2\pi j Q_k + 
+     n_0^\mmin (q \cdot v_k^*) n_0^\mmin \, e^-i2\pi j Q_k
+   \ig] \nonumber
+At a resonance, \delta = 0. 
+The first two terms on the right hand side of \Eqzj2pn will be nonzero only at the sum resonance
+with Q_k + \nu_0 = p for p an integer.  The third and fourth terms will be nonzero only at the
+difference resonance with Q_k - \nu_0 = p.  And the last four terms will be nonzero only at an
+integer resonance where Q_k = p which can be ignored since an accelerator can never be operated
+stably at an integer tune.
+
+The normalized resonance strength \xi_r is defined by
+  \epsilon_r \equiv \sqrtJ \, \xi_r
+Combining the above equations along with \Eqsn6 through \eq4ggg, the strength of the sum
+resonance for the k mode of oscillation is
+  \xi_r+ = \frac\sqrt22\pi \big| \cal G \cdot v_k \big| 
+and for the difference resonance the strength is
+  \xi_r- = \frac\sqrt22\pi \big|
+  \cal G \cdot v_k^* \big| 
+where \cal G is given by
+  \cal G = 2 \, n_0^\ppls q n_0^\mmin
+It should be noted that sum resonances are not physically "distinct" from difference
+resonances. That is, sum resonances become difference resonances and vice versa if the sign of
+n and \nu are flipped in the analysis (remember that if n is a valid spin field then so
+is -n).
+
+The resonance strength can also be calculated within the "SLIM" formalism  via
+\Eqx1pg or \Eqx2pg. Comparing \Eqsx12pq1 or \eqx12pq2 with \Eqx2pg it is seen
+that \cal G is the quaternion equivalent of the SLIM G 2\cross6 matrix.
+
+The "SLIM" formalism\footnote
+  
+The name references an early computer program that implemented the formalism.
+  
+\citeb:chao.spin,b:barber99, introduced by Alex Chao, is a way to represent the linearized (that
+is, first order) orbital and spin transport as an 8 \cross 8 matrix which then can be analyzed
+using standard linear algebra techniques. The idea is to expand the transport map around the closed
+orbit (r_0, n_0) where r_0 is the orbital closed orbit and n_0 is the "spin
+closed orbit". Namely the unit-vector, one-turn periodic solution of the Thomas-BMT equation on
+r_0\footnote
+  
+Warning: The symbol \hat n or
+\vec n used in \citeb:chao.spin,b:barber85 and other early literature to denote the periodic
+solution of the T--BMT equation on the closed orbit should be replaced by the symbol \hat n_0 to
+conform to the modern convention \citeb:barber99 and thereby avoid confusion with the symbol \hat
+n which denotes the invariant spin field.  In addition, the symbols \vec m and \vec l
+appearing, for example, in the formulae for the matrix G in \citeb:barber85, should be
+replaced by the symbols \hat m_0 and \hat l_0, namely by the modern symbols for the two
+(normally) non-periodic solutions of the T-BMT equation, which together with \hat n_0, form an
+orthonormal coordinate system.
+  .
+
+n_0 is just the invariant spin field on the closed orbit. The formalism provides estimates of
+the equilibrium spin polarization and the rate of depolarization in electron storage rings, both
+under the restriction of the aforementioned linearization. Moreover, a procedure known as
+spin-matching, for minimizing depolarization driven by the noise injected into synchro-betatron
+motion by synchrotron radiation, and which involves optimizing the layout of the ring, can be
+executed in a simple and elegant way via the SLIM formalism. The formalism can also give insights
+into proton spin dynamics in regimes where the linearization approximation suffices.
+
+The "SLIM" formalism expresses spin components using two right-hand coordinate systems:
+\footnoteDifferent authors will use different conventions for the ordering of the axes
+The ordering used here puts n_0 second reflecting the fact that in many rings the n_0
+axis will point in the vertical y-direction in the arcs.
+ \big( l(s), n_0(s), m(s) \big)
+  \qquad \textand \qquad \CRNO
+ \big( l_0(s), n_0(s), m_0(s) \big)
+The axes l_0(s) and m_0(s) are solutions of the Thomas-BMT equation on the closed orbit
+and, generally, are not one-turn periodic. The axes l(s) and m(s) are chosen to be
+one-turn periodic but can have an arbitrary s dependence which can be chosen for convenience
+otherwise. The axes l_0(s) and m_0(s) are used for spin-matching and l(s) and
+m(s) are used for calculating polarization and depolarization.  With respect to these axes, a
+unit-length spin S can be written as
+  S= \sqrt1- \alpha_0^2 - \beta_0^2 ~n_0 + \alpha_0 \, l_0 + \beta_0 \, m_0 
+  \qquad \textor \qquad \CRNO
+  S= \sqrt1- \alpha^2 - \beta^2 ~n_0 + \alpha \, l + \beta \, m
+
+To linearize the transport, it is assumed that \alpha_0, and \beta_0 (and hence \alpha and
+\beta) are small compared to one. To first order, the variation from unity of the spin component
+along the n_0 axis will be second order and can be ignored:
+  S\approx n_0 + \alpha_0 \, l_0 + \beta_0 \, m_0
+  \qquad \textor \qquad \CRNO
+  S\approx n_0 + \alpha \, l + \beta \, m
+
+The n_0 coordinate is dropped since the spin component along n_0 is a constant. With this,
+the eight-dimensional spin-orbit phase space used in the SLIM formalism is
+ (x, p_x, y, p_y, z, p_z, \alpha_0, \beta_0)
+  \qquad \textor \qquad \CRNO
+ (x, p_x, y, p_y, z, p_z, \alpha, \beta)
+where the orbital part x, p_x, etc. is taken with respect to the closed orbit. 
+
+The first order map between two any points s_1 and s_2 is an 8 \cross 8 matrix \wtM which
+is written in the form
+  \wtM(s1, s2) = \beginpmatrix
+    M_6\cross6 0_6\cross2 
+    G_2\cross6 D_2\cross2
+where M(s_1, s_2) is the 6\cross6 orbital phase space transport matrix, and G(s_1, s_2)
+contains the coupling of the spin coordinates (\alpha_0, \beta_0) or (\alpha, \beta) to the
+orbital motion. The upper right block 0_6\cross2 in the \wtM matrix is zero since
+Stern-Gerlach effects are ignored. When G is calculated with respect to the (l_0, m_0)
+axes, large spin precessions on the closed orbit due to dipole and solenoid fields are
+eliminated. That leaves small precessions due to synchro-betatron motion. The G matrix then
+represents the dominating linear dependence of the small precessions on the six synchro-betatron
+coordinates and it then provides a good framework for analysis \citeb:barber85,b:barber99. In
+\Eqmm0gd, D is a 2\cross2 rotation matrix for the spin transport of a particle on the
+closed orbit. In this case, since the l_0(s) and m_0(s) are solutions to the T-BMT
+equation, D is the unit matrix.
+
+To compute \widetildeM for a section of the ring, the first step is to find the 6 \times 6
+orbital matrix for the section. To calculate n_0, l_0 and m_0, first n_0 at some
+starting point s is calculated (section 18.3) and propagated around the ring. This n_0 is
+then available for calculations involving the whole ring. If only part of the ring is being
+analyzed, the orientation of n_0 at the start of the section can be an input parameter. That
+is, it can be given by the User and not calculated. However, for spin-matching, it usually only
+makes physical sense to use the n_0 at the start of the section that corresponds to the
+n_0 calculated for the whole ring. After n_0 is known at some s-position, l_0 and
+m_0 at that s-position can be chosen somewhat arbitrarily to form the right handed coordinate
+system. Sometimes it is possible to make a special choice of the initial l_0 and m_0 in
+order to simplify the G matrices. For example, in a section where there are only drifts and
+quadrupoles so that there is no spin rotation for a particle traveling on the centerline, with
+n_0 pointing vertically, a choice of m_0 pointing in the longitudinal s-direction results
+in the first line of the G matrix for the section being zero. After the initial l_0 and
+m_0 axes have been specified at some initial s, the axes can be transported along the closed
+orbit of the section.
+
+If the one-turn G were zero everywhere, the spin motion would be completely decoupled from the
+orbital motion (at least to first order) and the depolarization rate \tau_dep^-1 given by
+\Eqtdep would be zero since \partialn / \partial\delta would be zero. Therefore,
+spin-matching analysis for a section of the ring involves adjusting the parameters (quadrupole
+strengths, drift lengths etc) of the section so as to minimize elements in appropriate columns of
+the G matrix. This decreases the rate of depolarization by minimizing
+\partialn/\partial\delta at the dipole magnets (where g in \Eqtdep is nonzero)
+\citeb:barber99. Such adjustments are made while simultaneously maintaining acceptable
+Courant-Snyder parameters and for this the closed orbit should be taken to be the design orbit.
+This optimization can be carried out using standard facilities in Bmad. The calculation of
+\partialn/\partial\delta in the SLIM approximation is described below.
+
+The process for calculating electron polarization and the rate of depolarization in the "SLIM"
+formalism is as follows. First, the 8 \times 8 matrix \widetildeM for one-turn is calculated
+as described above. After this, using the closed-orbit spin tune \nu_0, a specific version of
+(l, m) is constructed by rotating the vectors l_0 and m_0 backwards around
+n_0 by the angle 2\pi \nu_0 in a drift space right at the end of the turn, thereby
+transforming \alpha_0 and \beta_0 into \alpha and \beta and transforming the G matrix
+correspondingly\footnoteAdding a rotation at the end is just for convenience. For some other
+applications it is useful to choose axes l and m with respect to which spins precess at
+the constant rate with a phase advance of 2\pi \nu_0 per turn.. The original one-turn G
+matrix is not one-turn periodic but the transformed G matrix is one-turn periodic and the
+matrix D for one-turn becomes the 2 \times 2 rotation matrix with rotation angle 2\pi \nu_0
+\citeb:chao.spin. The new matrix \widetilde M is then also one-turn periodic and its
+eigenvectors are used as described after \Eqqvw for calculating the derivative \partial
+n/\partial \delta used in \Eqtdep. Note that if the elements in the appropriate columns of
+the non-periodic G matrix for the one-turn map at a dipole have been minimized by
+spin-matching, the corresponding elements of the periodic one-turn G matrix have been minimized
+too. As a consequence it can be seen, via \Eqswdlgv and \eqndaw, that
+\partialn/\partial\delta has been minimized as required.
+
+In contrast to the approach in \citeb:barber85,b:barber99, Bmad calculates the G and D
+matrices from the quaternion of the spin transport map (which Bmad calculates via PTC
+). After the (l_0, n_0, m_0) coordinates have been calculated (or set by
+the User) at some initial point, the spin axes can be transported using the q_0 quaternion
+(\Eqqqqr). When analyzing only a section of a ring, there is no identifiable spin tune so nothing
+further needs to be done. In this case, the D matrix is just a unit matrix. When analyzing
+one-turn maps, if the l and m axes are set to be the l_0(s) and m_0(s) axes
+except at the end of the lattice, the spin phase advance as a function of s will be zero except
+just before the starting position where there will be a discontinuous jump in phase.
+
+Once the (l_0, n_0, m_0) axes have been calculated, the matrices G and D can be
+calculated from the spin transport map (which Bmad calculates via PTC ).  The
+first order transport map \Eqqqqr is used. Let q_lnm(s) be the quaternion that transforms
+from (l_0, n_0, m_0)\footnote Such a formalism works also with the (l, n_0,
+m) coordinates to (x, y, z) coordinates at a given point s. With this, the spin transport
+\whatq from s_1 to s_2 in the (l_0, n_0, m_0) coordinate system is
+  \whatq_s(s_1, s_2) = q_lnm(s_2) \, q_s(s_1, s_2) \, q_lnm^-1(s_1)
+The zeroth order part of q_s gives:
+  \whatq_0(s_1,s_2) = q_lnm(s_2) \, q_0(s_1, s_2) \, q_lnm^-1(s_1) 
+represents a rotation around the n_0 axis. 
+
+To calculate the D matrix, \whatq_0 is converted into a 3 \times 3 rotation matrix
+R_0 via \Eqrqqq). The second row and second column of this rotation matrix corresponds to the
+n_0 axis. Since the component of the spin along this axis does not vary to first order,
+R_0 has the form
+  R_0 = \beginpmatrix
+      R_0(1,1) 0 R_0(1,3) 
+      0        1 0        
+      R_0(3,1) 0 R_0(3,3)
+That is, the rotation is around the n_0 axis. Since the n_0 spin component is ignored in
+the SLIM formalism (\Eqxpxypy), the 2 \times 2 D matrix is simply R_0 with the second
+row and second column removed.
+  D(s_1, s_2) = \beginpmatrix
+      R_0(1,1) R_0(1,3) 
+      R_0(3,1) R_0(3,3)
+In particular, when using the (l_0, n_0, m_0) coordinate system, \widehat q_0
+represents the identity (\equiv (1, 0, 0, 0)) and D is a unit matrix as expected.
+
+The rows of the G matrix encode the first-order dependence of the changes of the angles
+\alpha_0 and \beta_0 (or of the angles \alpha and \beta).  The G matrix can therefore
+be calculated from \whatq_i which is the first order part of \whatq_s
+  \whatq_i = q_lnm(s_2) \, q_i(s_1, s_2) \, q_lnm^-1(s_1)
+Using \Eqqqqr in \Eqrqqq and keeping only first order terms gives
+  G(1,i)= 2 (\what q_0,y \, \what q_i,x - \what q_0,0 \, \what q_i,z) 
+  G(2,i)= 2 (\what q_0,0 \, \what q_i,x + \what q_0,y \, \what q_i,z),
+  \quad i = 1, \ldots, 6
+  \nonumber
+where the fact that \what q_0,x = \what q_0,z = 0 has been used.\footnote
+  
+Do not be confused by the x, y and z subscripts which refer to the components of \what q
+as defined in \Eqqqqqq. \what q rotates spins in the (l_0, n_0, m_0) coordinate system.
+Not the (x, y, z) coordinate system.
+  
+\footnote
+  
+Unlike the operation of going from the linearized quaternion transport (\Eqqqqr to the
+\widetildeM matrix, given an \widetildeM matrix, it is not possible to uniquely construct
+the \whatq_i quaternions. \what q_i,x and \what q_i,z can be determined by
+\Eqg2qqqq. However, \what q_i,0 and \what q_i,y can only be determined via \Eqqnqn up
+to an unknown factor \kappa:
+  \what q_i,0 = \kappa \, \what q_0,y, \qquad \what q_i,y = -\kappa \, \what q_0,0
+A finite \kappa represents a variation of the spin tune with a particle's orbital phase space
+position. This is, a finite q_i,0 and q_i,y represent a non-linear effect which will average
+to zero over many turns as a particle with constant orbital amplitude samples different points on
+the phase space torus it is on.
+  
+The calculation of the derivative \partialn/\partial\delta within the SLIM formalism is
+similar to the calculation using quaternions . The following follows
+Barber\citeb:barber99. The calculation starts with the one-turn periodic 8 \times 8 matrix
+\widetilde M [Here the periodic (l(s), n_0(s), m(s)) coordinate system must be used
+since the ending coordinates for M must be the same as the starting coordinates.]  The
+eigenvectors u_k and eigenvalues \lambda_k (k = 1, \ldots 8) of \widetilde M are of
+the form
+  u_k= \beginpmatrix v_k  w_k \endpmatrix, \quad k = 1, \ldots, 6
+  u_k= \beginpmatrix 0_6  w_k \endpmatrix, \quad k = 7, 8 \nonumber
+where v_k are eigenvectors of the orbital submatrix M, and for the first six eigenvectors
+the w_k are computed via (compare with \Eqslnqnq)
+  w_k = \left[ \lambda_k \, I_2 - D \right]^-1 G \, v_k, \quad k = 1, \ldots, 6
+where I_2 is the 2 \times 2 unit matrix. These eigenvectors, computed at the chosen starting
+point s1 and are then propagated to other s-positions s2 using \widetilde M(s1, s2).
+
+The derivative \partial n/\partial \delta is computed analogously to \Eqndaw
+  \frac\partial n\partial \delta = 
+  \left( \frac\partial \alpha\partial \delta, \, \frac\partial \beta\partial \delta \right) = 
+  \sum_k = 1^6 A_k \, w_k
+with the A_k being computed from \Eq000001.
+
+Alternatively, Chao \citeb:chao79 gives a an analytical formulation where the eigenvectors are
+normalized in the form \Eqvsvi0.  With this, \partial n/\partial \delta is computed via
+  \frac\partial n\partial \delta = i \, \sum_k = 1^6 v_k5^* \, w_k
+
+The strength of linear resonances can be calculated from the G matrix.  The corresponding
+equation to \Eqsx12pq1 and \eqx12pq2 is\citeb:spin.hoff
+  \xi_r = \frac12 \, \pi \, \big| \overrightarrowG \cdot v_k \big|
+where 
+  \overrightarrowG = G(1,:) + i \, G(2,:)
+with G(1,:) being the first row of the 2\times6 G matrix and G(2,:) being
+the second row. It can be shown that an equivalent way of writing \Eqx1pg is 
+  \xi_r = \frac\sqrt22 \, \pi \, \big| (G(1,:) \cdot v_k, G(2,:) \cdot v_k) \big|
+
+The following describes the old spinor representation formally used by Bmad to represent
+spins. This documentation is kept as an aid for comparison with the spin tracking literature.
+
+In the SU(2) representation, a spin S is written as a spinor \Psi = \left( \psi_1, \psi_2
+\right)^T where \psi_1,2 are complex numbers. The conversion between SU(2) and SO(3) is
+  S = \Psi^\dagger sig \, \Psi 
+  \qquad \longleftrightarrow \qquad
+  \Psi  = \frace^i \xi\sqrt2 \left(1+s_3\right)   
+Where \xi is an unmeasurable phase factor, and sig = (\sigma_x, \sigma_y, \sigma_z) are
+the three Pauli matrices
+  \sigma_x = \beginpmatrix 0  1  1  0 \endpmatrix, \qquad
+  \sigma_y = \beginpmatrix 0 -i  i  0 \endpmatrix, \qquad
+  \sigma_z = \beginpmatrix 1  0  0 -1 \endpmatrix
+In polar coordinates
+  \Psi = \beginpmatrix \psi_1  \psi_2 \endpmatrix
+       = e^i \xi
+            \cos \frac\theta2    
+            e^i \phi \, \sin \frac\theta2
+  \qquad \longleftrightarrow \qquad
+  S = \beginpmatrix \sin \theta \cos \phi    
+                          \sin \theta \sin \phi    
+                          \cos \theta \endpmatrix
+Due to the unitarity of the spin vector,   
+|\psi_1|^2 + |\psi_2|^2 = 1.
+The spinor eigenvectors along the x, y and z axes are
+   \Psi_x+= \frac1\sqrt2 \, \beginpmatrix 1  1 \endpmatrix \, , 
+ \Psi_x-= \frac1\sqrt2 \, \beginpmatrix 1  -1 \endpmatrix \, , \CRNO
+   \Psi_y+= \frac1\sqrt2 \, \beginpmatrix 1  i \endpmatrix \, , 
+ \Psi_y-= \frac1\sqrt2 \, \beginpmatrix 1  -i \endpmatrix \, , 
+   \Psi_z+=                       \beginpmatrix 1  0 \endpmatrix \, , 
+ \Psi_z-=                       \beginpmatrix 0  -1 \endpmatrix \, . \nonumber
+
+In spinor notation, the T-BMT equation can be written as
+    \frac\mathrmd\mathrmd t \Psi = - \fraci2 \left( sig \dotproduct   
+    \pmb\Omega \right) \Psi = -\fraci2 \beginpmatrix
+    \Omega_z \Omega_x - i \, \Omega_y 
+    \Omega_x + i \, \Omega_y -\Omega_z \endpmatrix
+    \Psi
+The solution over a time interval \Delta t, assuming constant \pmb\Omega, leads to a rotation of
+the spin vector by an angle \alpha = |\pmb\Omega| \, \Delta t around a unit vector hat a
+pointing in the same direction as \pmb\Omega
+    \Psi_f= \exp \left[ -i \frac\alpha2 hat a \dotproduct sig \right] \Psi_i \CRNO
+        = \left[ \cos \left( \frac\alpha2 \right) \, I_2 - 
+            i \, (hat a \dotproduct sig) \, \sin \left( \frac\alpha2 \right) \right] \Psi_i 
+        = A \Psi_i. \nonumber
+where \Psi_i is the initial spin state, \Psi_f is the final spin state, and A, describes
+the spin transport. The Pauli matrices constitute a 2x2 Hermitian-matrix representation of the
+quaternion components \cali, \calj, and \calk in \Eqqqqqq and A is the SU(2) matrix
+representation of the quaternion (a_0, a) = (\cos(\alpha/2), -\sin(\alpha/2) \, hat
+a). A has the normalization condition a_0^2 + \boldsymbola^2 = 1.
+
+With spinors, the matrix representation of the observable S_u
+corresponding to the measurement of the spin along the unit vector
+u is
+  S_u\equiv \frac\hbar2 \, sig \dotproduct u    
+           = \frac\hbar2 
+                     u_z            u_x - i \, u_y 
+                     u_x + i \, u_y u_z
+The expectation value of this operator, \Psi^\dagger \, S_u \, \Psi, representing the spin of
+a particle, satisfies the equation of motion of a classical spin vector in the particle's
+instantaneous rest frame.
+
+For a distribution of spins, the polarization P_s along the unit
+vector u is defined as the absolute value of the average
+expectation value of the spin over all N particles times
+\frac2\hbar,
+    P_s = \frac2\hbar \frac1N \sum_k=1^N \Psi_k^\dagger S_u \Psi_k
+
+See \S~ for formulas for tracking a spin through a multipole
+fringe field.

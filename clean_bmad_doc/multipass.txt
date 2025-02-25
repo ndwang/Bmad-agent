@@ -1,0 +1,193 @@
+chapter Multipass
+
+This chapter covers the concept of "multipass". "Multipass" is used when an element is
+"shared" between branches such as the interaction region shared by two storage rings, or when a
+beam goes through the same physical element in a branch multiple times as in an energy recovery
+linac. With "multipass", "lord" and "slave" elements  are constructed
+by Bmad to hold the necessary information. The "lord" elements will represent the "physical"
+element while the "slave" elements will embody the "beam path".
+
+-----------------------------------------------------------------------------
+
+"Multipass" lines are a way to handle the bookkeeping when different elements being tracked
+through represent the same physical element. For example, consider the case where dual ring colliding
+beam machine is to be simulated. In this case the lattice file might look like:
+  ring1: line = (..., IR_region, ...)
+  ring2: line = (..., --IR_region, ...)
+  IR_region: line = (Q1, ....)
+  use, ring1, ring2
+[The "--" construct means go through the line backwards ] In this case, the
+"Q1" element in "ring1" represents the same physical element in "ring2". Thus the parameters
+of both the "Q1"s should be varied in tandem. This can be done automatically using "multipass".
+The use of multipass simplifies lattice and program development since the bookkeeping details are left
+to the Bmad bookkeeping routines.
+
+To illustrate how "multipass" works, consider the example of an Energy Recovery Linac (ERL) where
+the beam will recirculate back through the LINAC section to recover the energy in the beam before it
+is dumped. In Bmad, this situation can simulated by designating the LINAC section as "multipass".
+The lattice file might look like:
+  RF1: lcavity
+  linac: line[multipass] = (RF1, ...)
+  erl: line = (linac, ..., linac)
+  use, erl
+  expand_lattice
+  RF1\2[phi0_multipass] = 0.5
+The line called "linac" is designated as "multipass". This "linac" line appears twice in
+the line "erl" and "erl" is the root line for lattice expansion. The lattice constructed from
+"erl" will have two "RF1" elements in the tracking part of the lattice:
+  RF1\1, ..., RF1\2, ...
+Since the two elements are derived from a "multipass" line, they are given unique names by adding
+a "\"n suffix. These types of elements are known as "multipass_slave" elements. In
+addition, to the "multipass_slave" elements, there is a "multipass_lord" element (that doesn't
+get tracked through) called "RF1" in the lord part of the lattice .  Changes
+to attributes of the lord "RF1" element will be passed to the slave elements by Bmad's
+bookkeeping routines. Assuming that the phase of "RF1\1" gives acceleration, to make "RF1\2"
+decelerate the "phi0_multipass" attribute of "RF1\2" is set to 0.5. This is the one attribute
+that Bmad's bookkeeping routines will not touch when transferring attribute values from "RF1" to
+its slaves. Notice that the "phi0_multipass" attribute had to be set after "expand_lattice"
+ is used to expand the lattice. This is true since Bmad does immediate evaluation and
+"RF1\2" does not exist before the lattice is expanded. "Phi0_multipass" is useful with
+relative time tracking. However, "phi0_multipass" is "unphysical" and is just
+a convenient way to shift the phase pass-to-pass through a given cavity. To "correctly" simulate
+the recirculating beam, absolute time tracking should be used and the length of the lattice from a
+cavity back to itself needs to be properly adjusted to get the desired phase advance. See the discussion
+in section~.
+
+"Intrinsic" attributes are attributes that must, to make sense physically, be the same for all
+slaves of a given multipass lord. The element length is one such example.  The following
+non-intrinsic attributes can be set in a multipass slave and will not affect the corresponding
+attributes in the lord or the other slaves of the lord:
+  csr_ds_step           num_steps            
+  csr_method            ptc_integration_type 
+  ds_step               spin_tracking_method 
+  field_calc            space_charge_method  
+  integrator_order      tracking_method      
+  mat6_calc_method    
+
+Multiple elements of the same name in a multipass line are considered 
+physically distinct. Example:
+  m_line: line[multipass] = (A, A, B)
+  u_line: line = (m_line, m_line)
+  use, u_line
+In this example the tracking part of the lattice is
+  A\1, A\1, B\1, A\2, A\2, B\2
+In the control section of the lattice there will be two multipass lords called "A" and one called
+"B". [That is, Bmad considers the lattice to have three physically distinct elements.] The first
+"A" lord controls the 1\St and 4\Th elements in the tracking part of the lattice and the second
+"A" lord controls the 2\Nd and 5\Th elements. If "m_line" was \em not marked "multipass",
+the tracking part of the lattice would have four "A" and two "B" elements and there would be
+no lord elements.
+
+Sublines contained in a multipass line that are themselves not marked multipass act the same as if
+the elements of the subline where substituted directly in place of the subline in the containing
+line. For example:
+  a_line: line = (A)
+  m_line: line[multipass] = (a_line, a_line, B)
+  u_line: line = (m_line, m_line)
+  use, u_line
+In this example, "a_line", which is a subline of the multipass "m_line", is \em not
+designated "multipass" and the result is the same as the previous example where "m_line" was
+defined to be "(A, A, B)". That is, there will be three physical elements represented by three
+multipass lords.
+
+Multipass lines do not have to be at the same "level" in terms of nesting of lines within
+lines. Additionally, multipass can be used with line reversal . Example:
+  m_line: line[multipass] = (A, B)
+  m2_line: line = (m_line)
+  P: patch, ...
+  arc: line = (..., P)
+  u_line: line = (m_line, arc, --m2_line)
+  use, u_line
+Here the tracking part of the lattice is
+  A\1, B\1, ..., B\2 (r), A\2 (r)
+The "(r)" here just denotes that the element is reversed and is not part of the name. The lattice
+will have a multipass lord "A" that controls the two "A\ n" elements and similarly with
+"B". This lattice represents the case where a particle goes through the m_line in the "forward"
+direction, gets turned around in the "arc" line, and then passes back through "m_line" in the
+reverse direction.  While it is possible to use reflection "-"  instead
+of reversal "--" , reflection here does not make physical sense.  Needed
+here is a reflection patch "P"  between reversed and unreversed elements.
+
+The procedure for how to group lattice elements into multipass slave groups which represent the same
+physical element is as follows. For any given element in the lattice, this element has some line it
+came from. Call this line L_0. The L_0 line in turn may have been contained in some other line
+L_1, etc. The chain of lines L_0, L_1, ..., L_n ends at some point and the last (top) line
+L_n will be one of the root lines listed in the "use" statement  in the lattice
+file. For any given element in the lattice, starting with L_0 and proceeding upwards through the
+chain, let L_m be the \em first line in the chain that is marked as "multipass". If no such
+line exists for a given element, that element will not be a multipass slave. For elements that have
+an associated L_m multipass line, all elements that have a common L_m line and have the same
+element index when L_m is expanded are put into a multipass slave group (for a given line the
+element index with respect to that line is 1 for the first element in the expanded line, the second
+element has index 2, etc.).  For example, using the example above, the first element of the lattice,
+"A\1", has the chain:
+    m_line, u_line
+The last element in the lattice, ("A\2"), has the chain
+  m_line, m2_line, u_line
+For both elements the L_m line is "m_line" and both elements are derived from the element with
+index 1 with respect to "m_line". Therefore, the two elements will be slaved together.
+
+As a final example, consider the case where a subline of a multipass line is also marked
+"multipass":
+  a_line: line[multipass] = (A)
+  m_line: line[multipass] = (a_line, a_line, B)
+  u_line: line = (m_line, m_line)
+  use, u_line
+In this case the tracking part of the lattice will be:
+  A\1, A\2, B\1, A\3, A\4, B\2
+There will be two lord elements representing the two physically distinct elements "A" and "B".
+The "A" lord element will will control the four "A\ n" elements in the tracking
+part of the lattice. The "B" lord will control the two "B\ n" elements in the tracking part
+of the lattice. 
+
+To simplify the constructed lattice, if the set of lattice elements to slave together only contains
+one element, a multipass lord is not constructed. For example:
+  m_line: line[multipass] = (A, A, B)
+  u_line: line = (m_line)
+  use, u_line
+In this example no multipass lords are constructed and the lattice is simply
+  A, A, B
+
+It is important to note that the global coordinates  of the slaves of a given
+multipass lord are not constrained by Bmad to be the same. It is up to the lattice designer to make
+sure that the physical positions of the slaves makes sense (that is, are the same).
+
+-----------------------------------------------------------------------------
+
+Consider the lattice where the tracking elements are
+  A\1, C, A\2
+where "A\1" and "A\2" are multipass slaves of element "A" and "C" is a "lcavity"
+element with some finite voltage. In this case, the reference energy calculation 
+where the reference energy of an element is inherited from the previous element, assigns differing
+reference energies to "A\1" and "A\2". In such a situation, what should be the assigned
+reference energy for the multipass lord element "A"? Bmad calculates the lord reference energy
+in one of two ways. If, in the lattice file, "e_tot" or "p0c" is set for the multipass lord
+element, that setting will be used. Exception: For "em_field", "lcavity", and "custom"
+elements where the reference energy may change, set "e_tot_start" or "p0c_start" instead of
+"e_tot" or "p0c".  If the reference energy (or reference momentum) is not set in the lattice
+file, the reference energy of the lord is set equal to the reference energy of the first pass slave
+element.
+
+It is important to keep this convention in mind if the normalized field strength (k1, for a
+quadrupole, etc.) for the lord element is set in the lattice file. To be physical, the unnormalized
+strength (the actual field) has to be the same for all slave elements. Bmad therefore calculates
+the unnormalized strength for the lord and sets the slave unnormalized strengths to be equal to the
+lord unnormalized strength. After this, the normalized strength for the slaves is calculated. Notice
+that the normalized strengths for the slaves will differ from each other. For "sbend" and
+"rbend" elements the calculation is a bit trickier. Here the "g" bending strength must be the
+same for all slaves since the setting of "g" determines the reference geometry. In this case,
+"dg" for each slave is adjusted accordingly so that the total normalized field, "g" +
+"dg", gives the same unnormalized field for all slaves. Note that since the normalized field
+is calculated from the unnormalized field for the slaves, the setting of "field_master"
+ is set to True for all the slaves independent of the setting of
+"field_master" for the lord.
+
+To keep track of how the reference energy has been calculated for an element, Bmad sets an internal
+element switch called "multipass_ref_energy" which is set to ""user_set"" if the energy is
+explicitly set in the lattice file and is set to ""first_pass"" if the reference energy is
+calculated from the standard reference energy calculation of the first pass slave element.
+
+Note: Historically, there was an element parameter "n_ref_pass" that could be set to control the
+reference energy. This parameter may be seen in old lattice files but will be ignored.
+
+An example of an ERL lattice with multipass can be found in Section~.

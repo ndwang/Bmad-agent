@@ -1,0 +1,749 @@
+chapter Coordinates
+
+\vspace*-0.3in
+Bmad uses three coordinate systems as illustrated in \figf:coords. First, the "global" (also
+called ""floor"") coordinates are independent of the accelerator. Such things as the
+building the accelerator is in may be described using "global" coordinates.
+
+It is not convenient to describe the position of the beam using the "global" coordinate system so
+a ""local"" coordinate system is used .  This curvilinear coordinate
+system defines the nominal position of the lattice elements.  The relationship between the
+"local" and "global" coordinate systems is described in.
+
+The "nominal" position of a lattice element is the position of the element without what are called
+"misalignments" (that is, position and orientation shifts). Each lattice element has ""element
+body"" coordinates which are attached to the physical element. That is, the electric and magnetic
+fields of an element are described with respect to "element" coordinates.  If there are no
+misalignments, the "element" coordinates are aligned with the "local" coordinates. The
+transformation between "local" and "element" coordinates is given in
+.
+
+When discussing "local" vs "element" coordinates, it can be less confusing to use the name
+""laboratory"" cordinates instead of "local" coordinates. The x=y=0 curved line of the
+laboratory coordinate system is known as the ""reference orbit"".
+
+  \includegraphics[width=5.0in]coordinates.pdf
+The three coordinate systems used by Bmad: The "global" (or ""floor"") coordinate system
+is independent of the accelerator.  The "local" curvilinear coordinate system follows the bends
+of the accelerator.  Each lattice element has "element body" coordinates which, if the element is
+not "misaligned" is the same as the "local" coordinates. The x=y=0 curved line of the
+laboratory coordinate system is known as the "reference orbit".
+
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+
+  \includegraphics[width=6in]local-coords.pdf
+The local reference coordinate system. By construction, a particle's z coordinate is zero.  This
+is not to be confused with the phase space z coordinate . The curvature
+vector g lies in the x-y plane and has a magnitude of 1/\rho where \rho is the bending
+radius. A) The z-axis will normally be parallel to the s-axis. B) For "reversed" elements it
+will be antiparallel. In both cases, the particle and reference particle are traveling in the
+direction of greater s.
+
+The "local reference orbit" is the curved path used to define a coordinate system for describing
+a particle's position as shown in \figf:local.coords. The reference orbit is also used for
+orientating lattice elements in space. At a given time t, a particle's position can be described
+by a point \calO on the reference orbit a distance s relative to the reference orbit's zero
+position plus a transverse (x,y) offset. The point \calO on the reference orbit is used as the
+origin of the local (x, y, z) coordinate system with the z--axis tangent to the reference
+orbit. The z--axis will generally be pointing in the direction of increasing s
+(\figf:local.coordsA) but, as discussed below, will point counter to s for elements that are
+"reversed" (\figf:local.coordsB). The x and y--axes are perpendicular to the reference
+orbit and, by construction, the particle is always at z = 0. The coordinate system so constructed
+is called the ""local coordinate system"" or sometimes the ""laboratory coordinate
+system"" when there is need to distinguish it from the ""element coordinate system""
+(\srefs:coords.3") which is attached to the physical element. There is a separate reference orbit
+for each branch  of a lattice.
+
+Notice that, in a "wiggler", the reference orbit, which is a straight line, does \em not
+correspond to the orbit that any actual particle could travel. Typically the physical element is
+centered with respect to the reference curve. However, by specifying offsets, pitches or a tilt (See
+), the physical element may be arbitrarily shifted with respect to its reference
+curve. Shifting a physical magnet with respect to its reference curve generally means that the
+reference curve does \em not correspond to the orbit that any actual particle could travel.
+
+Do not confuse this reference orbit (which defines the local coordinate system) with the reference
+orbit about which the transfer maps are calculated . The former is fixed by the
+lattice while the latter can be any arbitrary orbit.
+
+-----------------------------------------------------------------------------
+
+--------------------------------------
+
+  \includegraphics[width=5in]element-coord-frame.pdf
+fit together to form the reference orbit along with the laboratory coordinate system. How elements
+join together is determined in part by their entrance and exit coordinate frames. A) For
+straight line elements the entrance and exit frames are colinear. B) For bends elements, the two
+frames are rotated with respect to each other. C) For "patch" and "floor_shift" elements the
+exit frame may be arbitrarily positioned with respect to the entrance frame.
+
+--------------------------------------
+
+One way of thinking about the reference orbit and the laboratory coordinates is to imagine that each
+element is like a LEGO block with an ""entrance"" and an ""exit"" coordinate frame as
+illustrated in \figf:ele.coord.frame\footnote
+  
+Thanks to Dan Abell for this analogy.
+  . 
+These coordinate frames are attached to the element. that is, things like electric and magnetic
+fields, apertures, etc., are described with respect to the entrance and exit coordinates.  Thus, for
+example, the "e1" edge of a bend  is always at the "entrance" face and the
+"e2" is always at the "exit" face. Most elements have a "straight" geometry as shown in
+\figf:ele.coord.frameA. That is, the reference orbit through the element is a straight line
+segment with the x and y axes always pointing in the same direction.  For a "bend" element
+, the reference orbit is a segment of a circular arc as shown in
+\figf:ele.coord.frameB. With the "ref_tilt" parameter of a bend set to zero, the rotation axis
+between the entrance and exit frames is parallel to the y-axis . For "patch"
+, and "floor_shift"  elements, the exit face can can
+arbitrarily oriented with respect to the entrance end. In this case, the reference orbit between the
+entrance and exit faces is not defined.
+
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+  \includegraphics[width=5in]patch-between.pdf
+connecting the "downstream" reference frame of one element with the "upstream" reference frame
+of the next element in the branch. Coordinates shown is for the mating of element "A" to element
+B.  B) Example with drift element "dft" followed by a bend "bnd". Both elements are
+unreversed. C) Similar to (B) but in this case element "bnd" is reversed.  D) Similar to (C) but
+in this case a reflection patch has been added in between "dft" and "bnd".  In (B), (C), and
+(D) the (x,z) coordinates are drawn at the "entrance" end of the elements. The y coordinate
+is always out of the page.
+-----------------------------------------------------------------------------
+
+Assuming for the moment that there are no "fiducial" elements present, the construction of the
+reference orbit starts at the "beginning_ele" element  at the start of a
+branch. If the branch is a "root" branch , The orientation of the beginning
+element within the global coordinate system  can be set via the appropriate
+positioning statements . If the branch is not a "root" branch, the position
+of the beginning element is determined by the position of the "fork" or "photon_fork" element
+from which the branch forks from. Unless set otherwise in the lattice file, s = 0 at the
+"beginning_ele" element.
+
+If there are "fiducial" elements, the laboratory coordinates are constructed beginning at these
+elements.
+
+Once the beginning element in a branch is positioned, succeeding elements are concatenated together
+to form the laboratory coordinates. All elements have an ""upstream"" and a ""downstream""
+end as shown in \figf:patch.betweenA. The "downstream" end of an element is always farther (at
+greater s) from the beginning element than the "upstream" end of the element.  Particles travel
+in the +s direction, so particles will enter an element at the upstream end and exit at the
+downstream end.
+
+Normally, the "upstream" end is the element's "entrance" end (\figf:ele.coord.frame) and the
+"downstream" end is the element's "exit" exit. This corresponds to particles entering at the
+entrance end and exiting the element at the exit end. However, if an element is reversed
+, the element's "exit" end will be "upstream" end and the element's
+"entrance" end will be the "downstream" end. That is, for a reversed element, particles will
+enter at the element's "exit" end and will exit at the "entrance" end.
+
+The procedure to connect elements together to form the laboratory coordinates is to mate the
+downstream reference frame of the element with the upstream reference frame of the next element in
+the branch so that, without misalignments, the (x,y,z) axes coincide\footnote
+  
+If there are misalignments, the "entrance" and "exit" frames will move with the element. However,
+the "upstream" and "downstream" frames, along with the reference orbit and laboratory
+coordinates, will not move.
+  . 
+This is illustrated in \figf:patch.between. \figf:patch.betweenA shows the general situation
+with the downstream frame of element "A" mated to the upstream frame of element "B".
+Figures~\reff:patch.betweenB-C show branches constructed from the following lattice file:
+  DFT: drift, l = 2
+  BND: sbend, l = 2, g = pi/12
+  P: patch, x_pitch = pi          ! Reflection patch.
+  B_line: line = (DFT, BND)       ! No reversal.
+  C_line: line = (DFT, --BND)     ! Illegal. Do not use 
+  D_line: line = (DFT, P, --BND)  ! Valid.
+The (x,z) coordinates are drawn at the entrance end of the elements and z will always point
+towards the element's exit end.  \figf:patch.betweenB shows the branch constructed from
+"B_line" containing an unreversed drift named "dft" connected to an unreversed bend named
+"bnd". \figf:patch.betweenC shows the branch constructed from "C_line". This is like
+"B_line" except here element "bnd" is reversed. This gives an unphysical situation since a
+particle traveling through "dft" will "fall off" when it gets to the end.
+\figf:patch.betweenD shows the branch constructed from "D_line". Here a ""reflection""
+patch "P"  has been added to get a plausible geometry. The patch rotates the
+coordinate system around the y-axis by 180\Deg (leaving the y-axis invariant). It is always the
+case that a reflection patch is needed between reversed and unreversed elements
+
+Notes:
+*
+If the first element after the "beginning_ele" element at the start of a branch is reversed, the
+"beginning_ele" element will be marked as reversed so that a reflection patch is not needed in
+this circumstance.
+*
+Irrespective of whether elements are reversed or not, the laboratory (x,y,z) coordinate system
+at all s-positions will always be a right-handed coordinate system.
+*
+Care must be take when using reversed elements. For example, if the field of the "bnd" element in
+"B_line" is appropriate for, say, electrons, that is, electrons will be bent in a clockwise
+fashion going through "bnd", then an electron going through "D_line" will be lost in the bend
+(the y-axis and hence the field is in the same direction for both cases so electrons will still be
+bent in a clockwise fashion but with "D_line" a particle needs to be bent counterclockwise to get
+through the bend). To get a particle through the bend, positrons must be used.
+*
+A reflection patch that rotated the coordinates, for example, around the x-axis by 180\Deg (by
+setting "y_pitch" to "pi") would also produce a plausible geometry.
+
+-----------------------------------------------------------------------------
+
+  \includegraphics[width=5in]patch-problem.pdf
+The local reference coordinates in a "patch" element. The "patch" element, shown
+schematically as an irregular quadrilateral, is sandwiched between elements "ele_a" and
+"ele_b". "L" is the length of the "patch". In this example, the "patch" has a finite
+"x_pitch".
+
+-----------------------------------------------------------------------------
+-----------------------------------------------------------------------------
+
+Generally, if a particle is reasonably near the reference orbit, there is a one-to-one mapping
+between the particle's position and (x, y, s) coordinates. A "patch"  elements
+with a non-zero "x_pitch" or non-zero "y_pitch" breaks the one-to-one mapping. This is
+illustrated in \figf:patch.prob.  The "patch" element, shown schematically as an, irregular
+quadrilateral, is sandwiched between elements "ele_a" and "ele_b". The local coordinate system
+with origin at \alpha are the coordinates at the end of "ele_a". The coordinates at the end of
+the "patch" has its origin labeled \gamma. By convention, the length of the patch "L" is
+taken to be the longitudinal distance from \alpha to \gamma with the "patch"'s exit
+coordinates defining the longitudinal direction. The "beginning" point of the "patch" on the
+reference orbit a distance "L" from point \gamma is labeled \beta in the figure.
+
+In the local (x, y, s) coordinate system a particle at \alpha will have some value s = s_0. A
+particle at point \beta will have the same value s = s_0 and a particle at \gamma will have s
+= s_1 = s_0 + L. A particle at point r_a in \figf:patch.prob illustrates the problem of
+assigning (x, y, s) coordinates to a given position. If the particle is considered to be within
+the region of "ele_a", the particle's s position will be s_a2 which is greater than the
+value s_0 at the exit end of the element. This contradicts the expectation that particles within
+"ele_a" will have s \le s_0.  If, on the other hand, the particle is considered to be within
+the "patch" region, the particle's s position will be s_a1 which is less than the value
+s_0 at the entrance to the patch. This contradicts the expectation that a particles within the
+"patch" will have s \ge s_0.
+
+To resolve this problem, Bmad considers a particle at position r_a to be within the "patch"
+region. This means that there is, in theory, no lower limit to the s-position that a particle in
+the "patch" region can have. This also implies that there is a discontinuity in the s-position
+of a particle crossing the exit face of "ele1". Typically, when particles are translated from the
+exit face of one element to the exit face of the next, this "patch" problem does not appear. It
+only appears when the track between faces is considered.
+
+Notice that a particle at position r_b in \figf:patch.prob can simultaneously be considered to
+be in either "ele_a" or the "patch". While this creates an ambiguity it does not complicate
+tracking.
+
+-----------------------------------------------------------------------------
+
+  \includegraphicsglobal-coords.pdf
+The local (reference) coordinate system (purple), which is a function of s along the reference
+orbit, is described in the global coordinate system (black) by a position (X(s), Y(s), Z(s)) and
+and by angles \theta(s), \phi(s), and \psi(s).
+  
+The Cartesian "global" coordinate system, also called the `floor" coordinate system, is the
+coordinate system "attached to the earth" that is used to describe the local coordinate
+system. Following the \mad\ convention, the "global" coordinate axis are labeled (X, Y,
+Z). Conventionally, Y is the "vertical" coordinate and (X, Z) are the "horizontal"
+coordinates. To describe how the local coordinate system is oriented within the global coordinate
+system, each point on the s-axis of the local coordinate system is characterized by its (X, Y,
+Z) position and by three angles \theta(s), \phi(s), and \psi(s) that describe the orientation
+of the local coordinate axes as shown in \figf:global.coords. These three angles are defined as
+follows:
+
+     \theta(s) Azimuth (yaw) angle: 
+Angle in the (X, Z) plane between the Z--axis and the projection of the z--axis onto the (X,
+Z) plane. Corresponds to the "x_pitch" element attribute . A positive angle of
+\theta = \pi/2 corresponds to the projected z--axis pointing in the positive X direction.
+
+     \phi(s) Pitch (elevation) angle: 
+Angle between the z--axis and the (X,Z) plane. Corresponds to the "y_pitch" element attribute
+. A positive angle of \phi = \pi/2 corresponds to the z--axis pointing in the
+positive Y direction.
+
+     \psi(s) Roll angle: 
+Angle of the x--axis with respect to the line formed by the intersection of the (X, Z) plane
+with the (x, y) plane. Corresponds to the "tilt" element attribute . A
+positive \psi forms a right--handed screw with the z--axis.
+
+By default, at s = 0, the reference orbit's origin coincides with the (X, Y, Z) origin and the
+x, y, and z axes correspond to the X, Y, and Z axes respectively. If the lattice has no
+vertical bends (the "ref_tilt" parameter  of all bends are zero), the y--axis
+will always be in the vertical Y direction and the x--axis will lie in the horizontal (X,Z)
+plane. In this case, \theta decreases as one follows the reference orbit when going through a
+horizontal bend with a positive bending angle. This corresponds to x pointing radially
+outward. Without any vertical bends, the Y and y axes will coincide, and \phi and \psi will
+both be zero. The "beginning" statement  in a lattice file can be use to
+override these defaults.
+
+Following \mad, the global position of an element is characterized by a vector V
+  V = 
+    X  Y  Z 
+The orientation of an element is described by a unitary rotation matrix W. The column vectors
+of W are the unit vectors spanning the local coordinate axes in the order (x, y, z). W
+can be expressed in terms of the orientation angles \theta, \phi, and \psi via the formula
+  W= R_y(\theta) \; R_-x(\phi) \; R_z(\psi) 
+ = \beginpmatrix
+    \cos\theta \cos\psi - \sin\theta \sin\phi \sin\psi -\cos\theta \sin\psi - \sin\theta \sin\phi \cos\psi 
+                                                                                          \sin\theta \cos\phi 
+    \cos\phi \sin\psi \cos\phi \cos\psi \sin\phi 
+   -\cos\theta \sin\phi \sin\psi - \sin\theta \cos\psi \sin\theta \sin\psi - \cos\theta \sin\phi \cos\psi 
+                                                                                          \cos\theta \cos\phi 
+  \nonumber
+where
+  R_y(\theta) = 
+    \cos\theta  0 \sin\theta 
+    0           1 0          
+    -\sin\theta 0 \cos\theta 
+  R_-x(\phi) = 
+    1 0 0                
+    0 \cos\phi  \sin\phi 
+    0 -\sin\phi \cos\phi 
+  R_z(\psi) = 
+    \cos\psi -\sin\psi 0 
+    \sin\psi  \cos\psi 0 
+    0         0        1                
+Notice that R_-x(\phi), for positive \phi, represents a rotation around the negative
+x-axis. Also notice that these are Tait-Bryan angles and not Euler angles.
+
+An alternative representation of the W matrix (or any other rotation matrix) is to specify the
+axis u (normalized to 1) and angle of rotation \beta
+  W = \beginpmatrix
+    \cos \beta + u_x^2 \left(1 - \cos \beta \right) 
+    u_x \, u_y \left(1 - \cos \beta \right) - u_z \sin \beta 
+    u_x \, u_z \left(1 - \cos \beta \right) + u_y \sin \beta  
+    u_y \, u_x \left(1 - \cos \beta \right) + u_z \sin \beta 
+    \cos \beta + u_y^2\left(1 - \cos \beta \right) 
+    u_y \, u_z \left(1 - \cos \beta \right) - u_x \sin \beta  
+    u_z \, u_x \left(1 - \cos \beta \right) - u_y \sin \beta 
+    u_z \, u_y \left(1 - \cos \beta \right) + u_x \sin \beta 
+    \cos \beta + u_z^2\left(1 - \cos \beta \right)
+
+-----------------------------------------------------------------------------
+
+Bmad, again following \mad, computes V and W by starting at the first element of the
+lattice and iteratively using the equations
+  V_i= W_i-1 \; L_i + V_i-1, 
+  W_i= W_i-1 \; S_i
+L_i is the displacement vector for the i\Th element and matrix S_i is the rotation of
+the local reference system of the exit end with respect to the entrance end. For clarity, the
+subscript i in the equations below will be dripped. For all elements whose reference orbit through
+them is a straight line, the corresponding L and S are
+  L = 
+      0  0  L
+  \quad
+  S = 
+      1 0 0  
+      0 1 0 
+      0 0 1
+Where L is the length of the element. 
+
+-----------------------------------------------------------------------
+
+A) Rotation axes (bold arrows) for four different "ref_tilt" angles of \theta_t = 0, \pm
+\pi/2, and \pi. (x_0, y_0, z_0) are the local coordinates at the entrance end of the bend with
+the z_0 axis being directed into the page. Any rotation axis will be displaced by a distance of
+the bend radius "rho" from the origin. B) The (x, y, z) coordinates at the exit end of the bend
+for the same four "ref_tilt" angles. In this case the bend angle is taken to be \pi/2.
+  
+-----------------------------------------------------------------------
+
+For a "bend", the axis of rotation is dependent upon the bend's "ref_tilt" angle
+ as shown in \figf:tilt.bendA. The axis of rotation points in the negative y_0
+direction for "ref_tilt" = 0 and is offset by the bend radius "rho". Here (x_0, y_0, z_0)
+are the local coordinates at the entrance end of the bend with the z_0 axis being directed into
+the page in the figure.  For a non-zero "ref_tilt", the rotation axis is itself rotated about the
+z_0 axis by the value of "ref_tilt". \figf:tilt.bendB shows the exit coordinates for four
+different values of "ref_tilt" and for a bend angle "angle" of \pi/2.  Notice that for a
+bend in the horizontal X-Z plane, a positive bend "angle" will result in a decreasing azimuth
+angle \theta.
+
+For a bend, S is given using \Eqwctux2 with 
+  u= (-\sin\theta_t, -\cos\theta_t, 0) \CRNO
+  \beta= \alpha_b
+where \theta_t is the "ref_tilt" angle. The L vector for a "bend" is given by 
+  L = R_z(\theta_t) \; tilde L, \quad
+  tilde L = 
+    \rho (\cos\alpha_b - 1)  0  \rho \, \sin\alpha_b
+where \alpha_b is the bend "angle"  and \rho being the bend radius
+("rho"). Notice that since u is perpendicular to z, the curvilinear reference coordinate
+system has no "torsion". That is, it is a Frenet-Serret coordinate system.
+
+Note: An alternative equation for "S" for a bend is
+  S = R_z(\theta_t) \; R_y(-\alpha_b) \; R_z(-\theta_t)
+
+The bend transformation above is so constructed that the transformation is equivalent to rotating
+the local coordinate system around an axis that is perpendicular to the plane of the bend. This
+rotation axis is invariant under the bend transformation. For example, for \theta_t = 0 (or \pi)
+the y-axis is the rotation axis and the y-axis of the local coordinates before the bend will be
+parallel to the y-axis of the local coordinates after the bend as shown in \figf:tilt.bend. That
+is, a lattice with only bends with \theta_t = 0 or \pi will lie in the horizontal plane (this
+assuming that the y-axis starts out pointing along the Y-axis as it does by default).  For
+\theta_t = \pm\pi/2, the bend axis is the x-axis. A value of \theta_t = +\pi/2 represents a
+downward pointing bend.
+
+appropriate for a "ref_tilt" angle of \theta_t = 0.  \theta_g is the bend angle of the
+incoming (entrance) ray, and \alpha_b is the total bend angle of the reference trajectory. A)
+Geometry for a mirror or a Bragg crystal. Point \calO is the origin of both the local coordinates
+just before and just after the reflection/diffraction. B) Geometry for a Laue crystal.  Point
+\calO_out is the origin of the coordinates just after diffraction is displaced from the origin
+\calO_in just before diffraction due to the finite thickness of the crystal. here the bend
+angles are measured with respect to the line that is in the plane of the entrance and exit
+coordinates and perpendicular to the surface. For Laue diffraction, the user has the option of using
+the undiffracted beam (shown in red) as the reference trajectory.
+    
+-----------------------------------------------------------------------------
+
+A point Q_g = (X, Y, Z) defined in the global coordinate system, when expressed in the
+coordinate system defined by (V, W) is
+  Q_VW = W^-1 \left( Q_g - V \right)
+This is essentially the inverse of \Eqvwlv. That is, vectors propagate inversely to the
+propagation of the coordinate system.
+
+Using \Eqrwrv with \Eqsvwlv, and \eqwws, the transformation of a particle's position q =
+(x,y,z) and momentum P = (P_x, P_y, P_z) when the coordinate frame is transformed from frame
+(V_i-1, W_i-1) to frame (V_i, W_i) is
+  q_i= S_i^-1 \, \left( q_i-1 - L_i \right), 
+  P_i= S_i^-1 \, P_i-1
+
+Notice that since S (and W) is the product of orthogonal rotation matrices, S is
+itself orthogonal and its inverse is just the transpose
+  S^-1 = S^T
+
+-----------------------------------------------------------------------------
+
+A "crystal" element  diffracts photons and a "mirror" element
+ reflects them. For a crystal setup for Bragg diffraction, and for a mirror, the
+reference orbit is modeled as a zero length bend with tilde L = (0, 0, 0), as shown in
+\figf:mirrorA. Shown in the figure is the geometry appropriate for a "ref_tilt" angle of
+\theta_t = 0 (the rotation axis is here the y-axis). Since the mirror or crystal element is
+modeled to be of zero length, the origin points (marked \calO in the figure) of the entrance and
+exit local coordinates are the same. For Laue diffraction, the only difference is that tilde L
+is non-zero due to the finite thickness of the crystal as shown in \figf:mirrorB. This results in
+a separation between the entrance coordinate origin \calO_in and the exit coordinate origin
+\calO_out.
+
+In all cases, the total bending angle is
+  \alpha_b= \textbragg_angle_in + \textbragg_angle_out&\text! Crystal, graze_angle_in = 0 \CRNO
+  \alpha_b= \textgraze_angle_in + \textgraze_angle_out&\text! Crystal, graze_angle_in \ne 0 \CRNO
+  \alpha_b= 2 \, \textgraze_angle                      \text! Mirror
+With a mirror or Bragg diffraction, the bend angles are measured with respect to the surface
+plane. With Laue diffraction the bend angles are measured with respect to the line in the bend plane
+perpendicular to the surface.
+
+For Laue diffraction, the user has the option of using the undiffracted beam (shown in red) as the
+reference trajectory.
+
+The orientation of the exit coordinates (the local coordinates after the reflection) are only
+affected by the element's "ref_tilt" and bend angle parameters and is independent of all other
+parameters such as the radius of curvature of the surface, etc. The local z-axis of the entrance
+coordinates along with the z-axis of the exit coordinates define a plane which is called the
+element's "bend plane".  For a mirror, the graze angle is a parameter supplied by the user. For a
+crystal, the Bragg angles are calculated so that the reference trajectory is in the middle of the
+Darwin curve. Calculation of the Bragg angles for a crystal is given in
+Section~.
+
+-----------------------------------------------------------------------------
+
+For "patch"  and "floor_shift"  elements, the shift in the
+exit end reference coordinates is given by \Eqsvwlv and \eqwws with
+  L= 
+      \textx_offset  \texty_offset  \textz_offset 
+    \CRNO
+  S= R_y (\textx_pitch) \; R_-x (\texty_pitch) \; R_z (\texttilt)
+
+The difference here between "patch" and "floor_shift" elements is that, with a "patch"
+element, the shift is relative to the exit end of the previous element while, for a "floor_shift"
+element, the shift is relative to the reference point on the origin element specified by the
+"origin_ele" parameter of the "floor_shift".
+
+-----------------------------------------------------------------------------
+
+For "fiducial" and "girder" elements, the alignment of the
+reference coordinates with respect to ""origin"" coordinates is
+analogous to \Eqsswww. Explicitly:
+  L= 
+      \textdx_origin  \textdy_origin  \textdz_origin
+    \CRNO
+  S= R_y (\textdtheta_origin) \; R_-x (\textdphi_origin) \; R_z (\textdpsi_origin)
+
+-----------------------------------------------------------------------------
+
+A "Patch" (or a series of patches) that reflects the direction of the "z"-axis is called a
+"reflection" "patch". By "reflected direction" it is meant that the dot product z_1
+\cdot z_2 is negative where z_1 is the z-axis vector at the "entrance" face and \f
+z_2 is the z-axis vector at the "exit" face. This condition is equivalent to the condition
+that the associated S matrix (see \Eqswww) satisfy:
+  S(3,3) < 0
+Using \Eqswww gives, after some simple algebra, this condition is equivalent to
+  \cos(\textx_pitch) \, \cos(\texty_pitch) < 0
+When there are a series of patches, The transformations of all the patches are concatenated together
+to form an effective S which can then be used with \Eqs330.
+
+\beginfigure[!b]
+ \centering
+ \includegraphics[width=5.0in]edge-track.pdf
+ \caption[]
+
+ \labelf:edge.track
+\endfigure
+
+-----------------------------------------------------------------------------
+
+The "element body" coordinates are the coordinate system attached to an element. Without any
+misalignments, where ""misalignments"" are here defined to be any offset, pitch or tilt
+, the "laboratory" coordinates  and "element body" coordinates
+are the same. With misalignments, the transformation between "laboratory" and "element body"
+coordinates depends upon whether the local coordinate system is straight  or
+bent .
+
+When tracking a particle through an element, the particle starts at the "nominal"
+ upstream end of the element with the particle's position expressed in laboratory
+coordinates. Tracking from the nominal upstream end to the actual upstream face of the element
+involves first transforming to element body coordinates (with s = 0 in the equations below) and
+then propagating the particle as in a field free drift space from the particle's starting position
+to the actual element face. Depending upon the element's orientation, this tracking may involve
+tracking backwards. Similarly, after a particle has been tracked through the physical element to the
+actual downstream face, the tracking to the nominal downstream end involves transforming to
+laboratory coordinates (using s = L in the equations below) and then propagating the particle as
+in a field free drift space to the nominal downstream edge.
+
+-----------------------------------------------------------------------------
+
+For straight line elements, given a laboratory coordinate frame \Lambda_s with origin a distance
+s from the beginning of the element, misalignments will shift the coordinates to a new reference
+frame denoted E_s. Since misalignments are defined with respect to the middle of the element, the
+transformation between \Lambda_s and E_s is a three step process:
+  \Lambda_s \longrightarrow \Lambda_\textmid 
+  \longrightarrow E_\textmid \longrightarrow E_s
+where \Lambda_\textmid and E_\textmid are the laboratory and element reference frames at the
+center of the element.
+
+The first and last transformations from \Lambda_s to \Lambda_\textmid and from E_\textmid
+to E_s use \Eqsvwlv, \eqwws, and \eql00l with the replacement L \rightarrow L/2 - s for
+the first transformation and L \rightarrow s - L/2 for the third transformation. The middle
+transformation, by definition of the offset, pitch and tilt parameters is
+  L= 
+      \textx_offset  \texty_offset  \textz_offset 
+    \CRNO
+  S= R_y (\textx_pitch) \; R_-x (\texty_pitch) \; R_z (\texttilt)
+
+Notice that with this definition of how elements are misaligned, the position of the center of a
+non-bend misaligned element depends only on the offsets, and is independent of the pitches and tilt.
+
+-----------------------------------------------------------------------------
+
+For "rbend" and "sbend" elements there is no "tilt" attribute.  Rather, there is the
+"roll" attribute and a "ref_tilt" attribute. The latter affects both the reference orbit and
+the bend position . Furthermore, "ref_tilt" is calculated with respect to
+the coordinates at the beginning of the bend while, like straight elements, "roll", offsets, and
+pitches are calculated with respect to the center of the bend. The different reference frame used
+for "ref_tilt" versus everything else means that five transformations are needed to get from the
+laboratory frame to the element body frame (see \Eqllee). Symbolically:
+  \Lambda_s \longrightarrow \Lambda_\textmid 
+  \longrightarrow \Omega_\textmid \longrightarrow \Omega_0
+  \longrightarrow E_0 \longrightarrow E_s
+
+The first transformation, \Lambda_s to \Lambda_\textmid, from laboratory coordinates at a
+distance s from the beginning of the element to laboratory coordinates at the center the bend is a
+rotation around the center of curvature of the bend and is given by \Eqsvwlv and \eqwws with
+\Eqsustt and \eqlrztt with the substitution \alpha_b \rightarrow (L/2 - s)/\rho.
+
+The second transformation \Lambda_\textmid to \Omega_\textmid at the center of the element
+adds in the misalignments (Note that the coordinate frame \Omega_\textmid is neither a
+laboratory frame or an element frame so hence the use of a different symbol \Omega). Explicitly,
+the \Lambda_\textmid \longrightarrow \Omega_\textmid transformation is
+  L= L_\textoff + 
+    \left[ R_z(\textroll) - \f1 \right] \; R_z(\theta_t) \; R_y(\alpha_b/2) \; L_c \CRNO
+  S= R_y(\textx_pitch) \; R_-x(\texty_pitch) \; R_z(\textroll)
+where
+  L_c = 
+      \rho (\cos(\alpha_b/2) - 1)  0  \rho \, \sin(\alpha_b/2)
+  , \qquad
+  L_\textoff = 
+      \textx_offset  \texty_offset  \textz_offset 
+The reason why L has a different form from straight line elements is due to the fact that the
+axis of rotation for a "roll" is displaced from the z-axis of the coordinate system at the
+center of the bend (see \figf:roll).
+
+The third transformation from \Omega_\textmid to \Omega_0 is like the first transformation and
+rotates from the center of the bend to the beginning. Again \Eqsustt and \eqlrztt are used with
+the substitution \alpha_b \rightarrow -L/2\rho.
+
+The fourth transformation \Omega_0 to E_0 tilts the reference frame by an amount "ref_tilt":
+  L = 0, \quad
+  S = R_z(\theta_t)
+
+The fifth and final transformation, E_0 to E_s, like the first and third, rotates around the
+center of the bend but in this case, since we are dealing with element coordinates, the
+"ref_tilt" is ignored.  That is, \Eqsustt and \eqlrztt are used with the substitutions
+\theta_t \rightarrow 0 and \alpha_b \rightarrow L/\rho.
+
+Notice that with this definition of how elements are misaligned, the position of the center of a
+misaligned element depends only on the offsets and "roll", and is independent of the pitches and
+tilt. Also the orientation of an element depends only on the pitches roll, and ref_tilt, and is
+independent of the offsets.
+
+-----------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+
+The "reference energy" and "reference time" are needed in evaluating the phase space
+coordinates of charged particles .
+
+All lattice elements, except for controller elements, have an associated "reference energy"
+energy.  The reference energy at the start of a lattice's "root branch"  is
+set in the lattice file by setting the reference momentum ("p0c") or total energy ("E_tot")
+using a "parameter"  or "beginning"  statement. For other
+branches, the energy at the start of the branch is set using the appropriate line parameter
+ statement.
+
+Note that the reference momentum "p0c" is actually the reference momentum times the speed of light
+so that the reference momentum has the same unit (eV) as the reference energy.
+
+For most elements, the reference energy is the same as the reference energy of the proceeding
+element. The following elements are exceptions:
+  custom
+  em_field
+  hybrid
+  lcavity
+  patch
+The reference energy of these elements is determined by tracking a particle (the ""reference
+particle"") through the element with the particle starting on the reference orbit and whose energy
+is equal to the reference energy. The energy of the particle at the downstream end is the reference
+energy of the element. Note: Tracking through an element to determine the reference energy is always
+done with the element turned on independent of the setting of the element's "is_on"
+ parameter. Reference energy tracking is also done ignoring any orientation attributes
+ and errors like "voltage_err".
+
+Besides the reference energy, lattice elements have an associated "reference time" which is
+computed, for most elements, by the time-of-flight of the "reference particle" assuming that the
+reference particle is following the reference orbit. Exceptions are "wiggler" elements which uses
+the time-of-flight of the actual undulating trajectory. [Actually what is used in the computation of
+the z phase space coordinate (\Eqzbctt) is the sum of reference time deltas of the elements that
+a particle has passed through. It is not possible to assign a unique reference time to an element
+when particles are recirculating through elements as in a storage ring.]
+
+-----------------------------------------------------------------------------
+
+velocity.]  Interpreting phase space z at constant velocity: A) The change in z going through
+an element of length L_0 is L_0 - L_p.  B) At constant time, z is the longitudinal distance
+between the reference particle and the particle.  \labelf:canonical.z
+
+For charged particles (more correctly, for everything but photons ),
+Bmad uses the canonical phase space coordinates
+  r(s) = (x, p_x, y, p_y, z, p_z)
+The longitudinal position s is the independent variable instead of the time. x and y, are the
+transverse coordinates of the particle as shown in~\figf:local.coordsA. Note that x and y are
+independent of the position of the reference particle.
+
+The phase space momenta p_x and p_y are normalized by the reference (sometimes called the
+design) momentum P_0
+  p_x = \fracP_xP_0, \qquad
+  p_y = \fracP_yP_0
+where P_x and P_y are respectively the x and y momentums.
+
+The phase space z coordinate is 
+  z(s)= -\beta(s) \, c \, (t(s) - t_0(s)) \CRNO
+   \equiv - \beta(s) \, c \, \Delta t(s)
+t(s) is the time at which the particle is at position s, t_0(s) is the time at which the
+reference particle is at position s, and \beta is v/c with v being the particle velocity
+(and not the reference velocity). The reference particle is, by definition, "synchronized" with
+elements whose fields are oscillating and therefore the actual fields a particle will see when
+traveling through such an element will depend upon the particle's phase space z. For example, the
+energy change of a particle traveling through an "lcavity"  or "rfcavity"
+ element is z dependent. Exception: With absolute time tracking 
+fields are tied to the absolute time and not z.
+
+If the particle's velocity is constant, and is the same as the velocity of the reference particle
+(for example, at high energy where \beta = 1 for all particles), then \beta \, c \, t is just
+the path length. In this case, the change in z going through an element is
+  \Delta z = L_0 - L_p
+where, as shown in \figf:canonical.zA, L_0 is the path length of the reference particle (which
+is just the length of the element) and L_p is the path length of the particle in traversing the
+element.  Another way of interpreting phase space z is that, at constant \beta, and constant
+time, z is the longitudinal distance between the particle and the reference particle as shown in
+\figf:canonical.zB. with positive z indicating that the particle is ahead of the reference
+particle.
+
+Do not confuse the phase space z with the z that is the particle's longitudinal coordinate in
+the local reference frame as shown in \figf:local.coords. By construction, this latter z is
+always zero.
+
+Notice that if a particle gets an instantaneous longitudinal kick so that \beta is discontinuous
+then, from \Eqzbctt, phase space z is discontinuous even though the particle itself does not
+move in space. In general, from \Eqzbctt, The value of z for a particle at s_2 is related to
+the value of z for the particle at s_1 by
+  z_2 = \frac\beta_2\beta_1 \, z_1 - 
+  \beta_2 \, c \, (\Delta t_2 - \Delta t_1)
+\Delta t_2 - \Delta t_1 can be interpreted as the difference in transit time, between the particle
+and the reference particle, in going from s_1 to s_2.
+
+The longitudinal phase space momentum p_z is given by
+  p_z = \frac\Delta PP_0 \equiv \fracP - P_0P_0
+where P is the momentum of the particle. For ultra--relativistic particles p_z can be
+approximated by
+  p_z = \frac\Delta EE_0
+where E_0 is the reference energy (energy here always refers to the total energy) and \Delta E =
+E - E_0 is the deviation of the particle's energy from the reference energy. For an "Lcavity"
+element  the reference momentum is  constant so the tracking for an
+"Lcavity" is not canonical.
+
+\mad uses a different coordinate system where (z, p_z) is replaced by (-c\Delta t, p_t) where
+p_t \equiv \Delta E / P_0 c. For highly relativistic particles the two coordinate systems are
+identical.
+
+The relationship, between the phase space momenta and the slopes x' \equiv dx/ds and y' \equiv dy/ds
+is
+  x'= \fracp_x\sqrt(1 + p_z)^2 - p_x^2 - p_y^2 \, (1 + g x) 
+  y'= \fracp_y\sqrt(1 + p_z)^2 - p_x^2 - p_y^2 \, (1 + g x) 
+g = 1/\rho is the curvature function with \rho being the radius of curvature of the reference
+orbit and it has been assumed that the bending is in the x--z plane.
+
+With the paraxial approximation, and in the relativistic limit, the change in z with position is
+  \fracdzds = -g \, x - \frac12 (x'^2 + y'^2)
+This shows that in a linac, without any bends, the z of a particle always decreases.
+
+A particle can also have a spin. The spin is characterized by the spinor \Psi = \left( \psi_1,
+\psi_2 \right)^T where \psi_1,2 are complex numbers .
+
+-----------------------------------------------------------------------------
+
+Some specialized routines (for example, time Runge Kutta tracking) use the time t as the
+independent variable for charged particle tracking. This is useful when particles can reverse
+direction since the normal z based tracking cannot handle this. Direction reversal can happen, for
+example, with low energy "dark current" electrons that are generated at the walls of the vacuum
+chamber.
+
+When the tracking is time based the phase space coordinates are:
+  (x, c \, p_x, y, c \, p_y, z, c \, p_s)
+The positions x, y, and z are the same as with phase space coordinates
+. The momenta are defined as
+c p_x\equiv m c^2 \gamma \beta_x \CRNO
+c p_y\equiv m c^2 \gamma \beta_y 
+c p_s\equiv m c^2 \gamma \beta_s, \nonumber
+and internally are stored in units of eV.
+
+-----------------------------------------------------------------------------
+
+The phase space coordinates discussed above implicitly assume that
+particles are traveling longitudinally in only one direction. That is,
+the sign of the s component of the momentum cannot be determined
+from the phase space coordinates. This is generally fine for tracking
+high energy beams of charged particles but for photon tracking this
+would oftentimes be problematical. For photons, therefore, a different
+phase space is used:
+  (x, \beta_x, y, \beta_y, z, \beta_z)
+Here (\beta_x, \beta_y, \beta_z) is the normalized photon velocity with
+  \beta_x^2 + \beta_y^2 + \beta_z^2 = 1 
+and (x, y, z) are the reference orbit coordinates with z being the
+distance from the start of the lattice element the photon is in.
+
+In Bmad, the information associated with a photon include its phase
+space coordinates and time along with the photon energy and four
+parameters E_x, \phi_x, and E_y, \phi_y specifying the intensity
+and phase of the field along the x and y axes transverse to the
+direction of propagation.  the field in the vicinity of the photon is
+  E_x (r, t)\sim E_x \, e^i (k \, (z - z_0) - \omega \, (t - t_\REF) + \phi_x) \CRNO
+  E_y (r, t)\sim E_y \, e^i (k \, (z - z_0) - \omega \, (t - t_\REF) + \phi_y) 
+where z_0 is the photon z position and and t_\REF is the reference time.
+
+The normalization between field and intensity is dependent upon the
+particular parameters of any given simulation and so must be
+determined by the program using Bmad.
+

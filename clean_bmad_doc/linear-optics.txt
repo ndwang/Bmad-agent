@@ -1,0 +1,315 @@
+chapter Linear Optics
+
+The coupling formalism used by Bmad is taken from the paper of Sagan and Rubin\citeb:coupling.
+The main equations are reproduced here.
+
+The analysis starts with the map T(s) for the transverse two--dimensional phase space
+coordinates x = (x, x', y, y'). In ring, with a closed geometry, this map will be a one-turn
+map starting and ending at some point s. For a machine with open geometry, T(0) can be
+computed from the initial Twiss and coupling parameters and T(s) can then be computed by
+propagating with the transfer map M_0s from 0 to s:
+    T(s) = M_0s \, T(0) \, M_0s^-1
+
+T can be decomposed using a similarity transformation
+ can be written as
+    T = V \, U \, V\inv 
+    , \labeltvuv
+where V is symplectic, and U is of the form
+    U =
+      A \f0 \cr 
+      \f0 B \cr
+    . \labelua00b
+Since U is uncoupled, the standard Twiss analysis can be performed with the A and B
+matrices being parameterized using the standard form:
+  A = \beginpmatrix
+    \cos\theta_a + \alpha_a \, \sin\theta_a \beta_a \, \sin\theta_a 
+    -\gamma_a \, \sin\theta_a \cos\theta_a - \alpha_a \, \sin\theta_a
+with a similar equation for B. 
+
+The V "coupling" matrix is written in the form:\footnote
+  
+The form of V and U is not unique. The form of V and U used here essentially
+follows the form given by Edwards and Teng\citeb:edteng.
+  
+    V = 
+        \gamma I C \cr 
+        -C^+     \gamma I \cr
+    , \labelvgicc1
+where C is a 2x2 matrix and + superscript denotes the symplectic conjugate:
+    C^+ = 
+       C_22 -C_12 \cr 
+      -C_21 C_11 \cr
+    . \labelccccc
+Since we demand that V be symplectic we have the condition
+    \gamma^2 + \, |C| = 1
+    , \labelgc1
+and V\inv is given by
+    V\inv = 
+      \gamma I -C \cr 
+      C^+ \gamma I \cr
+    . \labelvgicc2
+C is a measure of the coupling. T is uncoupled if and only if C = 0.
+
+It is useful to normalize out the \beta(s) variation in the above analysis. Normalized quantities
+being denoted by a bar above them. The normalized normal mode matrix \ARU is defined by
+    \ARU = G \, U \, G\inv
+    , \labelugug
+Where G is given by 
+    G \equiv 
+      G_a \f0 \cr 
+      \f0 G_b
+    , \labelgg00g
+with 
+    G_a = 
+      \frac\tstyle 1\tstyle \sqrt\beta_a 0 \cr
+      \frac\tstyle \alpha_a\tstyle \sqrt\beta_a \sqrt\beta_a
+    , \labelg1b0a 
+with a similar equation for G_b. With this definition, the corresponding \ARA and
+\ARB (cf.~\Equa00b) are just rotation matrices. The relationship between T and
+\ARU is
+    T = G\inv \, \ARV \, \ARU \, \ARV\inv \, G
+    , \labeltgvuv
+where
+    \ARV = G \, V \, G\inv
+    . \labelvgvg
+Using \Eqgg00g, \ARV can be written in the form
+    \ARV = 
+      \gamma I \ARC \cr -\ARC^+ \gamma I
+    , \labelvgicc3
+with the normalized matrix \ARC given by
+    \ARC = G_a \, C \, G_b\inv
+    . \labelcgcg
+
+The two normal modes of oscillation are denoted a and b with the a-mode associated with the
+A matrix and the b-mode associated with the B matrix. The normal mode phase space
+coordinates are denoted  a = (a, p_a, b, p_b). If the one--turn matrix T is uncoupled
+then the a-mode is associated with horizontal horizontal motion and b-mode is associated with
+vertical motion.
+
+The normal mode coordinates  a are related to the laboratory frame via
+     a = V\inv \,  x
+    . \labelavx
+In particular the normal mode dispersion eta_a = (\eta_a, \eta'_a, \eta_b, \eta'_b) is related
+to the laboratory frame dispersion eta_x = (\eta_x, \eta'_x, \eta_y, \eta'_y) via
+    eta_a = V\inv \, eta_x
+    . \labeletaavx
+When there is no coupling (C = 0), eta_a and eta_x are
+equal to each other.
+
+In highly coupled lattices there is the possibility of ""mode flips"". An example will make
+this clear. Suppose that at one point in a lattice, which will be labeled s_1, the 1-turn matrix
+T_1 is uncoupled (V_1 is the unit matrix). The two normal modes at this point will be
+labeled a_1 and b_1. and T_1 can be written in the form
+  T_1 = 
+      A_1 \f0 \cr 
+      \f0   B_1 \cr
+Further assume that the transfer matrix M_12 between point s_1 and some other point s_2
+is of the form
+  M_12 = 
+      \f0 E \cr 
+      F \f0 \cr
+The 1-turn matrix T_2 at s_2 will be
+  T_2 = M_12^-1 \, T_1 \, M_12
+  = \beginpmatrix
+      F^-1 \, B_1 F \f0 \cr 
+      \f0                     E^-1 \, A_1 \, E \cr
+  = \beginpmatrix
+      A_2 \f0 \cr 
+      \f0   B_2 \cr
+This shows that the at s_2 the a_2 normal mode is associated with the b_1 mode and the b_2
+mode is associated with the a_1 mode! This is a mode flip. What this means is that in this highly
+coupled lattice the excitation of a given "physical" mode will be described using the a-mode in
+some places of the lattice and the b-mode in other places. In particular, it is important to keep
+track of where there are mode flips when evaluating synchrotron radiation integrals
+like I_4a and I_4b  since an individual integral must be evaluated
+using the same physical mode throughout.
+
+At any point where Bmad evaluates the Twiss parameters, a "mode_flip" parameter is set. By
+default, Bmad sets the "mode_flip" at the beginning of the lattice to "False"
+ and then calculates the "mode_flip" parameter appropriately for any other
+point. For a lattice with a closed geometry, if the lattice is stable, the "mode_flip" state at
+the end of the lattice will be equal to the state at the beginning of the lattice.
+
+  \includegraphics[width=5in]tune.pdf
+a clockwise rotation in (x, p_x) or (y, p_y) space represents a positive tune. B) For longitudinal
+oscillations, it is sometimes conventional to take counterclockwise rotation as positive if a machine
+is always running above transition.
+
+Given the 6 \times 6 one-turn matrix for a storage ring, one issue is how to extract the tunes. If
+there is no coupling the analysis is simple but with coupling things get more complicated. In the
+general case, calculating with eigenvectors and eigenvalues gives, assuming that the lattice is
+stable, three pairs of eigenvalues with the two eigenvalues of a given pair being complex
+conjugates and all eigenvalues having unit amplitude. That is, the eigenvalues \lambda_i, i =
+1, \ldots 6 can be ordered in pairs:
+  \lambda_1, \, \lambda_2= \exp(i \, \theta_a), \, \exp(-i \, \theta_a) \CRNO
+  \lambda_3, \, \lambda_4= \exp(i \, \theta_b), \, \exp(-i \, \theta_b) \labellleit 
+  \lambda_5, \, \lambda_6= \exp(i \, \theta_c), \, \exp(-i \, \theta_c) \nonumber
+where \theta_a, \theta_b, and \theta_c are the three tunes. To associate \lambda_1 and
+\lambda_2, along with their associated eigenvectors v_1 and v_2, with the
+"horizontal-like" mode, all the eigenvectors are compared to one another and the eigenvector pair
+with the largest values for the x and p_x components are used for v_1 and v_2.
+Similarly, for the "vertical-like" mode, eigenvector pair with the largest values for the y and
+p_y components are associated with v_3 and v_4, and finally for the "longitudinal-like"
+mode the eigenvector pair with the largest values for the z and p_z components are associated
+with v_5 and v_6.
+
+It can be useful to arrange the eigenvalues such that the odd numbered eigenvalues (1, 3, and 5) are
+associated with the tune and the even numbered eigen values (2, 4, and 6) are associated with the
+negative of the tune as arranged in \Eqlleit. The algorithm for doing this can be deduced by first
+considering the case where the motion is in one-dimension only. Here taken to be (x, p) as shown
+in \figf:tune. Notice that, by the standard accelerator physics convention, a positive tune
+represents a clockwise rotation in the transverse dimensions. For the longitudinal mode what counts
+as positive tune can depend upon whether the machine is above transition or not. To keep the
+mathematics consistent, positive tune for all modes will be taken to be clockwise.
+
+Assuming that the motion is circular, the one-turn matrix M with tune \theta is
+  M = \beginpmatrix
+    \cos(\theta) \sin(\theta) 
+   -\sin(\theta) \cos(\theta)
+The eignvalues and eigenvectors are
+  \lambda_1= \exp( i \, \theta),  \qquad&v_1 = \frac1\sqrt2 \, (1, i) \CRNO
+  \lambda_2= \exp(-i \, \theta),  \qquad&v_2 = \frac1\sqrt2 \, (1, -i) 
+Thus, for the eigenvector (1, i)/\sqrt2, were the momentum component is rotated by a factor
+of \pi/2 counterclockwise from the position coordinate, the rotation angle is the tune. The
+rotation angle associated with the eigenvector (1, -i)/\sqrt2 is associated with the negative of
+the tune.
+
+In the general case, each v_k, k = 1, \ldots 6, is a vector in (x, p_x, y, p_y, z, p_z)
+space with each component of the vector being a complex number. The criterion that an eigenvector
+is associated with the tune is that the phase of the momentum components are on average rotated
+clockwise from the position coordinates is
+  \wtv_k^* \, S \, v_k=  i, \quad&k = 1, 3, 5 \CRNO
+  \wtv_k^* \, S \, v_k= -i, \quad&k = 2, 4, 6
+where the tilde means transpose and S is the matrix
+  S = \beginpmatrix
+      0  1  0  0  0  0 
+     -1  0  0  0  0  0 
+      0  0  0  1  0  0 
+      0  0 -1  0  0  0 
+      0  0  0  0  0  1 
+      0  0  0  0 -1  0 
+\Eqvsvi0, along with the condition 
+  v_k+1 = v_k^*, \qquad k = 1, 3, 5
+makes sure that the v_k are properly normalized.\footnote
+  
+Different Authors use different conventions. For example, the S matrix in the paper by
+Chao\citeb:chao.spin, is the negative of the S matrix defined here and in the paper by Ohmi,
+Hirata, and Oide \citeb:ohmi the phases are reversed (positive phase is counterclockwise rotation)
+as can be seen from Eqs.~(77) and (79) in their paper.
+  
+The transformation from the one-turn 6 \cross 6 matrix T in laboratory coordinates to
+action-angle coordinates uses the similarity transformation
+  T = N \, R \, N^-1
+where N is a symplectic matrix. N^T \, S \, N = S with S given in \Eqs010000
+and R is a rotation matrix
+  R = \beginpmatrix
+    R_2(\theta_a)                                   
+                     R_2(\theta_b)                  
+                                      R_2(\theta_c)
+with each 2 \times 2 rotation submatrix R_2 being of the form as M in \Eqmctst.
+The transformation from laboratory coordinates x to normal mode a coordinates is
+  a = N^-1 \, x
+In action-angle coordinates a looks like
+  a =\left( \sqrt2 \, J_a \, \cos(\phi_a), -\sqrt2 \, J_a \, \sin(\phi_a), 
+                 \sqrt2 \, J_b \, \cos(\phi_b), -\sqrt2 \, J_b \, \sin(\phi_b), \right. 
+       \hskip20em \left. 
+                 \sqrt2 \, J_c \, \cos(\phi_c), -\sqrt2 \, J_c \, \sin(\phi_c) 
+         \right) \nonumber
+where J_a, J_b, and J_c are the actions and \phi_a, \phi_b, and \phi_c are the angles.
+
+When the motion is uncoupled, the action and angle of a mode is related to the laboratory coordinates, up
+to an overall phase factor via:
+  x= \sqrt2 \, J \, \beta \, \cos( \phi ) \CRNO
+  p= -\sqrt\frac2 \, J\beta \, \left( \alpha \, \cos( \phi ) + \sin( \phi ) \right) \CRNO
+
+With the eigenvectors normalized with \Eqvsvi0, the particle position x on turn m when a
+single mode k is excited can be written in the form
+  x(m) = \sqrtJ \, v_k \, e^i \, (\theta_k \, m + \phi_0) + \textC.C.
+where the phase \phi_0 is set by the initial particle position x(0) and "C.C." means
+complex conjugate.
+
+The N matrix can be constructed using the eigenvectors of T 
+  N = \frac1\sqrt2 \, \left( 
+    (\wtv_1 + \wtv_2), -i \, (\wtv_1 - \wtv_2), 
+    (\wtv_3 + \wtv_4), -i \, (\wtv_3 - \wtv_4), 
+    (\wtv_5 + \wtv_6), -i \, (\wtv_5 - \wtv_6)
+  \right)
+where the tilde means transpose. That is, the \wtv_k are column vectors.
+
+The v_k vectors, k = 1, 3, 5 can each be multiplied by an arbitrary complex phase factor z
+with unit magnitude. The corresponding v_k must then be multiplied by z^*
+to keep \Eqvv135 satisfied. To recover the standard Twiss parameters, without coupling N
+should have the form
+  N = \beginpmatrix
+    N_a               
+           N_b        
+                  N_c
+where the 2 \times 2 submatrices have the standard form
+  N_a = \beginpmatrix
+    \sqrt\beta_a                                   0 \cr
+    \frac\tstyle -\alpha_a\tstyle \sqrt\beta_a \frac\tstyle 1\tstyle \sqrt\beta_a
+with similar equations for N_b and N_c. To make the (1,2) component of these submatrices
+zero, along with having \sqrt\beta positive, the k\Th component of v_k, k = 1, 3, 5
+must be positive real. This fixes the overall phase of the eigenvectors.
+
+The dispersion \eta is defined in the standard way
+  \texteta_x = \eta_x(s) \equiv \left. \fracdxdp_z \right|_s \comma \qquad
+  \texteta_y = \eta_y(s) \equiv \left. \fracdydp_z \right|_s
+
+The associated momentum dispersion is:
+  \textetap_x = \eta_px \equiv \left. \fracdp_xdp_z \right|_s \comma \qquad 
+  \textetap_y = \eta_py \equiv \left. \fracdp_ydp_z \right|_s \comma \qquad 
+The momentum dispersion is useful when constructing particle bunch distributions and for
+various calculations like for calculating radiation integrals.
+
+To calulate the normal mode dispersions, \Eqavx is used to transform from laboratory to normal mode
+coordinates.
+
+The one drawback with the momentum dispersion is that it is not always simply related to the
+derivative of the dispersion d\eta/ds. This becomes a factor when designing lattices where, if
+some section of the lattice needs to be dispersion free, it is convienient to be able to optimize
+d\eta/ds to zero. The dispersion derivative is related to the momentum dispersion by
+  \textdeta_x_ds\equiv \fracd\eta_xds
+    = \fracddp_z \left( \fracdxds \right)
+    = \fracddp_z \left( \fracp_x1 + p_z \right)
+    = \frac11 + p_z \, \eta_px - \fracp_x(1 + p_z)^2  \CRNO
+  \textdeta_y_ds\equiv \fracd\eta_yds
+    = \fracddp_z \left( \fracdyds \right)
+    = \fracddp_z \left( \fracp_y1 + p_z \right)
+    = \frac11 + p_z \, \eta_py - \fracp_y(1 + p_z)^2
+
+For a lattice branch with an open (non-circular) geometry, the dispersion of the z phase space
+coordinate, \eta_z can be defined similar to the dispersion of the other coordinates. In this
+case, the dispersion vector eta is defined by
+  eta = (\eta_x, \eta_px, \eta_y, \eta_py, \eta_z, 1)
+and this vector is propagated via
+  eta(s_2) = M_21 \, eta(s_1)
+where M_21 is the transfer matrix between points s_1 and s_2.
+
+For an open geometry lattice branch, there are two ways one can imagine
+defining the dispersion: Either with respect to changes in energy at the beginning of the machine or
+with respect to the local change in energy at the point of measurement. The former definition will
+be called "non-local dispersion" and the latter definition will be called "local dispersion"
+which what Bmad calculates. The non-local dispersion \wteta(s_1) at some point s_1 is
+related to the local dispersion eta(s_1) via
+  \wteta(s_1) = \fracdp_z1dp_z0 \, eta(s_1)
+where s_0 is the s-position at the beginning of the machine. The non-local dispersion has the
+merit of reflecting what one would measure if the starting energy of the beam is varied. The local
+dispersion, on the other hand, reflects the correlations between the particle energy and particle
+position within a beam.
+
+For a closed geometry lattice branch, defining the dependence of z on p_z is problematical.
+With the RF off, z is not periodic so a closed orbit z cannot be defined.  With the RF on, the
+dispersion of any of the phase space components is not well defined.  This being the case, \eta_z
+is just treated as zero for a closed branch.  
+
+Note: For a closed geometry branch with RF on, it is possible to define dispersions. If v is
+the eigenvector of the eigenmode associated with longitudinal oscillations, the dispersion \eta_x
+can be defined by v(1) / v(6) with similar definitions for the other dispersion components.
+With this definition, the dispersion become complex. In the low RF limit, the dispersions \eta_x,
+\eta_px, \eta_y, \eta_py converge to the standard (real) values and \eta_z diverges
+to infinity.\footnote
+  
+This is assuming a linear system. In practice, the motion will become unstable due to
+the finite size of the RF bucket.
+  

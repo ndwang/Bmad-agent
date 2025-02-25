@@ -1,0 +1,664 @@
+chapter The ele_struct
+
+This chapter describes the "ele_struct" which is the structure that
+holds all the information about an individual lattice element:
+quadrupoles, separators, wigglers, etc. The "ele_struct" structure is
+shown in \figsf:ele.struct1  and \reff:ele.struct2. This
+structure is somewhat complicated, however, in practice, a lot of the
+complexity is generally hidden  by the Bmad bookkeeping routines.
+
+As a general rule, for variables like the Twiss parameters that are not
+constant along the length of an element, the value stored in the
+corresponding component in the "ele_struct" is the value at the downstream
+end of the element.
+
+For printing information about an element, the
+\Hyperrefr:type.eletype_ele or \Hyperrefr:type.eletype_ele routines
+can be used . The difference between the two is
+that "type_ele" will print to the terminal window while "type_ele"
+will return an array of strings containing the element information.
+\nopagebreak[4]
+\footnotesize
+type ele_struct
+  character(40) name                       ! name of element.
+  character(40) type                       ! type name.
+  character(40) alias                      ! Another name.
+  character(40) component_name             ! Used by overlays, multipass patch, etc.
+  character(200), pointer :: descrip       ! Description string.
+  type (twiss_struct)  a, b, z             ! Twiss parameters at end of element.
+  type (xy_disp_struct) x, y               ! Projected dispersions.
+  type (ac_kicker_struct), pointer :: ac_kick  ! ac_kicker element parameters.
+  type (bookkeeping_state_struct) bookkeeping_state ! Element attribute bookkeeping
+  type (branch_struct), pointer :: branch      ! Pointer to branch containing element.
+  type (controller_struct), pointer :: control ! For group and overlay elements. 
+  type (cartesian_map_struct), pointer :: cartesian_map(:)     ! Used to define DC fields
+  type (cylindrical_map_struct), pointer :: cylindrical_map(:) ! Used to define DC fields
+  type (ele_struct), pointer :: lord           ! Pointer to a slice lord.
+  type (gen_grad_map_struct), pointer :: gen_grad_map(:)       ! Used to define DC fields.
+  type (grid_field_struct), pointer :: grid_field(:)           ! Used to define DC and AC fields.
+  type (fibre), pointer :: ptc_fibre           ! PTC tracking.
+  type (floor_position_struct) floor           ! Global floor position.
+  type (mode3_struct), pointer :: mode3        ! Full 6-dimensional normal mode decomposition.
+  type (photon_element_struct), pointer :: photon
+  type (rad_int_ele_cache_struct), pointer :: rad_int_cache  
+                                               ! Radiation integral calc cached values 
+  type (space_charge_struct), pointer :: space_charge 
+  type (taylor_struct) :: taylor(6)            ! Orbital Taylor map.
+  type (taylor_struct) :: spin_taylor(0:3)     ! Spin Taylor map.
+  type (wake_struct), pointer :: wake    ! Wakes
+    ele_struct definition continued on next figure...
+The complete structure is shown in this and the following figure.
+
+--------------------------------------------------------------------------
+
+\footnotesize
+    ... ele_struct definition continued from previous figure.
+  type (wall3d_struct) :: wall3d               ! Chamber or capillary wall
+  type(coord_struct) map_ref_orb_in            ! Transfer map ref orbit at upstream end of element.
+  type(coord_struct) map_ref_orb_out           ! Transfer map ref orbit at downstream end of element.
+  type(coord_struct) time_ref_orb_in           ! Reference orbit at upstream end for ref_time calc.
+  type(coord_struct) time_ref_orb_out          ! Reference orbit at downstream end for ref_time calc.
+  real(rp) value(num_ele_attrib)              ! attribute values.
+  real(rp) old_value(num_ele_attrib)          ! Used to see if %value(:) array has changed.
+  real(rp) vec0(6)                             ! 0th order transport vector.
+  real(rp) mat6(6,6)                           ! 1st order transport matrix.
+  real(rp) c_mat(2,2)                          ! 2x2 C coupling matrix
+  real(rp) gamma_c                             ! gamma associated with C matrix
+  real(rp) s_start                             ! longitudinal ref position at entrance_end
+  real(rp) s                                   ! longitudinal position at the downstream end.
+  real(rp) ref_time                            ! Time ref particle passes downstream end.
+  real(rp), pointer :: r(:,:,:)                ! For general use. Not used by Bmad.
+  real(rp), pointer :: a_pole(:)               ! multipole
+  real(rp), pointer :: b_pole(:)               ! multipoles
+  real(rp), pointer :: a_pole_elec(:)          ! Electrostatic multipoles.
+  real(rp), pointer :: b_pole_elec(:)          ! Electrostatic multipoles.
+  real(rp), pointer :: custom(:)               ! Custom attributes
+  integer key                    ! key value
+  integer sub_key                ! Records bend input type (rbend, sbend).
+  integer ix_ele                 ! Index in lat%branch(n)%ele(:) array [n = 0 <==> lat%ele(:)].
+  integer ix_branch              ! Index in lat%branch(:) array [0 => In lat%ele(:)].
+  integer lord_status            ! overlay_lord, etc.
+  integer n_slave                ! Number of slaves
+  integer n_slave_field          ! Number of field slaves
+  integer ix1_slave              ! Pointer to lat%control array
+  integer slave_status           ! super_slave, etc.
+  integer n_lord                 ! Number of lords
+  integer n_lord_field           ! Number of field lords
+  integer ic1_lord               ! Pointer to lat%ic array.
+  integer ix_pointer             ! For general use. Not used by Bmad.
+  integer ixx, iyy               ! Index for Bmad internal use
+  integer mat6_calc_method       ! bmad_standard, taylor, etc.
+  integer tracking_method        ! bmad_standard, taylor, etc.
+  integer spin_tracking_method   ! bmad_standard, symp_lie_ptc, etc.
+  integer ptc_integration_type   ! drift_kick, matrix_kick, etc.
+  integer field_calc             ! Used with Runge-Kutta integrators.
+  integer aperture_at            ! Aperture location: exit_end, ...
+  integer aperture_type          ! Type of aperture: rectanular, elliptical, or custom. 
+  integer orientation            ! -1 -> Element is longitudinally reversed. +1 -> Normal.
+  logical symplectify            ! Symplectify mat6 matrices.
+  logical mode_flip              ! Have the normal modes traded places?
+  logical multipoles_on          ! For turning multipoles on/off
+  logical scale_multipoles       ! multipole components scaled by the strength of element?
+  logical taylor_map_includes_offsets       ! Taylor map calculated with element offsets?
+  logical field_master           ! Calculate strength from the field value?
+  logical is_on                  ! For turning element on/off.
+  logical logic                  ! For general use. Not used by Bmad.
+  logical bmad_logic             ! For Bmad internal use only.
+  logical select                 ! For element selection. Used by make_hybrid_ring, etc.
+  logical csr_method             ! Coherent synchrotron radiation calculation
+  logical space_charge_method    ! Space charge method.
+  logical offset_moves_aperture  ! element offsets affects aperture?          
+end type
+The complete structure is shown in this and the preceding figure.
+
+--------------------------------------------------------------------------
+
+The "ele_struct" has a number of components and subcomponents 
+that are pointers and this raises a deallocation issue.
+Generally, most "ele_struct" elements are part of a "lat_struct"
+variable 
+and such elements in a "lat_struct" are handled by the
+"lat_struct" allocation/deallocation routines. 
+In the case where a local "ele_struct"
+variable is used within a subroutine or function, the "ele_struct" 
+variable must either be defined with the "save" attribute 
+  type (ele_struct), save :: ele          ! Use the save attribute
+  logical, save :: init_needed = .false.
+  ...
+  if (init_needed) then
+    call init_ele (ele, quadrupole$)     ! Initialize element once
+    init_needed = .false.
+  endif
+or the pointers within the variable must be deallocated  with a call to
+\Hyperrefr:deallocate.ele.pointersdeallocate_ele_pointers:
+  type (ele_struct) ele  
+  ...
+  call init_ele (ele, sbend$)            ! Initialize element each time
+  ...
+  call deallocate_ele_pointers (ele) ! And deallocate.
+
+In the "normal" course of events, the pointers of an "ele_struct" variable should not be
+pointing to the same memory locations as the pointers of any other "ele_struct" variable. To make
+sure of this, the equal sign in the assignment "ele1 = ele2" is overloaded by the routine
+\Hyperrefr:ele.equal.eleele_equal_ele.  The exception here are the "Electro-magnetic field
+component" pointers "ele%wig_term", "ele%em_field%mode(:)%map", and
+"ele%em_field%mode(:)%grid". Since these components potentially contain large arrays, and since
+the individual sub-components of these components are not likely to be individually modified, The
+field component pointers of "ele1" and "ele2" after the set "ele1 = ele2" will point at the
+same memory locations.
+
+Note: The assignment "ele1 = ele2" will not modify "ele1%ix_ele" or "ele1%ix_branch". If
+"ele1" is associated with a lattice then "ele1%lat" will also be unaffected.
+
+--------------------------------------------------------------------------
+
+When a value of an attribute in an element changes, the values of other attributes may need to be
+changed . Furthermore, in a lattice, changes to one element may necessitate changes
+to attribute values in other elements. For example, changing the accelerating gradient in an
+"lcavity" will change the reference energy throughout the lattice.
+
+The attribute bookkeeping for a lattice can be complicated and, if not done intelligently, can cause
+programs to be slow if attributes are continually being changed. In order to keep track what
+bookkeeping has been done, the "ele%status" component is used by the appropriate bookkeeping
+routines for making sure the bookkeeping overhead is keep to a minimum. However, "intelligent"
+bookkeeping is only done if explicitly enabled in a program. See for more
+details.
+
+--------------------------------------------------------------------------
+
+The "%name", "%type", "%alias", and "%descrip" components of the "ele_struct" all
+have a direct correspondence with the "name", "type", "alias", and "descrip" element
+attributes in an input lattice file . On input , The "name"
+attribute is converted to uppercase before being loaded into an "ele_struct". The other three are
+not. To save memory, since "%descrip" is not frequently used, "%descrip" is a pointer that is
+only allocated if "descrip" is set for a given element.
+
+When a lattice is constructed by \Hyperrefr:bmad.parserbmad_parser, a "nametable" is
+constructed to enable the fast lookup of element names. Therefore, It is important that if element
+names are modified, that the nametable is updated appropriately. This is done by calling
+\Hyperrefr:create.lat.ele.nametablecreate_lat_ele_nametable after any element name
+modifications.
+
+--------------------------------------------------------------------------
+
+The "%key" integer component gives the class of element
+("quadrupole", "rfcavity", etc.). In general, to get the
+corresponding integer parameter for an element class, just add a "$"
+character to the class name. For example "quadrupole$" is the integer
+parameter for "quadrupole" elements. The "key_name" array converts from
+integer to the appropriate string. For example:
+  type (ele_struct) ele
+  if (ele%key == wiggler$) then       ! Test if element is a wiggler.
+  print *, "This element: ", key_name(ele%key) ! Prints, for example, "WIGGLER"
+Note: The call to "init_ele" is needed for any "ele_struct" defined
+outside of a "lat_struct" structure.
+
+The "%sub_key" component is only used for bend element.  When a lattice file is parsed,
+, all "rbend" elements are converted into "sbend" elements
+. To keep track of what the original definition of the element was, the "%sub_key"
+component will be set to "sbend$" or "rbend$" whatever is appropriate. 
+The "%sub_key" component does not affect any calculations and is only used in the routines that
+recreate lattice files from a "lat_struct" .
+
+--------------------------------------------------------------------------
+
+Most of the real valued attributes of an element are held in the "%value(:)" array. For example,
+the value of the "k1" attribute for a quadrupole element is stored in "%value(k1$)" where
+"k1$" is an integer parameter that Bmad defines.  In general, to get the correct index in
+"%value(:)" for a given attribute, add a "$" as a suffix. To convert from an attribute name to
+its index in the "%value" array use the \Hyperrefr:attribute.indexattribute_index routine.
+To go back from an index in the "%value" array to a name use the
+\Hyperrefr:attribute.nameattribute_name routine. Example:
+  type (ele_struct) ele
+  call init_ele (ele, quadrupole$)    ! Initialize element
+  ele%value(k1$) = 0.3                                        ! Set K1 value
+  print *, "Index for Quad K1:  ", attribute_index(ele, "K1") ! prints: `4' (= k1$)
+  print *, "Name for Quad k1$: ", attribute_name (ele, k1$)   ! prints: `K1' 
+The list of attributes for a given element
+type is given in the writeup for the different element in
+Chapter~\refc:elements. 
+
+To obtain a list of attribute names and associated "%value(:)"
+indexes, the program "element_attributes" can be used. This program
+is included in the standard Bmad distribution.
+
+Besides real valued attributes, the "value(:)" array also holds logical,
+integer, and, as explained below, "switch" attributes. To find out the
+type of a given attribute, use the function \Hyperrefr:attribute.typeattribute_type. See the
+routine "type_ele" for an example of how "attribute_type" is used.
+
+An example of a logical attribute is the "flexible" logical of match elements which is stored in
+"%value(flexible$)". To evaluate logical attributes, the functions
+\Hyperrefr:is.trueis_true(param) or \Hyperrefr:is.falseis_false(param) should be used.
+
+Integer attributes stored in the "value(:)" array include "n_slice" (stored
+in "%value(n_slice$)"). With integer attributes, the "nint(param)" 
+Fortran instrinsic should be used for evaluation.
+
+A switch attribte is an attribute whose value is one of a certain set of integers
+where each integer corresponds to some "state". For example, the "fringe_at"
+switch which, as explained in, may have one of four values.
+Generally, the integer parameters that correspond to the states of a switch
+can be constructed by putting a "$" after the associated name. Thus,
+with the "fringe_at" switch, the four integer parameters are "no_end$",
+"both_ends$", "entrance_end$", and "exit_end$". For example:
+  if (nint(ele%value(fringe_type$)) == soft_edge_only$) then
+    ...
+For printing purposes, to convert a switch value to the appropriate string, use
+the routine\Hyperrefr:switch.attrib.value.nameswitch_attrib_value_name can be used.
+
+The "%field_master" logical within an element sets whether it is the normalized strength or field
+strength that is the independent variable. See for more details.
+
+The "%old_value(:)" component of the "ele_struct" is used by the
+\Hyperrefr:attribute.bookkeeperattribute_bookkeeper routine to check for changes for changes in
+the "%value(:)" array since the last time the "attribute_bookkeeper" routine had been called.
+If nothing has been changed, the "attribute_bookkeeper" routine knows not to waste time
+recalculating dependent values. Essentially what this means is that the "%old_value(:)" array
+should not be modified outside of "attribute_bookkeeper".
+
+--------------------------------------------------------------------------
+
+If an element is part of a "lat_struct" , the
+"%ix_ele" and "%ix_branch" components of the "ele_struct"
+identify where the element is. Additionally, the "%lat" component
+will point to the encomposing lattice. That is
+  type (lat_struct), pointer :: lat
+  type (ele_struct), pointer :: ele2
+  if (ele%ix_ele > -1) then
+    ie = ele%ix_ele
+    ib = ele%ix_branch
+    lat => ele%lat
+    ele2 => lat%branch(ib)%ele(ie)
+    print *, associated(ele2, ele)  ! Will print True.
+  endif
+In this example the "ele2" pointer is constructed to point to the "ele" element. The test
+("ele%ix_ele"~>~-1) is needed since "ele_struct" elements may exist outside of any
+"lat_struct" instance. Such "external" elements always have "%ix_ele"~<~0.  A value for
+"%ix_ele" of -2 is special in that it prevents the
+\Hyperrefr:deallocate.ele.pointersdeallocate_ele_pointers routine from deallocating the pointers
+of an element which has its "%ix_ele" set to -2.
+
+An element "slice" is an example of an element that exists external to any "lat_struct"
+instance. A slice is an "ele_struct" instance that represents some sub-section of a given
+element. Element slices are useful when tracking particles only part way through an element
+.
+
+--------------------------------------------------------------------------
+
+The aperture limits  in the "ele_struct" are:
+  %value(x1_limit$)
+  %value(x2_limit$)
+  %value(y1_limit$)
+  %value(y2_limit$)
+The values of these limits along with the "%aperture_at", "%aperture_type",
+and "%offset_moves_aperture" components are used in tracking to determine
+if a particle has hit the vacuum chamber wall. See Section~
+for more details.
+
+--------------------------------------------------------------------------
+
+The components "%a", "%b", "%z", "%x", "%y", "%c_mat", 
+"%gamma_c", "%mode_flip", and "mode3" 
+hold information on the Twiss parameters, dispersion, and coupling
+at the downstream end of the element. See \crefc:normal.modes for more details.
+
+--------------------------------------------------------------------------
+
+In Bmad, elements in a lattice can control other elements.
+The components that determine this control are:
+  %slave_status
+  %n_slave
+  %n_slave_field
+  %ix1_slave
+  %lord_status
+  %n_lord
+  %n_lord_field
+  %ic1_lord
+  %component_name
+This is explained fully in the chapter on the "lat_struct" .
+
+--------------------------------------------------------------------------
+
+"Group" and "overlay" elements use the "%control_var(:)" array for storing information about
+the control variables. Each element in the array represents a single variable. "%control_var(:)"
+is an array of "controller_var_struct" structures and these structures look like:
+  type controller_struct
+    character(40) :: name = ""
+    real(rp) :: value = 0
+    real(rp) :: old_value = 0
+  end type
+The "%old_value" component is only used for "group" elements. 
+
+See Section~ for an example of setting up a controller element within a program.
+
+--------------------------------------------------------------------------
+
+The "upstream" and "downstream" ends of an element are, by definition,
+where the physical ends of the element would be if there were no
+offsets. In particular, if an element has a finite "z_offset", the
+physical ends will be displaced from upstream and downstream ends. See
+ for more details.
+
+The "%floor" component gives the "laboratory" global "floor" coordinates 
+at the downstream end of the element. These coordinates are computed without misalignments.
+That is, the coordinates are not "body" coordinates. The components of the "%floor" structure are
+  type floor_position_struct
+    real(rp) r(3)               ! Offset from origin
+    real(rp) w(3,3)             ! Orientation matrix (\Eqwwww)
+    real(rp) theta, phi, psi    ! Angular orientation
+  end type
+The routine \Hyperrefr:ele.geometryele_geometry will calculate an element's 
+floor coordinates given the floor coordinates at the beginning of the element.
+In a lattice, the \Hyperrefr:lat.geometrylat_geometry routine will calculate
+the floor coordinates for the entire lattice using repeated calls to "ele_geometry".
+
+The positional offsets  for an element 
+from the reference orbit are stored in
+  %value(x_offset$)
+  %value(y_offset$)
+  %value(z_offset$)
+  %value(x_pitch$)
+  %value(y_pitch$)
+  %value(tilt$)
+If the element is supported by a "girder" element 
+then the "girder" offsets are added to the element offsets 
+and the total offset with respect to the
+reference coordinate system is stored in:
+  %value(x_offset_tot$)
+  %value(y_offset_tot$)
+  %value(z_offset_tot$)
+  %value(x_pitch_tot$)
+  %value(y_pitch_tot$)
+  %value(tilt_tot$)
+If there is no "girder", the values for "%value(x_offset_tot$)", etc.
+are set to the corresponding values in "%value(x_offset$)", etc.
+Thus, to vary the position of an individual
+element the values of "%value(x_offset$)", etc. are changed and to
+read the position of an element a program should look at
+"%value(x_offset_tot$)", etc.
+
+The longitudinal position at the downstream end of an element is stored in "%s" and the reference
+time is stored in "%ref_time". This reference time is calculated assuming that the reference time
+is zero at the start of the lattice. Also stored in the "ele_struct" is the reference time at the
+start of the element and the differnece in the reference time between the end and the beginning.
+These are given in "%value(ref_time_start$)" and "%value(delta_ref_time$)" respectively.
+
+Notice that the reference time used to calculate the z phase
+space coordinate (\Eqzbctt) may be different from "%ref_time". For example, with multiple
+bunches the z phase space coordinate is generally taken to be with respect to a reference particle
+at the center of the bunch the particle is in. And, at a given element, the reference time of the
+different bunch reference particles will be different. Another example happens when a particle is
+tracked through multiple turns. In this case the reference time at a given element will depend upon
+the turn number.
+
+--------------------------------------------------------------------------
+
+The routine \Hyperrefr:make.mat6make_mat6 computes the linear 
+transfer matrix (Jacobian) along with the zeroth order transfer vector. 
+This matrix is stored in "%mat6(6,6)" and the
+zeroth order vector is stored in "%vec0(6)". The reference orbit at
+the upstream end of the element about
+which the transfer matrix is computed is stored in "%map_ref_orb_in"
+and the reference orbit at the downstream end is stored in "%map_ref_orb_out".
+In the calculation of the transfer map, the vector "%vec0" is set so that
+  map_ref_orb_out = %mat6 * map_ref_orbit_in + %vec0
+The reason redundant information is stored in the element is to save
+computation time.
+
+To compute the transfer maps for an entire lattice use the routine 
+\Hyperrefr:lat.make.mat6lat_make_mat6.
+
+The Taylor map   for an element is stored in
+"%taylor(1:6)". Each "%taylor(i)" is a "taylor_struct"
+structure that defines a Taylor series:
+  type taylor_struct
+    real (rp) ref
+    type (taylor_term_struct), pointer :: term(:) => null()
+  end type
+Each Taylor series has an array of "taylor_term_struct" terms defined as
+  type taylor_term_struct
+    real(rp) :: coef
+    integer :: expn(6)
+  end type
+The coefficient for a Taylor term is stored in "%coef" and the
+six exponents are stored in "%exp(6)". 
+
+To see if there is a Taylor map associated with an element the
+association status of "%taylor(1)%term" needs to be checked.
+As an example the following finds the order of a Taylor map.
+  type (ele_struct) ele
+  ...
+  if (associated(ele%taylor(1)%term) then  ! Taylor map exists
+    taylor_order = 0
+    do i = 1, 6
+      do j = 1, size(ele%taylor(i)%term)
+        taylor_order = max(taylor_order, sum(ele%taylor(i)%term(j)%exp)
+      enddo
+    enddo
+  else  ! Taylor map does not exist
+    taylor_order = -1  ! flag non-existence
+  endif
+
+The Taylor map is made up around some reference phase space point
+corresponding to the coordinates at the upstream of the element.
+This reference point is saved in "%taylor(1:6)%ref".  Once a Taylor map is
+made, the reference point is not needed in subsequent
+calculations. However, the Taylor map itself will depend upon what
+reference point is chosen .
+
+--------------------------------------------------------------------------
+
+The reference energy and reference time are computed around a
+reference orbit which is different from the reference orbit used for
+computing transfer maps . The energy and time
+reference orbit for an element is stored in
+  ele%time_ref_orb_in        ! Reference orbit at upstream end
+  ele%time_ref_orb_out       ! Reference orbit at downstream end
+Generally "ele%time_ref_orb_in" is the zero orbit. The exception
+comes when an element is a "super_slave". In this case, the
+reference orbit through the super_slaves of a given "super_lord" is
+constructed to be continuous. This is done for consistancey sake. For
+example, to ensure that when a marker is superimposed on top of a
+wiggler the reference orbit, and hence the reference time, is not altered.
+
+--------------------------------------------------------------------------
+
+"%em_field" component holds information on 
+the electric and magnetic fields of an element 
+Since "ele%em_field" is a pointer its association
+status must be tested before any of its sub--components are accessed.
+  type (ele_struct) ele
+  ...
+  if (associated(ele%em_field)) then
+    ...
+
+The "ele%em_field" component is of type "em_fields_struct" which
+holds an array of modes
+  type em_fields_struct
+    type (em_field_mode_struct), allocatable :: mode(:)
+  end type
+Each mode has components
+  type em_field_mode_struct
+    integer m                     ! Mode varies as cos(m*phi - phi_0)
+    real(rp) freq                 ! Oscillation frequency (Hz)
+    real(rp) :: f_damp = 0        ! 1/Q damping factor
+    real(rp) :: phi0_autoscale = 0     ! Mode oscillates as: twopi * (f * t + phi0_autoscale)
+    real(rp) :: phi0_azimuth = 0  ! Azimuthal orientation of mode.
+    real(rp) :: field_scale = 1   ! Factor to scale the fields by
+    type (em_field_mode_map_struct), pointer :: map => null()
+    type (em_field_grid_struct), pointer :: grid => null()
+  end type
+
+--------------------------------------------------------------------------
+
+The "ele%wake" component holds information on the wakes associated with an element.  Since
+"ele%wake" is a pointer, its association status must be tested before any of its sub--components
+are accessed.
+  type (ele_struct) ele
+  ...
+  if (associated(ele%wake)) then
+    ...
+Bmad observes the following rule: If "%wake" is associated, it is assumed that all the
+sub--components ("%wake%sr_table", etc.) are associated. This simplifies programming in that you
+do not have to test directly the association status of the sub--components.
+
+See for the equations used in wakefield calculations.  wakefields are stored
+in the "%wake" struct:
+  type wake_struct
+    type (wake_sr_struct) :: sr     ! Short-range wake.
+    type (wake_lr_struct) :: lr     ! Long-range wake.
+    real(rp) :: amp_scale = 1       ! Wake amplitude scale factor.
+    real(rp) :: time_scale = 1      ! Wake time scale factor.
+  end type
+
+The short--range wake parameterization uses pseudo--modes . This parameterization
+utilizes the "%wake%sr%long(:)", and "%wake%sr%trans(:)" arrays for the longitudinal and
+transverse modes respectively.  The structure used for the elements of these arrays are:
+  type wake_sr_mode_struct  ! Pseudo-mode short-range wake struct 
+    real(rp) amp        ! Amplitude
+    real(rp) damp       ! Damping factor.
+    real(rp) freq       ! Frequency in Hz
+    real(rp) phi        ! Phase in radians/2pi
+    real(rp) b_sin      ! non-skew sin-like component of the wake
+    real(rp) b_cos      ! non-skew cos-like component of the wake
+    real(rp) a_sin      ! skew sin-like component of the wake
+    real(rp) a_cos      ! skew cos-like component of the wake
+  end type
+The wakefield kick is calculated from \Eqwadzk. "%amp", "%damp", "%freq", and "%phi"
+are the input parameters from the lattice file. the last four components ("%norm_sin", etc.)
+store the accumulated wake: Before the bunch passes through these are set to zero and as each
+particle passes through the cavity the contribution to the wake due to the particle is calculated
+and added the components.
+
+"%wake%z_sr_mode_max" is the maximum z value beyond which the pseudo mode representation is not
+valid. This is set in the input lattice file.
+
+The "%wake%lr" array stores the long--range wake modes. The
+structure definition is:
+  type wake_lr_struct   ! Long-Range Wake struct 
+    real(rp) freq       ! Actual Frequency in Hz
+    real(rp) freq_in    ! Input frequency in Hz
+    real(rp) R_over_Q   ! Strength in V/C/m^2
+    real(rp) Q          ! Quality factor
+    real(rp) angle      ! polarization angle (radians/2pi).
+    integer m           ! Order (1 = dipole, 2 = quad, etc.)
+    real(rp) b_sin      ! non-skew sin-like component of the wake
+    real(rp) b_cos      ! non-skew cos-like component of the wake
+    real(rp) a_sin      ! skew sin-like component of the wake
+    real(rp) a_cos      ! skew cos-like component of the wake
+    logical polarized   ! Polarized mode?
+  end type
+This is similar to the "sr_mode_wake_struct". "%freq_in" is the actual frequency in the input
+file. \Hyperrefr:bmad.parserbmad_parser will set "%freq" to "%freq_in" except when the
+"lr_freq_spread" attribute is non-zero in which case "bmad_parser" will vary "%freq" as
+explained in. "%polarized" is a logical that indicates whether the mode has a
+polarization angle. If so, then "%angle" is the polarization angle.
+
+--------------------------------------------------------------------------
+
+The "%sub_key" component of the "ele_struct" is used to distinguish
+between "map type" and "periodic type" wigglers :
+  if (ele%key == wiggler$ .and. ele%sub_key == map_type$) ...
+  if (ele%key == wiggler$ .and. ele%sub_key == periodic_type$) ...
+For a "map" type wiggler, the wiggler field terms
+ are stored in the "%wig_term(:)" array of
+the "element_struct". This is an array of "wig_term_struct"
+structure. A "wig_term_struct" looks like:
+  type wig_term_struct
+    real(rp) coef
+    real(rp) kx, ky, kz
+    real(rp) phi_z
+    integer type      ! hyper_y$, hyper_xy$, or hyper_x$
+  end type
+A "periodic" wiggler will have a single "%wig_term(:)" term that
+can be used for tracking purposes, etc. The setting for this
+"wig_term" element is
+  ele%wig_term(1)%ky     = pi / ele%value(l_pole$)
+  ele%wig_term(1)%coef   = ele%value(b_max$)
+  ele%wig_term(1)%kx     = 0
+  ele%wig_term(1)%kz     = ele%wig_term(1)%ky
+  ele%wig_term(1)%phi_z  = (ele%value(l_pole$) - ele%value(l$)) / 2
+  ele%wig_term(1)%type   = hyper_y$
+
+--------------------------------------------------------------------------
+
+The multipole components of an element (See) are
+stored in the pointers "%a_pole(:)" and "%b_pole(:)". If
+"%a_pole" and "%b_pole" are allocated they always have a range
+"%a_pole(0:n_pole_maxx)" and "%b_pole(0:n_pole_maxx)". Currently
+"n_pole_maxx" = 20. For a "Multipole" element, the
+"%a_pole(n)" array stores the integrated multipole strength
+"KnL", and the "%b_pole(n)" array stores the tilt "Tn".
+
+A list of Bmad routines for manipulating multipoles can be found in
+.
+
+--------------------------------------------------------------------------
+
+A number of "ele_struct" components control tracking and transfer
+map calculations.  These are:
+  %mat6_calc_method
+  %tracking_method
+  %taylor_order
+  %symplectify
+  %multipoles_on
+  %taylor_map_includes_offsets
+  %is_on
+  %csr_method
+  %space_charge_method
+  %offset_moves_apaerture
+See Chapter~ for more details.
+
+--------------------------------------------------------------------------
+
+There are four components of an "ele_struct" that are guaranteed to never be used by any Bmad
+routine and so are available for use by someone writing a program. These components are:
+  %r(:,:,:)                     ! real(rp), pointer.
+  %custom(:)                    ! real(rp), pointer.
+  %ix_pointer                   ! integer.
+  %logic                        ! logical.
+Values for "ele%r" and "ele%custom" can be set in the lattice file . If
+values are set for "ele%r" or "ele%custom", these arrays will be expanded in size if needed.
+
+Accessing the "ele%custom" array should be done using the standard accessor routines
+. For example, if the lattice file being used defines a custom
+attribute called "rise_time" :
+  parameter[custom_attribute1] = "rise_time"
+then a program can access the "rise_time" attribute via:
+  type (ele_struct), poiner :: ele
+  type (all_pointer_struct) a_ptr
+  ...
+  ele => ...            ! Point ele to some element in the lattice
+  call pointer_to_attribute (ele, "RISE_TIME", .true., a_ptr, err_flag)
+  print *, "RISE_TIME Attribute has value:", a_ptr%r
+
+Note: Even if there are custom attributes associated with a given type of element (say, all
+quadrupoles), a given element of that type may not have its "%custom(:)" array allocated. [In
+this case, none of the custom values have been set so are zero by definition.] In the above example,
+the "%custom" array will be allocated if needed in the call to "pointer_to_attribute".
+
+If not defined through a lattice file, custom attributes can also be
+defined directly from within a program using the 
+\Hyperrefr:set.custom.attribute.nameset_custom_attribute_name routine.
+For example:
+  logical err_flag
+  ...
+  call set_custom_attribute_name ('QUADRUPOLE::ERROR_CURRENT', err_flag) 
+
+Note: When there is a superposition , the "super_slave" elements that are formed
+do \em not have any custom attributes assigned to them even when their "super_lord" elements
+have custom attributes. This is done since the Bmad bookkeeping routines are not able to handle the
+situation where a "super_slave" element has multiple "super_lord" elements and thus the custom
+attributes from the different "super_lord" elements have to be combined. Proper handling of this
+situation is left to any custom code that a program implements to handle custom attributes.
+
+--------------------------------------------------------------------------
+
+A number of "ele_struct" components are reserved for Bmad internal use only. These are:
+  %ixx
+  %iyy
+  %bmad_logic
+To avoid conflict with multiple routines trying to use these components simultaneously, these
+components are only used for short term bookkeeping within individual routines.
+

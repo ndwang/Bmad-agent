@@ -1,0 +1,294 @@
+chapter Beam Lines and Replacement Lists
+
+This chapter describes how to define the ordered list of elements that make up a lattice branch
+.  In a lattice, branches may be connected together using "fork" or
+"photon fork" elements ("s:fork"), or by using "multipass" .
+
+-----------------------------------------------------------------------------
+
+A lattice branch  is defined in a lattice file using what are called "beam lines"
+ and "replacement lists" .  The "beam lines" are
+divided into two types - lines with  and lines without
+ "replacement arguments". This essentially corresponds to the \mad
+definition of lines and lists. There can be multiple "beam lines" and "replacement lists"
+defined in a lattice file and lines and lists can be nested inside other lines and lists.
+
+Since lines can be nested within other lines, The same element name may be repeated multiple times
+in a branch. To distinguish between multiple elements of the same name, lines and lists may be
+"tagged"  to produce unique element names.
+
+A marker element named "END" will, by default, be placed at the ends of all the branches unless a
+"parameter[no_end_marker]" statement  is used to suppress the insertion.
+Additionally, if an ending marker named "END" is already present in the lattice file, no extra
+marker will be created.
+
+Branches are ordered in an array  and each branch is assigned an index number
+starting with index 0. When there are multiple branches in a lattice, the reference orbit
+ of a branch must not depend upon details of branches later on in the array.  Bmad
+depends upon this and calculates the reference orbits of the branches one at a time starting with
+the first branch.
+
+-----------------------------------------------------------------------------
+
+A "beam line" without arguments has the format
+  label: line = (member1, member2, ...)
+where "member1", "member2", etc. are either elements, other "beam lines" or "replacement
+lists", or sublines enclosed in parentheses.  Example:
+  line1: line = (a, b, c)
+  line2: line = (d, line1, e)
+  use, line2
+The "use" statement is explained in Section~.  This example shows how a "beam
+line" member can refer to another "beam line". This is helpful if the same sequence of elements
+appears repeatedly in the lattice.
+
+The process of constructing the ordered sequences of elements that comprise the branches of the
+lattice is called "lattice expansion". In the example above, when \vnline2" is expanded to form
+the lattice (in this case there is only one branch so "lattice" and \vnbranch" can be considered
+synonymous), the definition of "line1" will be inserted in to produce the following lattice:
+  beginning, d, a, b, c, e, end
+The "beginning" and \vnend" marker elements are automatically inserted at the beginning and end
+of the lattice. The "beginning" element will always exist but insertion of the \vnend" element
+can be suppressed by inserting into the lattice:
+ parameter[no_end_marker] = T    ! See: \srefs:param"
+Lattice expansion occurs either at the end after the lattice file has been parsed, or, during parsing, at the
+point where an "expand_lattice" statement  is found.
+
+Each element is assigned an "element index" number starting from 0 for the "beginning"
+element, 1 for the next element, etc.
+
+In the expanded lattice, any "null_Ele" type elements  will be discarded. For
+example, if element "b" in the above example is a "null_Ele" then the actual expanded lattice
+will be:
+  beginning, d, a, c, e, end
+
+A member that is a line or list can be "reflected" (elements taken in reverse order) if a negative
+sign is put in front of it. For example:
+  line1: line = (a, b, c)
+  line2: line = (d, -line1, e)
+"line2" when expanded gives
+  d, c, b, a, e
+It is important to keep in mind that line reflection is "not" the same as going backwards through
+elements. For example, if an "sbend" or "rbend" element  is reflected, the
+face angle of the upstream edge  is still specified by the "e1" attribute
+and not the "e2" attribute. True element reversal can be accomplished as discussed in \Srefs:ele.reverse.
+
+Reflecting a subline will also reflect any sublines of the subline. For example:
+  line0: line = (y, z)
+  line1: line = (line0, b, c)
+  line2: line = (d, -line1, e)
+"line2" when expanded gives
+  d, c, b, z, y, e
+
+A repetition count, which is an integer followed by an asterisk, 
+means that the member is
+repeated. For example
+  line1: line = (a, b, c)
+  line2: line = (d, 2*line1, e)
+"line2" when expanded gives
+  d, a, b, c, a, b, c, e
+Repetition count can be combined with reflection. For example
+  line1: line = (a, b, c)
+  line2: line = (d, -2*line1, e)
+"line2" when expanded gives
+  d, c, b, a, c, b, a, e
+Instead of the name of a line, subline members can also be given as an explicit list using
+parentheses. For example, the previous example could be rewritten as
+  line2: line = (d, -2*(a, b, c), e)
+
+Lines can be defined in any order in the lattice file so a subline does not have to come before a
+line that references it. Additionally, element definitions can come before or after any lines that
+reference them.
+
+A line can have the "multipass" attribute. This is covered in.
+
+-----------------------------------------------------------------------------
+
+A line ""slice"" is a section of a line from some starting element to some ending element.  A
+line slice can be used to construct a new line similar to how an unsliced line is used to construct
+a new line. An example will make this clear:
+  line1: line = (a, b, c, d, e)
+  line2: line = (z1, line1[b:d], z2)
+The line slice "line1[b:d]" that is used to construct "line2" consists of the elements in
+"line1" from element "b" to element "d" but not elements "a" or "e". When "line2"
+is expanded, it will have the elements:
+  z1, b, c, d, z2
+
+The general form for line slices is
+  line_name[element1:element2]
+where "line_name" is the name of the line and "element1" and "element2" delimit the
+beginning and ending positions of the slice. The beginning and ending element names may be omitted
+and, if not present, the default is the beginning element and ending element of the line
+respectively. Thus, for example, ""line4[:q1]"" represents the list of elements from the start
+of "line4" up to, and including the element "q1".
+
+If there are multiple elements of the same name, the double hash "##" symbol
+ can be use to denote the N\Th element of a given name. If double hash is not
+used, the first instance of a given element name is assumed. That is, something like ""q1"" is
+equivalent to ""q1##1"".
+
+Wild card characters and "class::element_name" syntax  are not allowed with
+slice element names.
+
+Line slicing of a given line occurs after the line has been expanded (all sublines and line slices
+substituted in). Thus, the following makes sense:
+  line1: line = (a, b, c, d, e)
+  line2: line = (z1, line1, z2)
+  line3: line = (line2[z1:c])
+
+-----------------------------------------------------------------------------
+
+An element's orientation is "reversed" if particles traveling through it enter at the "exit" end and leave at
+the "entrance" end. Being able to reverse elements is useful, for example, in describing the
+interaction region of a pair of rings where particles of one ring are going in the opposite
+direction relative to the particles in the other ring.
+
+Element reversal is indicated by using a double negative sign "--" prefix. The double negative
+sign prefix can be applied to individual elements or to a line. If it is applied to a line, the line
+is both reflected (same as if a single negative sign is used) and each element is reversed. For
+example:
+  line1: line = (a, b, --c)
+  line2: line = (--line1)
+  line3: line = (c, --b, --a)
+In this example, "line2" and "line3" are identical. Notice that the reversal of a reversed
+element makes the element unreversed.
+
+Another example involving element reversal is given in Section~.
+
+Reversed elements, unlike other elements, have their local z-axis pointing in the opposite
+direction to the local s-axis . This means that there must be a
+"reflection patch"  between reversed and unreversed elements. Since this
+complicates matters, it is generally only useful to employ element reversal in cases where there are
+multiple intersecting lines with particle beams going in opposite directions through some elements
+(for example, colliding beam interaction regions). In this case, element reversal is typically used
+with "multipass"  and the lattice will contain a branch of unreversed
+elements for simulating particles going in one direction along with a branch of reversed elements to
+simulate particle going in the other direction.
+
+Where reversed elements are not needed, it is simple to define elements that are
+effectively reversed. For example:
+  b00: bend, angle = 0.023, e1 = ...
+  b00_rev: b00, angle = -b00[angle], e1 = -b00[e2], e2 = -b00[e1]
+and "b00_rev" serves as a reversed version of "b00".
+
+Internally, Bmad associates an "orientation" attribute with each element. This attribute is set
+to -1 for reversed elements and 1 for unreversed elements.
+
+-----------------------------------------------------------------------------
+
+"Beam lines" can have an argument list using the following syntax
+  line_name(dummy_arg1, dummy_arg2, ...): LINE = (member1, member2, ...)
+The dummy arguments are replaced by the actual arguments when the line is used
+elsewhere. For example:
+  line1(DA1, DA2): line = (a, DA2, b, DA1)
+  line2: line = (h, line1(y, z), g)
+When "line2" is expanded the actual arguments of "line1", in this case \vn(y, z), replaces the
+dummy arguments "(DA1, DA2)" to give for "line2"
+  h, a, z, b, y, g
+Unlike \mad, "beam line" actual arguments can only be elements or "beam lines". 
+Thus the following is not allowed
+  line2: line = (h, line1(2*y, z), g)   ! NO: 2*y NOT allowed as an argument.
+
+-----------------------------------------------------------------------------
+
+When a lattice is expanded, all the lattice members that correspond to a name of a "list" are
+replaced successively, by the members in the "list". The general syntax is
+  label: LIST = (member1, member2, ...)
+For example:
+  my_list1 list = (a, b, c)
+  line1: line = (z1, my_list, z2, my_list, z3, my_list, z4, my_list)
+  use, line1
+When the lattice is expanded the first instance of "my_list" in "line1" is replaced by "a"
+(which is the first element of "my_list"), the second instance of "my_list" is replaced by
+"b", etc. If there are more instances of "my_list" in the lattice then members of
+"my_list", the replacement starts at the beginning of "my_list" after the last member of
+"my_list" is used. In this case the lattice would be:
+  z1, a, z2, b, z3, c, z4, a
+members of a "replacement list" can only be simple elements and not other lines or lists. 
+For example, the following is not allowed:
+  line1: line = (a, b)
+  my_list: list = (2*line1)  ! Lines cannot be list members.
+A repetition count is permitted
+  my_list1: list = (2*a, b) 
+  my_list2: list = (a, a, b) ! Equivalent to my_list1
+
+-----------------------------------------------------------------------------
+
+The particular line or lines that defines the root branches  to be used in the
+lattice is selected by the "use" statement. The general syntax is
+  use, line1, line2 ...
+For example, "line1" may correspond to one ring and "line2" may correspond to the other ring
+of a dual ring colliding beam machine. In this case, "multipass"  will be
+needed to describe the common elements of the two rings. Example
+  use, e_ring, p_ring
+would pick the lines "e_ring" and "p_ring" for analysis.  These will be the "root"
+branches.
+
+"use" statements can come anywhere in the lattice, even before the definition of the lines they
+refer to. Additionally, there can be multiple "use" statements.  The last "use" statement in
+the file defines which "line" to use.
+
+The total number of branches in the lattice is equal to the number of lines that appear on the
+"use" statement plus the number of "fork" and "photon_fork" elements that branch to a new
+branch.
+
+To set such things as the geometry of a branch, beginning Twiss parameters, etc., see Section
+"s:beginning".
+
+-----------------------------------------------------------------------------
+
+When a lattice has repeating lines, it can be desirable to differentiate
+between repeated elements. This can be done by tagging lines with a "tag". 
+An example will make this clear:
+  line1: line = (a, b)
+  line2: line = (line1, line1)
+  use, line2
+When expanded the lattice would be:
+  a, b, a, b
+The first and third elements have the same name "a" and the second and fourth
+elements have the same name "b". Using tags the lattice elements can be given
+unique names. lines or lists are tagged  
+using the at (@) sign. The general syntax is:
+  tag_name@line_name                           ! Syntax for lines
+  tag_name@list_name                           ! Syntax for lists
+  tag_name@replacement_line(arg1, arg2, ...)   ! Syntax for replacement lines.
+Thus to differentiate the lattice elements in the above example "line2" needs to
+be modified using tags:
+  line1: line = (a, b)
+  line2: line = (t1@line1, t2@line1)
+  use, line2
+In this case the lattice elements will have names of the form:
+  tag_name.element_name
+In this particular example, the lattice with tagging will be:
+  t1.a, t1.b, t2.a, t2.b
+Of course with this simple example one could have just as easily not used tags:
+  t1.a: a;   t2.a: a
+  t1.b: b;   t2.b: b
+  line1: line = (t1.a, t1.b, t2.a, t2.b)
+  use, line2
+But in more complicated situations tagging can make for compact lattice files.
+
+When lines are nested, the name of an element is formed by concatenating the tags together with dots
+in between in the form:
+  tag_name1.tag_name2. ... tag_name_n.element_name
+An example will make this clear:
+  list1 = (g, h)
+  line1(y, z) = (a, b)
+  line2: line = (t1@line1(a, b))
+  line3: line = (line2, hh@list1)
+  line4: line = (z1@line3, z2@line3)
+  use, line4
+The lattice elements in this case are:
+  z1.t1.a, z1.t1.b, z1.hh.g, z2.t1.a, z2.t1.b, z1.hh.h 
+
+To modify a particular tagged element the lattice must be expanded
+first . For example:
+  line1: line = (a, b)
+  line2: line = (t1@line1, t2@line1)
+  use, line2
+  expand_lattice
+  t1.b[k1] = 1.37
+  b[k1] = 0.63       ! This statement generates an error
+After the lattice has been expanded there is no connection between the original "a" and "b"
+elements and the elements in the lattice like "t1.b". Thus the last line in the example where the
+"k1" attribute of"b" is modified generates an error since there are no elements named "b"
+in the lattice.

@@ -1,0 +1,257 @@
+chapter PTC/FPP Programming
+
+----------------------------------------------------------------------------
+
+The PTC/FPP library of \'Etienne Forest handles Taylor maps to any arbitrary order. this is also
+known as Truncated Power Series Algebra (TPSA). The core Differential Algebra (DA) package used by
+PTC/FPP was developed by Martin Berz\citeb:berz. The PTC/FPP code is interfaced to Bmad so
+that calculations that involve both Bmad and PTC/FPP can be done in a fairly seamless manner.
+
+     FPP 
+The "Fully Polymorphic Package" ("FPP") library implements Differential Algebra (DA) for the
+manipulation of Taylor maps. Thus in FPP you can define a Hamiltonian and then generate the Taylor
+map for this Hamiltonian. FPP is very general. It can work with an arbitrary number of dimensions.
+"FPP" is purely mathematical in nature. It has no knowledge of accelerators, magnetic
+fields, particle tracking, Twiss parameters, etc. 
+
+     PTC 
+The "Polymorphic Tracking Code" "PTC" library is for accelerator simulation. It uses
+"FPP" as a back end for calculating such things as one turn maps.
+
+PTC is used by Bmad when constructing Taylor maps and when the "tracking_method"
+) is set to "symp_lie_ptc". All Taylor maps above first order are calculated
+via PTC. No exceptions.
+
+For information on using PTC within Bmad, see Chapter~.  For more information on
+PTC/FPP in general the PTC/FPP manual\citeb:ptc.
+
+--------------------------------------------------------------------------
+
+PTC uses different longitudinal phase space coordinates compared to Bmad.
+Bmad's phase space coordinates are 
+  (x, p_x, y, p_y, z, p_z)
+In PTC one can choose between several different coordinate systems. The one
+that Bmad uses is 
+  (x, p_x, y, p_y, p_t, c \Delta t)
+where
+  p_t = \frac\Delta Ec \, P_0
+This choice of phase space is set in \Hyperrefr:set.ptcset_ptc.  Specifically,
+the PTC global variable "DEFAULT", which is of type
+"internal_states", has the "%time" switch set to "True".
+
+"vec_bmad_to_ptc" and "vec_ptc_to_bmad" are conversion routines
+that translate between the two. Actually there are a number of
+conversion routines that translate between Bmad and PTC
+structures. See for more details.
+
+--------------------------------------------------------------------------
+
+One important parameter in PTC is the order of the Taylor maps.  By default Bmad will set
+this to 3. The order can be set within a lattice file using the
+"parameter[taylor_order]" attribute.  In a program the order can be set using
+"set_ptc". In fact "set_ptc" must be called by a program before PTC can be used.
+"bmad_parser" will do this when reading in a lattice file.  That is, if a program does
+not use "bmad_parser" then to use PTC it must call "set_ptc". Note that resetting
+PTC to a different order reinitializes PTC's internal memory so one must be careful if one
+wants to change the order in mid program.
+
+call init vs call init_all
+
+--------------------------------------------------------------------------
+
+Bmad uses a "lat_struct" structure to hold the information on a machine and a
+"lat_struct" has an array of "branch_struct"s (the "%branch(:)" component) with
+each "branch_struct" holding an array of "ele_struct"s (the "%ele(:)"
+component). The "ele_struct" holds the information on the individual elements. An
+"ele_struct" holds information about both the physical element and the reference orbit
+through it.
+
+PTC has a somewhat different philosophy as illustrated in \figf:ptc-struct. A PTC
+"mad_universe" structure is very roughly equivalent to a Bmad "lat_struct". That
+is, both structures can contain the description for an entire accelerator complex. Note
+that it is standard in PTC to use two "mad_universe" structures called "m_u" and
+"m_t". These two are defined globally. The difference between "m_u" and "m_t" is
+that "m_u" is used as a bookkeeping device for convenient accessing of all lattice
+elements. On the other hand, "m_t" contains the "layouts" that can be used for
+tracking.
+
+equivalent to a Bmad "branch_struct". A
+"layout" has a pointer to a linked list of "fibre" structures. Each "fibre" has a
+pointer to a "magnet" structure which holds the information about the physical element
+and each "fibre" holds information about the reference orbit through the element.
+
+With PTC, The top level structure "mad_universe" has two components called "%first"
+and "%last" which are pointers to the ends of an array of "layout_array"
+structures. Each "layout_array" holds a "layout" structure. A "layout" structure
+has pointers to the previous and next "layout"s making a linked list of "layout"s
+indicated by the horizontal arrows. Each layout has pointers to a linked list of
+"fibre" structures. The "fibre" structures represent the reference trajectory
+through an element. Each "fibre" structure has a pointer to a "element" and an
+"elementp" structures which represent the physical element. With Bmad, the
+"lat_struct" roughly corresponds to the PTC "layout_array(:)", the
+"branch_struct" roughly corresponds to the PTC "layout" and the "element_struct"
+roughly corresponds to the PTC "fibre", "element" and "elementp" structures.
+
+--------------------------------------------------------------------------
+
+  \includegraphicsptc-structures.pdf
+Simplified diagram showing the organization of the major PTC structures involved in
+defining a lattice contrasted with Bmad.
+  
+--------------------------------------------------------------------------
+
+PTC variables must be initialized and finalized. This is done with
+the"alloc()" and "kill()" routines. In addition, the "real_8_init"
+routine can initialize a "real_8" array:
+  type (real_8) y8(6) 
+  ...
+  call real_8_init (y8)
+  call kill (y8)
+
+--------------------------------------------------------------------------
+
+When a PTC "layout" is created from a Bmad "lat_struct"
+instance using the routine
+\Hyperrefr:lat.to.ptc.layoutlat_to_ptc_layout, the correspondence
+between the Bmad elements and the PTC fibres is maintained through
+the "ele%ptc_fibre" pointer. The following rules apply:
+  * There will be marker "fibre"s at the beginning and end 
+of the "layout". The beginning "fibre" will correspond to
+"branch%ele(0)". The end "fibre" will not have a corresponding
+Bmad element.
+  * Generally there will be a one-to-one correspondence between
+"fibre"s and "branch%ele" elements. The exception is where a
+"hard edge" model is used for tracking. In this case, there will be
+three "fibre"s for the Bmad element: Two drift "fibre"s with a
+"fibre" of the appropriate type in between.  In this case,
+"ele%ptc_fibre" will point to the last (drift) "fibre".
+
+Remember: The attributes like reference energy, etc. for a Bmad
+"ele_struct" instance are referenced to the exit end of the
+element. For PTC the reference edge for a "fibre" is the entrance
+end.
+
+--------------------------------------------------------------------------
+
+FPP stores its "real_8" Taylor maps in such a way that it is not
+easy to access them directly to look at the particular terms. To
+simplify life, \'Etienne has implemented the
+"universal_taylor"structure:
+  type universal_taylor
+    integer, pointer  :: n       ! Number of coefficients
+    integer, pointer  :: nv      ! Number of variables
+    real(dp), pointer :: c(:)    ! Coefficients C(N)
+    integer, pointer  :: j(:,:)  ! Exponents of each coefficients J(N,NV)
+  end type
+Bmad always sets "nv" = 6. Bmad overloads the equal sign to call 
+routines to convert between \'Etienne's
+"real_8" Taylor maps and "universal_taylor":
+  type (real_8) tlr(6)           ! Taylor map
+  type (universal_taylor) ut(6)  ! Taylor map
+  ...
+  tlr = ut                       ! Convert universal_taylor -> real_8
+  ut = tlr                       ! Convert real_8 -> universal_taylor
+
+--------------------------------------------------------------------------
+
+There is a significant difference between how patches are treated in
+PTC and Bmad.  In PTC, a patch is just though of as a coordinate
+transformation for propagating a particle from one "fibre" to the
+next. As such, the "patch" is part of a "fibre". That is, any
+"fibre" representing tracking through quadrupoles, bends, etc. will
+have patches for the entrance and exit ends of the "fibre".
+
+With Bmad, on the other hand, a "patch" is a "first class"
+element on par with all other elements be they quadrupoles, bends,
+etc. When translating a "patch" from Bmad to PTC, the "patch"
+is represented in PTC as a "marker" element with a patch at the
+exit end.
+
+--------------------------------------------------------------------------
+
+"Drift like" elements in PTC will use, by default, only one
+integration step. Bmad uses the default when translating from Bmad
+lattice elements to PTC fibres. The Bmad lattice elements that are
+drift like are:
+  drift
+  ecollimator 
+  instrument 
+  monitor 
+  pipe
+  rcollimator 
+
+When tracking, there is a trade-off between step size and integrator order. Higher order
+means fewer steps are needed to get the same accuracy. But one higher order step is
+computationally more intensive then one lower order step so what is the optimum order and
+number of steps is dependent upon various factors like magnet strength and how fast the
+field is varying. Generally, when the field is varying, such as in a wiggler, lower order
+and more steps are favored. Also spin tracking is always 2nd order in PTC. So going to higher
+order for the orbital tracking with less steps will cause the spin tracking to be less
+accurate.
+
+The way PTC "resplitting" routines work is that, for a given element, they start by
+assuming that the tracking will be done using a 2\Nd order integrator, They then compute
+the number of steps needed based upon the electric and magnetic field strengths. This
+number is compared to a crossover limit point here named C_1. If the number of steps is
+less than or equal to C_1 then the resplitting routine stops and tracking will
+thereafter be done with a 2\Nd order integrator with the calculated number of steps. On
+the other hand, if the number of steps is greater than C_1, the resplitting routine will
+redo the calculation assuming 4\Th order integration. With 4\Th order integration, the
+number of calculated steps will compared to a different crossover limit point here called
+C_2. Again, if the number of steps is less than or equal to C_2, the routine will
+assign 4\Th order tracking to the element. Otherwise, the routine will assign 6\Th order
+tracking to the element with an appropriate number of steps.
+
+The default crossover limit points are
+  [C_1, C_2] = [30, 60] \qquad \textFor wiggler type elements. \nonumber 
+  [C_1, C_2] = [4, 18]  \qquad \textFor all other elements. \nonumber 
+The greater number for wigglers is a reflection of the fact that the wiggler field
+is not constant.
+
+--------------------------------------------------------------------------
+
+For a programmer, it is sometimes useful to feed a Bmad lattice into PTC and then use PTC for all
+the calculations. As an example of how to do this, the following minimal program creates a PTC
+"layout" from a Bmad lattice:
+  use pointer_lattice, dummy => lat
+  use ptc_layout_mod, dum1 => dp
+  implicit none
+  type (lat_struct), target :: lat
+  type(layout), pointer:: als
+   
+  call bmad_parser ('lat.bmad', lat)
+  call lat_to_ptc_layout (lat, .true.)
+  als => lat%branch(0)%ptc%m_t_layout
+
+--------------------------------------------------------------------------
+
+The "internal_state" structure looks like:
+type internal_state
+   integer totalpath      ! total time or path length is used
+   logical(lp) time       ! Time is used instead of path length
+   logical(lp) radiation  ! Radiation damping (but not excitation) is turned on
+   logical(lp) nocavity   ! Cavity is turned into a drift
+   logical(lp) fringe     ! fringe fields are turned on (mainly for quadrupoles)
+   logical(lp) stochastic ! Random Stochastic kicks to x(5)
+   logical(lp) envelope   ! Stochastic envelope terms tracked in probe_8
+   logical(lp) para_in    ! If true, parameters in the map are included
+   logical(lp) only_4d    ! REAL_8 Taylor in (x,p_x,y,p_y)
+   logical(lp) delta      ! REAL_8 Taylor in (x,p_x,y,p_y,delta)
+   logical(lp) spin       ! Spin is tracked
+   logical(lp) modulation ! One modulated family tracked by probe
+   logical(lp) only_2d    ! REAL_8 Taylor in (x,p_x)
+   logical(lp) full_way    
+end type internal_state
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! 
+
+Placement of magnet in global coordinate system:
+
+TYPE MAGNET_FRAME
+   REAL(DP), POINTER,DIMENSION(:)  ::   A   => null()   ! Entrance point
+   REAL(DP), POINTER,DIMENSION(:,:)::   ENT => null()   ! Entrance orientation. %ent(1,1:3) => x-axis, etc.
+   REAL(DP), POINTER,DIMENSION(:)  ::   O   => null()   ! Mid point. Will be midpoint of chord for a bend.
+   REAL(DP), POINTER,DIMENSION(:,:)::   MID => null()
+   REAL(DP), POINTER,DIMENSION(:)  ::   B   => null()   ! Exit point
+   REAL(DP), POINTER,DIMENSION(:,:)::   EXI => null()
+END TYPE MAGNET_FRAME

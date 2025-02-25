@@ -1,0 +1,121 @@
+Etienne stuff
+
+\newcommand\RR\textrmI\kern-0.19emR
+\newcommand\CC\textrmI\kern-0.5emC
+\newcommand\dragt\mbox\scriptsize \beginmatrix# 
+# \endmatrix
+\newcommand\cookcookbook  %future location
+\newcommand\forestjForest
+\definecolormucolrgb0.7,0.1,0.1
+\newcommand\etex\colormucol \Huge \bullet  
+
+End Etienne stuff
+
+\newcommand\cosc\textcosc
+\newcommand\atantwo\textatan2
+\newcommand\sinc\textsinc
+\newcommand\sincc\textsincc
+\newcommand\Deg^\circ
+\newcommand\rcr_\!c
+
+\newcommand\backtick\symbol0
+
+\newcommand\f[1] #1
+\newcommand\dsfrac[2]\frac\displaystyle #1\displaystyle #2
+\newcommand\calO\cal O
+\newcommand\calH\cal H
+\newcommand\calM\cal M
+\newcommand\Cal[1]\cal #1
+\newcommand\two
+\newcommandsig\boldsymbol\sigma
+\newcommand\sigb\sigma_\beta
+\newcommandrbar\overliner
+\newcommandq\overrightarrowq
+\DeclareMathAlphabet\calbfOMScmsybn
+
+\newcommand\mk[1]\mkern-3 mu#1
+
+\newcommand\mis\textmis
+\newcommand\lab\textlab
+\newcommand\ele\textele
+\newcommand\sign\textsgn
+\newcommand\Out\textout
+\newcommand\In\textin
+\newcommand\REF\textref   % Some package defines "\Ref" so cannot use
+
+\newcommand\re\operatornameRe
+\newcommand\im\operatornameIm
+
+\newcommand\cali\fi
+\newcommand\calj\fj
+\newcommand\calk\fk
+
+\newcommandaa
+\newcommandbb
+\newcommandcc
+\newcommanddd
+\newcommandee
+\newcommandgg
+\newcommandjj
+\newcommandkk
+\newcommandll
+\newcommandmm
+\newcommandnn
+\newcommandpp
+\newcommandqq
+\newcommandrr
+\newcommandss
+\newcommandtt
+\newcommanduu
+\newcommandvv
+\newcommandww
+\newcommandxx
+\newcommandyy
+\newcommandzz
+\newcommandAA
+\newcommandBB
+\newcommandCC
+\newcommandDD
+\newcommandEE
+\newcommandFF
+\newcommandGG
+\newcommandHH
+\newcommandII
+\newcommandJJ
+\newcommandKK
+\newcommandLL
+\newcommandMM
+\newcommandNN
+\newcommandOO
+\newcommandPP
+\newcommandQQ
+\newcommandRR
+\newcommandSS
+\newcommandTT
+\newcommandUU
+\newcommandVV
+\newcommandWW
+\newcommandZZ
+
+\newcommandeta\boldsymbol\eta
+\newcommandbeta\boldsymbol\beta
+
+\newcommand\vdot[2]\igl[ #1, \, #2 \igr]
+\newcommand\comma\> ,
+\newcommand\period\> .
+\newcommandAbar\overlineA
+\newcommandCbar\overlineC
+\newcommandKbar\overlineK
+\newcommandkbar\overlinek
+\newcommandSbar\overlineS
+\newcommandTbar\overlineT
+\newcommand\Hbar\overlineH
+\newcommand\Kbar\overlineK
+\newcommand\kbar\overlinek
+\newcommand\Ebar\overlineE
+\newcommand\Pbar\overlineP
+\newcommand\gam\gamma                                     
+\newcommand\inv^-1
+
+\newcommand\tot\texttot
+

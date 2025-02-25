@@ -1,0 +1,181 @@
+chapter Simulation Modules
+
+In the Bmad "ecosystem", various modules have been developed to
+simulate machine hardware. This chapter provides documentation.
+
+Bmad has the ability to simulate instrumental measurement errors
+for orbit, dispersion, betatron phase, and coupling measurements.
+The appropriate attributes are listed in and
+the conversion formulas are outlined below.
+
+For orbits, the relationship between measured position (x, y)_\textmeas and true position (x,
+y)_true is
+    x  y
+  =
+  n_f \, 
+    r_1  r_2
+  +
+  M_m \, 
+  \left[
+    x  y
+  -
+    x  y
+  \right]
+where the Gaussian random numbers r_1 and r_2 are centered at zero and have unit width and the
+factor n_f represents the inherent noise in the measurement. In the above equation, (x, y)_0 
+represents a measurement offset and M_g is a "gain" matrix written in the form
+  M_m
+  =
+     (1 + dg_x) \, \cos (\theta + \psi) (1 + dg_x) \, \sin (\theta + \psi) 
+    -(1 + dg_y) \, \sin (\theta - \psi) (1 + dg_y) \, \cos (\theta - \psi) 
+Here dg_x and dg_y represent gain errors and the angles \theta and \psi are tilt and 
+"crunch" errors.
+
+In the above equations, various quantities are written as a difference between an "error" quantity
+and a "calibration" quantity:
+  x_0    = x_\textoff - x_\textcalib \CRNO
+  y_0    = y_\textoff - y_\textcalib \CRNO
+  \psi   = \psi_\texterr   - \psi_\textcalib \CRNO
+  \theta = \theta_\texterr - \theta_\textcalib 
+  dg_x   = dg_x,\texterr - dg_x,\textcalib \CRNO
+  dg_y   = dg_y,\texterr - dg_y,\textcalib \nonumber
+See for the element attribute names that correspond to these quantities.
+
+The calibration component is useful in a simulation where initally the error quantities are set to
+represent the errors in the monitors. After this, analysis of orbit data with the machine in various
+states can be used to calculate a best guess as to what the errors are. The calculated error values
+can then be put in the calibration quantities. This represents a correction in software of the
+errors in the monitors. Further simulations of orbit measurements will show how well the actual orbit
+can be deduced from the measured orbit.
+
+A dispersion measurement is considered to be the result of measuring the orbit at two different
+energies. The measured values are then
+    \eta_x  \eta_y
+  =
+  \frac\sqrt2 \, n_fdE/E \, 
+    r_1  r_2
+  +
+  M_m \, \left[
+    \eta_x  \eta_y
+  -
+  \left(
+    \eta_x  \eta_y
+  -
+    \eta_x  \eta_y
+  \right)
+  \right]
+The factor of \sqrt2 comes from the fact that there are two measurements. M_m is given in \Eqm1dg.
+
+The coupling measurement is considered to be the result of measuring
+the beam at a detector over N_s turns while the beam oscillates at a
+normal mode frequency with some amplitude A_\textosc.  The
+measured coupling is computed as follows. First, consider excitation
+of the a-mode which can be written in the form:
+    x_i 
+    y_i
+  =
+  A_\textosc \,
+    \cos \phi_i 
+    K_22a \, \cos \phi_i + K_12a \sin \phi_i
+i is the turn number and \phi_i is the oscillation phase on the i\Th turn.
+The coefficients K_22a and K_12a are related to the coupling Cbar via
+Sagan and Rubin\citeb:coupling Eq.~54:
+  K_22a= \frac-\sqrt\beta_b\gamma \, \sqrt\beta_a \, Cbar_22 \CRNO
+  K_12a= \frac-\sqrt\beta_b\gamma \, \sqrt\beta_a \, Cbar_12
+To apply the measurement errors, consider the general case where the
+beam's oscillations are split into two components: One component being
+in-phase with some reference oscillator (which is oscillating with the
+same frequency as the beam) and a component oscillating out-of-phase:
+    x_i 
+    y_i
+  =
+    q_a1x 
+    q_a1y
+  \, A_\textosc \, \cos (\phi_i + d\phi) +
+    q_a2x 
+    q_a2y
+  \, A_\textosc \, \sin (\phi_i + d\phi)
+where d\phi is the phase of the reference oscillator with respect to
+the beam.  Comparing \Eqxyapk with \Eqxykkap gives the relation
+  K_22a= \fracq_a1x \, q_a1y + q_a2x \, q_a2yq_a1x^2 + q_a2x^2 \CRNO
+  K_12a= \fracq_a1x \, q_a2y - q_a2x \, q_a1yq_a1x^2 + q_a2x^2 
+This equation is general and can be applied in either the true or
+measurement frame of reference.  \Eqxynrr can be used to transform
+(x_i, y_i)_\texttrue in \Eqxyapk to the measurement frame of
+reference. Only the oscillating part is of interest.  Averaging over
+many turns gives
+    q_a1x 
+    q_a1y
+  =  
+  M_m \, 
+    q_a1x 
+    q_a1y
+  \comma \qquad
+    q_a2x 
+    q_a2y
+  =  
+  M_m \, 
+    q_a2x 
+    q_a2y
+This neglects the measurement noise. A calculation shows that the noise gives a 
+contribution to the measured K_22a and K_12a of
+  K_22a \rightarrow K_22a + r_1 \, \fracn_fN_s \, A_\textosc 
+  \comma \qquad
+  K_12a \rightarrow K_12a + r_2 \, \fracn_fN_s \, A_\textosc 
+Using the above equations, the transformation from the true
+coupling to measured coupling is as follows: From a knowledge of the
+true Cbar and Twiss values, the true K_22a and
+K_12a can be calculated via \Eqkabgbc. Since the value of d\phi
+does not affect the final answer, d\phi in \Eqxykkap is chosen to
+be zero.  Comparing this to \Eqxyapk gives
+    q_a1x 
+    q_a1y
+  =
+    1 
+    K_22a
+  \comma \qquad
+    q_a2x 
+    q_a2y
+  =
+    0 
+    K_12a
+Now \Eqkkmkk is used to convert to the measured q's and
+\Eqkaqqqq then gives the measured K_22a and K_12a. Finally,
+Applying \Eqkkrnn and then \Eqkabgbc gives the measured
+Cbar_22 and Cbar_12. 
+
+A similar procedure can be applied to b-mode oscillations to
+calculate values for the measured Cbar_11 and Cbar_12.
+K_11b and K_12b are defined by
+    x_i 
+    y_i
+  =
+  A_\textosc \,
+    K_11b \, \cos \phi_i + K_12b \sin \phi_i 
+    \cos \phi_i
+Comparing this to Sagan and Rubin\citeb:coupling Eq.~55 gives
+  K_11b= \frac \sqrt\beta_a\gamma \, \sqrt\beta_b \, Cbar_11 \CRNO
+  K_12b= \frac-\sqrt\beta_a\gamma \, \sqrt\beta_b \, Cbar_12
+The q_x1b, q_y1b, q_x2b and q_y2b are defined by using
+\Eqxykkap with the "a" subscript replaced by "b". The
+relationship between K and q is then
+  K_11b= \fracq_b1y \, q_b1x + q_b2y \, q_b2xq_b1y^2 + q_b2y^2 \CRNO
+  K_12b= \fracq_b1y \, q_b2x - q_b2y \, q_b1xq_b1y^2 + q_b2y^2 
+
+Like the coupling measurement, the betatron phase measurement is
+considered to be the result of measuring the beam at a detector over
+N_s turns while the beam oscillates at a normal mode frequency with
+some amplitude A_\textosc.  Following the analysis of the
+previous subsection, the phase \phi is
+    \phi_a 
+    \phi_b
+  =
+    \phi_a 
+    \phi_b
+  +
+  \fracn_fN_s \, A_\textosc \, 
+    r_1  
+    r_2
+  -
+    \tan^-1 \left( \fracq_a2xq_a1x \right) 
+    \tan^-1 \left( \fracq_b2yq_b1y \right)

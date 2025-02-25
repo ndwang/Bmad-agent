@@ -1,0 +1,335 @@
+chapter Synchrotron Radiation
+
+Emission of synchrotron radiation by a particle can be decomposed into two parts. The deterministic
+average energy emitted produces damping while the stochastic fluctuating part of the energy spectrum
+produces excitation\citeb:jowett.
+
+The treatment of radiation damping by Bmad essentially follows Jowett\citeb:jowett. The energy
+loss at a given location is modeled via
+  \frac\Delta EE_0 = 
+  -k_E \equiv -\left[ k_d \aveg^2 \, L_p + \sqrtk_\mkf \aveg^3 L_p \,\, \xi \right] \, (1 + p_z)^2
+where L_p is the actual path length, g is the bending strength (1/g is the bending radius),
+and \ave\ldots is an average over the actual path.  In the above equation k_d gives the
+deterministic part of the emission, \xi is a Gaussian distributed random number with unit sigma
+and zero mean, and k_\mkf is the amplitude of the stochastic part of the emission. Values for k_d
+and k_\mkf are calculated via the equations
+  k_d= \frac2 \, \rc3 \, \gamma_0^3
+  k_\mkf= \frac55 \, \rc \, \hbar24 \, \sqrt3 \, m \, c \, \gamma_0^5
+where \gamma_0 is the energy factor of an on-energy particle and \rc is the particles
+"classical radius" given by
+  \rc = \fracq^24 \, \pi \, \epsilon_0 \, m \, c^2 
+where q is the particle's charge and m is the particle's mass.
+
+Ignoring the finite opening angle of the emission for now, the angular orientation of the particle
+motion is invariant for forward directed emission which leads to the following equations for the
+changes in momentum phase space coordinates
+  \Delta p_x = -\frack_E1 + p_z \, p_x , \qquad
+  \Delta p_y = -\frack_E1 + p_z \, p_y, \qquad
+  \Delta p_z \approx \frac\Delta EE_0 = -k_E 
+
+Synchrotron radiation emission involves energy loss and this energy loss leads to what is known as
+the energy "sawtooth" effect where the curve of particle energy on the closed orbit as a function
+of longitudinal position has a sawtooth shape. A sawtooth pattern can also be generally seen in the
+horizontal orbit. It is sometimes convenient in simulations to eliminate the sawtooth effect. This
+can be done by shifting the photon emission spectrum at any given element to have zero average
+energy loss along the closed orbit. For this calculation the closed orbit should be the closed orbit
+as calculated without radiation damping (in other words the closed orbit without the sawtooth). In
+this case, k_E is calculated by
+  k_E = \left[ k_d \, \aveg^2 L_p + \sqrtk_\mkf \aveg^3 L_p \,\, \xi \right] \, (1 + p_z)^2 - 
+  k_d \, \aveg_0^2 \, L_p
+where g_0 is g evaluated along the closed orbit. In practice, for the calculation, Bmad
+approximates the closed orbit as the zero orbit. 
+
+The deterministic and stochastic parts of the emission can be included or excluded from a tracking
+simulation by setting in a lattice file the Bmad global parameters 
+  bmad_com[radiation_damping_on]      = True or False  ! Deterministic part on/off.
+  bmad_com[radiation_fluctuations_on] = True or False  ! Stochastic part on/off.
+  bmad_com[radiation_zero_average]    = True or False  ! Make ave radiation kick zero.
+The global parameter "bmad_com[radiation_zero_average]" controls the shifting of the photon
+spectrum to have zero average. Currently, the shifting of the spectrum only works for non PTC
+dependent tracking. That is, the shifting is not applicable to tracking with Taylor maps and with
+"symp_lie_ptc"  tracking.
+
+The fact that an emitted photon is not exactly colinear with the particle direction (often called
+the "vertical opening angle") can be modeled as a separate process from the energy loss. With this
+approximation, the change \Delta p_\perp in the momentum transverse to the bending plane is given
+by
+  \Delta p_\perp = \sqrtk_v \aveg^3 L_p \,\, \xi
+where the \xi in \Eqdpkgl is independent of the \xi in \Eqdeekk and
+ k_v = \frac13 \, \rc \, \hbar24 \, \sqrt3 \, m \, c \, \gamma_0^3
+
+Transport maps which include radiation effects can be constructed\citeb:ohmi. The first step is to
+calculate the reference orbit which is the closed orbit for lattices with a closed geometry and for
+lattices with an open geometry the reference orbit is the orbit for some given initial
+position. Orbits here are calculated with radiation damping but ignoring stochastic effects. The
+transfer map from s_1 to s_2 will be of the form
+  \deltar_2 = \calM_21(\deltar_1) + \CalS_21 \f\Xi
+where \deltar_1 and \deltar_2 are the particle positions with respect to the reference
+orbit at s_1 and s_2 respectively and \calM_21 is the transfer map with damping. The
+stochastic radiation part is represented by a 6\times6 matrix \CalS times a 6-vector
+  \f\Xi = (\xi_1, \xi_2, \xi_3, \xi_4, \xi_5, \xi_6)
+with each \xi_i being an independent Gaussian distributed random number with unit sigma and zero
+mean. The stochastic transport (second term in \Eqrmrsx) is treated here only in lowest
+order. This is a good approximation as long as the radiation emitted is small enough in the region
+between s_1 and s_2. This is true for nearly all practical cases. In the case where this
+approximation fails, the equilibrium beam distribution would not be Gaussian and the standard
+radiation integral treatment , which relies on this approximation, would not be
+valid.
+
+The transfer map with damping \calM is calculated by adding in the effect of the damping
+(\Eqspk1pp) when integrating the equations of motion to form the map. Through a given lattice
+element, it is generally very safe to assume that the change in energy is small compared to the
+energy of a particle. Thus the matrix M through an element, which is the first order part of
+\calM, can is computed via first order perturbation theory to be
+  M = T + Z
+where T is the transfer matrix without damping and Z is the change in T due
+to damping computed via
+  Z = \int_s_1^s_2 ds \, T_2,s \, d(s) \, T_s,1
+where s_1 and s_2 are the longitudinal positions at the ends of the element and
+the local damping matrix d is computed from \Eqspk1pp
+  d = -k_d \, \beginpmatrix
+    0                           0           0                           0           0 0       
+    \fracdg^2dx p_x (1+p_z) g^2 (1+p_z) \fracdg^2dy p_x (1+p_z) 0           0 g^2 p_x 
+    0                           0           0                           0           0 0       
+    \fracdg^2dx p_y (1+p_z) 0           \fracdg^2dy p_y (1+p_z) g^2 (1+p_z) 0 g^2 p_y 
+    0                           0           0                           0           0 0       
+    \fracdg^2dx (1+p_z)^2   0           \fracdg^2dy (1+p_z)^2   0           0 2 g^2 (1+p_z) 
+All quantities are evaluated on the closed orbit. Notice that since \calM_21 is computed with
+respect to the beam centroid orbit, there is no constant part to the map. Since T_21 is
+invertible, \Eqmtz can be written in the form
+  M_21 = \bigl( \boldsymbol1 + Z_21 \, T_21^-1 \bigr) \, T_21 
+  \equiv D_21 \, T_21 
+D is defined by this equation. The 1-turn damping decrement \alpha for each mode a, b,
+and c of oscillation can be calculated from D using Eq.~(86) of Ohmi\citeb:ohmi.
+
+The \CalS matrix (\Eqrmrsx) is calculated by first noting that, to linear order, the
+distribution of \deltar_2 due to stochastic radiation over some length ds as some point s
+is
+  \deltar_2 = \sqrtds \, M_2,s \, \left( F_\mkf(s) \, \xi_1 + F_\mkv \, \xi_2 \right)
+where M_2,s is the first order part (matrix) of the map \calM_2,s from s to s_2,
+\xi_1 and \xi_2 are two independent Gaussian random numbers with unit sigma and zero mean, and
+F_\mkf and F_\mkv are (see)
+  F_\mkf= \sqrtk_\mkf g_0^3 \, (0, p_x \, (1 + p_z), 0, p_y \, (1 + p_z), 0, (1 + p_z)^2) 
+  F_\mkv= \sqrtk_v g_0 \, (0, -g_y, 0, g_x, 0, 0)
+where k_\mkf p_x, p_y and p_z are to be evaluated on the reference orbit and (g_x, g_y) is the
+curvature vector which points away from the center of curvature of the particle's orbit. Notice that since
+\deltar is, by definition, the deviation from the reference orbit, p_x = r_2 and p_y = r_4
+will be zero on the reference orbit. The covariance matrix sig_\gamma is defined by
+\sigma_\gamma ij \equiv \langle r_i \, r_j \rangle_\gamma where \langle \ldots \rangle_\gamma
+is an average over the photon emission spectrum. The contribution, sig_\gamma21, to the
+covariance matrix at s_2 due to the stochastic emission over the region between s_1 and s_2,
+is
+  sig_\gamma21 = \int_s_1^s_2 ds \, 
+    M_2,s \, \big[ 
+    F_\mkf(s) \, F_\mkf^t(s) + F_\mkv(s) \, F_\mkv^t(s) \big] \, M_2,s^t
+where the t superscript indicates transpose. sig_\gamma21 is related to \CalS via
+  sig_\gamma21 = \CalS_21 \, \CalS_21^t
+The calculation of \CalS_21 involves calculating sig_\gamma21 via \Eqsmvvm and then
+using \Eqsxx to solve for \CalS_21 using, say, a Cholesky decomposition. Notice that while
+\Eqsxx does not have a unique solution, what matters here is that \CalS_21 \, \f\Xi (see
+\Eqrmrsx) gives the correct distribution. The \CalS_21 matrix may contain columns or rows
+that are all zero. This can happen if there are vectors z where z^t sig_\gamma21 z
+is zero. For example, in a planer ring where the vertical emittance is zero there will be rows that
+are zero.
+
+The covariance matrix sig_\gamma(s_2) at s_2 relative to the covariance matrix at s_1 is
+  sig_\gamma(s_2) = sig_\gamma21 + M_21 \, sig_\gamma(s_1) \, M_21^t
+The beam size matrix sig is not the same as the covariance matrix since the beam size matrix is
+an average over the particles of a beam and not an average over the photon emission
+spectrum. However, in equilibrium, the two are the same. To calculate the equilibrium beam size
+matrix, \Eqssmsm is recast. For any symmetric 6\times6 matrix A, define the 21-vector
+V(A) by
+  V(A) \equiv (A_11, A_12, \ldots, A_16, A_22, A_23, \ldots, A_56, A_66)
+With s_1 = s_2 = s, and using \Eqssmsm, the equilibrium beam size matrix can be calculated via
+  V(sig(s)) = V(sig_\gamma ss) + \wtM \, V(sig(s))
+where the 21\times21 matrix \wtM is defined so that for any symmetric A, \wtM \, V(A) =
+V(MAM^t). That is
+  \wtM = \beginpmatrix
+    M_11^2      2 M_11 M_12 \cdots 2 M_15 M_16 M_16 M_16 
+    M_11 M_21 2 M_11 M_22 \cdots 2 M_15 M_26 M_16 M_26 
+    \vdots        \vdots          \ddots \vdots          \vdots      
+    M_51 M_61 2 M_51 M_62 \cdots 2 M_55 M_66 M_56 M_66 
+    M_61 M_61 2 M_61 M_62 \cdots 2 M_65 M_66 M_66 M_66
+\Eqvsmv is linear in the unknown V(sig) and is easily solved.
+
+The emittances can be calculated from the eigenvalues of the matrix sig \, S
+(Wolski\citeb:wolski.coupling Eq.~30) where S is given by \Eqs010000. Specifically, the
+eigenvalues of sig \, S are pure imaginary and, using the eigenvector ordering given by
+\Eqvsvi0 (which is opposite that of Wolski), the emittances are the imaginary part of the odd
+eigenvalues (\epsilon_a, \epsilon_b, \epsilon_c) = (\im\lambda_1, \im\lambda_3, \im\lambda_5).
+
+Unlike the case where radiation is ignored and the motion is symplectic, the calculated emittances
+along with the beam size will vary from point to point in a manner similar to the variation of the average
+beam energy (sawtooth effect) around the ring .
+
+The emittance calculation makes a number of approximations. One approximation is embodied in
+\Eqzstd which assumes that the damping is weak enough so that second order and higher terms can be
+neglected. Another approximation is that, within the extent of the beam, the damping as a function
+of transverse position is linear. That is, the effect of the damping is well represented by the
+matrix d in \Eqzstd. The third major assumption is that, within the extent of the beam, the
+stochastic kick coefficient F_\mkf (\Eqfk000) is independent of the transverse coordinates.
+Other approximations involve the assumption of linearity of the guide fields and the ignoring of any
+resonance or wakefield effects. To the extent that these assumptions are violated, this will lead to
+a non-Gaussian beam shape.
+
+The synchrotron radiation integrals can be used to compute emittances, the energy spread,
+etc. However, using the 6D damped and stochastic transport matrices  has
+a number of advantages:
+
+*
+Unlike the radiation integrals, the 6D calculation does not make the approximation that the
+synchrotron frequency is negligible. Therefore, the 6D calculation will be more accurate.
+
+*
+The 6D calculation is simpler: Not as many integrals needed (only 2) and the 6D calculation does not
+depend upon calculation of the Twiss parameters.
+
+*
+When doing any lattice design which involves constraining the emittances: Since the integrals of the
+6D calculation are local (the integrations through any given lattice element are only dependent upon
+the properties of that lattice element), by caching integrals element-by-element, the computation of
+the emittances can be speeded up. That is, in a design problem, only the parameters of some subset
+of all the lattice elements will be varied (for example, a design may only involve varying the
+strength of quadrupoles), only this subset of elements needs to have their integrals recomputed.  On
+the other hand, the radiation integrals are dependent on the Twiss, dispersion, and coupling
+parameters which make the integrals nonlocal.
+
+*
+The 6D formalism can be used to construct transport maps with radiation damping and excitation for
+efficient particle tracking.
+
+The standard radiation formulas assume no coupling between the horizontal and vertical
+plains\citeb:helm,b:jowett. With coupling, the equations need to be generalized and this is
+detailed below.
+
+In the general case, the curvature vector g = (g_x, g_y), which points away from the center of
+curvature of the particle's orbit and has a magnitude of |g| = 1/\rho, where \rho is the
+radius of curvature (see \figf:local.coords), does not lie in the horizontal plane. Similarly, the
+dispersion eta\two = (\eta_x, \eta_y) will not lie in the horizontal plane. With this notation,
+the synchrotron integrals for coupled motion are:
+  \allowdisplaybreaks
+    I_0= \oint ds \, \gamma_0 \, g 
+    I_1= \oint ds \, g \dotproduct eta 
+         \equiv \oint ds \, (g_x \, \eta_x + g_y \, \eta_y) 
+    I_2= \oint ds \, g^2 
+    I_3= \oint ds \, g^3 
+    I_4a= \oint ds \, \left[ g^2 \, g \dotproduct eta\two_a + 
+         \nabla g^2 \dotproduct eta\two_a \right] 
+    I_4b= \oint ds \, \left[ g^2 \, g \dotproduct eta\two_b + 
+         \nabla g^2 \dotproduct eta\two_b \right] 
+    I_4z= \oint ds \, \left[ g^2 \, g \dotproduct eta\two + 
+         \nabla g^2 \dotproduct eta\two \right] 
+    I_5a= \oint ds \, g^3 \, \calH_a 
+    I_5b= \oint ds \, g^3 \, \calH_b 
+    I_6b= \oint ds \, g^3 \, \beta_b
+where \gamma_0 is that usual relativistic factor and \calH_a is 
+    \calH_a = \gamma_a \, \eta_a^2 + 2 \, \alpha_a \, \eta_a \, \eta_a' + 
+      \beta_a \eta_a'^2 
+with a similar equation for \calH_b. Here eta\two_a =
+(\eta_ax, \eta_ay), and eta\two_b = (\eta_bx, \eta_by)
+are the dispersion vectors for the a and b modes respectively in
+x--y space (these 2--vectors are not to be confused with the
+dispersion 4--vectors used in the previous section). The position
+dependence of the curvature function is:
+    g_x(x,y) = g_x + x \, k_1 + y \, s_1 \CRNO
+    g_y(x,y) = g_y + x \, s_1 - y \, k_1 
+where k_1 is the quadrupole moment and s_1 is the skew--quadrupole moment.
+Using this gives on--axis (x = y = 0)
+    \nabla g^2 = 2 \left( g_x k_1 + g_y s_1, \, g_x s_1 - g_y k_1 \right)
+Note: The above equations must be modified in places in the lattice where there are mode flips
+( since an individual integral must be evaluated using the same physical mode
+throughout the lattice.
+
+I_0 is not a standard radiation integral. It is useful, though, in calculating the average number
+of photons emitted. For electrons:
+    \cal N = \frac5 \: \rc m \, c^22 \sqrt3 \, \hbar \, c \, I_0 
+where \cal N is the average number of photons emitted by a particle over one turn, and \rc is
+the the particle's "classical radius" given by \Eqrq4pe.
+
+In a dipole a non--zero e_1 or e_2 gives a contribution to I_4 via the \nabla g^2 \dotproduct
+eta term. The edge field is modeled as a thin quadrupole of length \delta and strength k = -g
+\, \tan(e) / \delta. It is assumed that g rises linearly within the edge field from zero on
+the outside edge of the edge field to its full value on the inside edge of the edge field. Using
+this in \Eqg2gkg and integrating over the edge field gives the contribution to I_4 from a
+non--zero e_1 as
+    I_4z = -\tan(e_1) \, g^2
+    \left( \cos(\theta) \, \eta_x + \sin(\theta) \, \eta_y \right)
+With an analogous equation for a finite e_2. The extension to I_4a and I_4b involves using
+eta\two_a and eta\two_b in place of eta\two.  In \Eqiegct \theta is the reference
+"tilt" angle which is non--zero if the bend is not in the horizontal plane. Here use of the fact
+has been made that the g vector rotates as \theta and the quadrupole and skew quadrupole
+strengths rotate as 2\, \theta.
+
+The above integrals are invariant under rotation of the (x,y) coordinate system and reduce to the
+standard equations when g_y = 0 as they should.
+
+There are various parameters that can be expressed in terms of these integrals. The I_1 integral
+can be related to the momentum compaction \alpha_p via
+    I_1 = L \, \fracdL/Ldp/p = L \, \alpha_p
+where p is the momentum and L is the ring circumference. The can be related to the time slip
+factor \eta_p by
+  \eta_p = \fracdt/tdp/p = \alpha_p - \frac1\gamma^2
+
+The energy loss per turn is related to I_2 via
+    U_0 = \frac2 \, \rc E_0^43 \, (mc^2)^3 I_2
+where E_0 is the nominal energy.
+
+The damping partition numbers are related to the radiation integrals via
+    J_a = 1 - \fracI_4aI_2 \comma \quad
+    J_b = 1 - \fracI_4bI_2 \comma \, \textand \quad \labelj1ii
+    J_z = 2 + \fracI_4zI_2 \period
+Since 
+    eta\two_a + eta\two_b = eta\two
+    \comma \labeleee
+Robinson's theorem, J_a + J_b + J_z = 4, is satisfied.
+Alternatively, the exponential damping coefficients per turn are
+    \alpha_a = \fracU_0 \, J_a2 E_0 \comma \quad
+    \alpha_b = \fracU_0 \, J_b2 E_0 \comma \, \textand \quad
+    \alpha_z = \fracU_0 \, J_z2 E_0 \period
+The energy spread is given by
+    \sigma_pz^2 = \left( \frac\sigma_EE_0 \right)^2 = 
+    C_q \gamma_0^2 \fracI_32I_2 + I_4z
+where \gamma_0 is the usual energy factor and 
+    C_q = \frac5532 \, \sqrt3 \, \frac\hbarmc = 
+    3.832 \times 10^-13 \, \textmeter for electrons
+If the synchrotron frequency is not too large, the bunch length is given by
+    \sigma_z^2 = \fracI_1M(6,5) \, \sigma_pz^2
+where M(6,5) is the (6,5) element for the 1--turn transfer matrix
+of the storage ring. Finally, the emittances are given by
+    \epsilon_a= \fracC_qI_2 - I_4a 
+      \, \gamma_0^2 \, I_5a \CRNO
+    \epsilon_b= \fracC_qI_2 - I_4b 
+      \, \left( \gamma_0^2 \, I_5b + \frac1355 \, I_6b \right)
+The I_6b term come from the finite vertical opening angle of the
+radiation\citeb:tol. Normally this term is very small compared to
+the emittance due to coupling or vertical kicks due to magnet misalignment.
+
+For a non-circular machine, radiation integrals are still of interest
+if there are bends or steering elements. However, in this case, the
+appropriate energy factors must be included to take account any
+changes in energy due to any "lcavity" elements.  For a
+non-circular machine, the I_1 integral is not altered and the I_4
+integrals are not relevant. The other integrals become
+    L_2= \int ds \, g^2 \, \gamma_0^4 
+    L_3= \int ds \, g^3 \, \gamma_0^7 
+    L_5a= \int ds \, g^3 \, \calH_a \, \gamma_0^6 
+    L_5b= \int ds \, g^3 \, \calH_b \, \gamma_0^6
+In terms of these integrals, the energy loss through the lattice is
+    U_0 = \frac2 \, \rc \, mc^23 L_2
+The energy spread assuming \sigma_E is zero at the start and neglecting
+any damping is
+    \sigma_E^2 = \frac43 \, C_q \, \rc \, \left( m c^2 \right)^2 \, L_3
+The above equation is appropriate for a linac. In a storage ring, where
+there are energy oscillations, the growth of \sigma_E^2 due to
+quantum excitation is half that. One way to explain this is that in a
+storage ring, the longitudinal motion is "shared" between the z and
+pz coordinates and, to preserve phase space volume, this reduces
+\sigma_E^2 by a factor of 2.
+
+Again neglecting any initial beam width, the transverse beam size
+at the end of the lattice is
+    \epsilon_a= \frac23 \, C_q \, \rc \, 
+    \fracL_5a\gamma_f \CRNO
+    \epsilon_b= \frac23 \, C_q \, \rc \, 
+    \fracL_5b\gamma_f 
+Where \gamma_f is the final gamma.

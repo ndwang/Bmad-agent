@@ -1,0 +1,377 @@
+chapter Miscellaneous Programming
+
+-----------------------------------------------------------------------------
+
+Bmad calculations, like particle tracking through a lattice element, can be customized using what
+are called ""custom"" and ""hook"" routines. The general idea is that a programmer can
+implement custom code which is linked into a program and this custom code will be called at the
+appropriate time by Bmad. For example, custom code can be created for Runge-Kutta tracking that
+calculates the electromagnetic field of some complicated electromagnet. Prototype custom and hook
+routines are available in the "/bmad/custom" directory and are discussed in detail below.
+
+To enable Bmad to be able to call customized code, "function pointers" are defined, one for each
+custom or hook routine. At certain places in the Bmad code, the appropriate function pointer will
+be checked. If the function pointer is associated with a routine, that routine will be called. By
+default, the function pointers are not associated with any functions and the only way there will be
+an association by user code modification.
+
+The function pointers are defined in the file "/bmad/modules/bmad_routine_interface.f90". The
+convention followed is that for any given custom or hook routine there is a base name, for example,
+"track1_custom", and in "bmad_routine_interface.f90" there will be an abstract interface which
+with the base name with a "_def" suffix ("track1_custom_def" for this example). Additionally
+the corresponding function pointer uses a "_ptr" suffix and is defined like:
+  procedure(track1_custom_def), pointer :: track1_custom_ptr => null()
+
+To implement custom code for, say, "track1_custom":
+
+* 
+Copy the file "/bmad/custom/track1_custom.f90" to the area where the program is to be compiled.
+
+*
+Customize file as desired. The name of the routine can be changed if desired as long as that name is used
+consistently throughout the program. In fact, multiple custom
+routines can be created and switched in and out as desired in the program.
+
+*
+In the program, define an interface for the custom routine like:
+  procedure(track1_custom_def) :: track1_custom
+This procedure statement must go in the declaration section above the executable section of the code.
+Note: If the custom routine has been put in a module this will not be needed.
+
+*
+Somewhere near the beginning of the program (generally before "bmad_parser" is called), set the
+function pointer to point to your custom routine:
+  track_custom_ptr => track1_custom
+
+*
+If needed modify the compile script(s) (typically named something like "cmake.XXX") to compile the
+file the custom routine is in.
+
+*
+Compile the program using the "mk" command.
+
+While coding a custom routine, it is important to remember that it is \em not permissible to
+modify any routine argument that does not appear in the list of output arguments shown in the
+comment section at the top of the file.
+
+Note: Custom and hook entry points are added to Bmad on an as-needed basis. If you have a need that
+is not met by the existing set of entry points, please contact a Bmad maintainer.
+
+Note: The custom and hook routines in "/bmad/custom/" are not compiled with the Bmad library. Their
+only purpose is to serve as prototypes for code development.
+
+-----------------------------------------------------------------------------
+
+There are essentially two ways to do "custom" (as opposed to "hook") calculations. One way
+involves using a "custom" element . The other way involves setting the
+appropriate "method" component of an element to "custom". An appropriate method component is
+one of
+  tracking_method      
+  mat6_calc_method     
+  field_calc           
+  aperture_type        
+
+There are eight routines that implement custom calculations:
+  \Hyperrefr:check.aperture.limit.customcheck_aperture_limit_custom
+  \Hyperrefr:em.field.customem_field_custom
+  \Hyperrefr:init.custominit_custom
+  \Hyperrefr:make.mat6.custommake_mat6_custom
+  \Hyperrefr:radiation.integrals.customradiation_integrals_custom
+  \Hyperrefr:track1.customtrack1_custom
+  \Hyperrefr:track1.spin.customtrack1_spin_custom
+  \Hyperrefr:wall.hit.handler.customwall_hit_handler_custom
+[Use "getf" for more details about the argument lists for these
+routines.]  
+
+The \Hyperrefr:init.custominit_custom routine is called by \Hyperrefr:bmad.parserbmad_parser
+at the end of parsing for any lattice element that is a "custom" element or has set any one of
+the element components as listed above to "custom". The "init_custom" routine can be used to
+initialize the internals of the element. For example, consider a "custom" element defined in a
+lattice file by
+  my_element: custom, val1 = 1.37, descrip = "field.dat", mat6_calc_method = tracking
+In this example, the "descrip"  component is used
+to specify the name of a file that contains parameters for this
+element. When "init_custom" is called for this element (see below),
+the file can be read and the parameters stored in the element
+structure. Besides the "ele%value" array, parameters may be stored
+in the general use components given in.
+
+The \Hyperrefr:make.mat6.custommake_mat6_custom routine is called by the
+\Hyperrefr:track1track1 routine when calculating the transfer matrix through an element.
+
+The \Hyperrefr:track1.customtrack1_custom routine is called by the \Hyperrefr:track1track1
+routine when the "tracking_method" for the element is set to "custom". Further customization
+can be set by the routines \Hyperrefr:track1.preprocesstrack1_preprocess and
+\Hyperrefr:track1.postprocesstrack1_postprocess. See Section~ for more details.
+
+A potential problem with "track1_custom" is that the calling routine, that is "track1", does
+some work like checking aperture, etc. (see the "track1" code for more details). If this is not
+desired, the "track1_preprocess" routine  can be used to do custom tracking and to
+make sure that "track1" does not do any extra calculations. This is accomplished by putting the
+custom tracking code in "track1_preprocess" and by setting the "finished" argument of
+"track1_preprocess" to True.
+
+The \Hyperrefr:check.aperture.limit.customcheck_aperture_limit_custom routine is used to check
+if a particle has hit an aperture in tracking. It is called by the standard Bmad routine
+\Hyperrefr:check.aperture.limitcheck_aperture_limit when "ele%aperture_type" is set to
+"custom$". A "custom" element has the standard limit attributes  so a
+"custom" element does not have to implement custom aperture checking code.
+
+The \Hyperrefr:em.field.customem_field_custom routine is called by the electro-magnetic field
+calculating routine \Hyperrefr:em.field.calcem_field_calc when "ele%field_calc" is set to
+"custom$". As an alternative to "em_field_custom", a "custom" element can use a field map
+ to characterize the element's electromagnetic fields.
+
+Note: When tracking through a "patch" element, the first step is to transform the particle's
+coordinates from the entrance frame to the exit frame. This is done since it simplifies the
+tracking. [The criterion for stopping the propagation of a particle through a "patch" is that the
+particle has reached the exit face and the calculation to determine if a particle has reached the
+exit face is simplified if the particle's coordinates are expressed in the coordinate frame of the
+exit face.] Thus for "patch" elements, unlike all other elements, the particle coordinates passed
+to \Hyperrefr:em.field.customem_field_custom are the coordinates with respect to the exit
+coordinate frame and not the entrance coordinate frame. If field must be calculated in the entrance
+coordinate frame, a transformation between entrance and exit frames must be done:
+  subroutine em_field_custom (ele, param, s_rel, time, orb, &
+                                  local_ref_frame, field, calc_dfield, err_flag)
+  use lat_geometry_mod
+  ...
+  real(rp) w_mat(3,3), w_mat_inv(3,3), r_vec(3), r0_vec(3)
+  real(rp), pointer :: v(:)
+  ...
+  ! Convert particle coordinates from exit to entrance frame.
+  v => ele%value   ! v helps makes code compact
+  call floor_angles_to_w_mat (v(x_pitch$), v(y_pitch$), v(tilt$), w_mat, w_mat_inv)
+  r0_vec = [v(x_offset$), v(y_offset$), v(z_offset$)]
+  r_vec = [orb%vec(1), orb%vec(3), s_rel]  ! coords in exit frame
+  r_vec = matmul(w_mat, r_vec) + r0_vec      ! coords in entrance frame
+
+  ! Calculate field and possibly field derivative
+  ...
+
+  ! Convert field from entrance to exit frame
+  field%E = matmul(w_mat_inv, field%E)
+  field%B = matmul(w_mat_inv, field%B)
+  if (logic_option(.false., calc_dfield)) then
+    field%dE = matmul(w_mat_inv, matmul(field%dE, w_mat))
+    field%dB = matmul(w_mat_inv, matmul(field%dB, w_mat))
+  endif
+
+The \Hyperrefr:wall.hit.handler.customwall_hit_handler_custom routine is called when the
+Runge-Kutta tracking code \Hyperrefr:odeint.bmadodeint_bmad detects that a particle has hit a
+wall . [This is separate from hitting an aperture that is only defined at the
+beginning or end of an lattice element.] The dummy "wall_hit_handler_custom" routine does
+nothing.  To keep tracking, the particle must be marked as alive
+  subroutine wall_hit_handler_custom (orb, ele, s, t)
+    ...
+    orb%state = alive$   ! To keep on truckin'
+    ...
+Note: "odeint_bmad" normally does not check for wall collisions.  To change the default behavior,
+the "runge_kutta_com" common block must modified. This structure is defined in
+"runge_kutta_mod.f90":
+  type runge_kutta_common_struct
+    logical :: check_wall_aperture = .false.
+    integer :: hit_when = outside_wall$   ! or wall_transition$
+  end type
+
+  type (runge_kutta_common_struct), save :: runge_kutta_com
+To check for wall collisions, the "%check_wall_aperture" component must be set to true. The
+"%hit_when" components determines what constitutes a collision. If this is set to
+"outside_wall$" (the default), then any particle that is outside the wall is considered to have
+hit the wall. If "%hit_when" is set to "wall_transition$", a collision occurs when the
+particle crosses the wall boundary. The distinction between "outside_wall$" and
+"wall_transition$" is important if particles are to be allowed to travel outside the wall.
+
+-----------------------------------------------------------------------------
+
+A "hook" routine is like a "custom" routine in that a "hook" routine can be used for
+customizing a Bmad calculation by replacing the "dummy" version of a "hook" routine with
+customized code. The difference is that the "hook" routine is always called at the appropriate
+time without regard to the type of lattice element under consideration or what tracking method is
+being used.  The "hook" routines that are available are:
+  \Hyperrefr:apply.element.edge.kick.hookapply_element_edge_kick_hook
+  \Hyperrefr:ele.geometry.hookele_geometry_hook
+  \Hyperrefr:ele.to.fibre.hookele_to_fibre_hook
+  \Hyperrefr:time.runge.kutta.periodic.kick.hooktime_runge_kutta_periodic_kick_hook
+  \Hyperrefr:track1.bunch.hooktrack1_bunch_hook
+  \Hyperrefr:track1.preprocesstrack1_preprocess
+  \Hyperrefr:track1.postprocesstrack1_postprocess
+  \Hyperrefr:track1.wake.hooktrack1_wake_hook
+
+The "apply_element_edge_kick_hook" routine can be used for custom tracking through a fringe field.
+See the documentation in the file "apply_element_edge_kick_hook.f90" for more details.
+
+The "ele_geometry_hook" routine can be used for custom calculations of the global geometry of an
+element. This is useful, for example, for a support table on a kinematic mount since Bmad does not
+have the knowledge to calculate the table orientation from the position of the mount points. See the
+documentation in the file "ele_geometry_hook.f90" for more details.
+
+The ele_to_fibre_hook routine can be used to customize how the PTC fibre corresponding to a
+Bmad lattice element is constructed. 
+
+The "time_runge_kutta_periodic_kick_hook" routine can be used to introduce a time dependent kick
+when doing tracking with "time_runge_kutta". This routine could be used, for example, to add the
+kick due to a passing beam ! on a residual gas ion that is being tracked. See the documentation in
+the file "time_runge_kutta_periodic_kick_hook.f90" for more details.
+
+The "track1_bunch_hook" routine can be used for custom bunch tracking through an element.
+
+The "track1_preprocess" and "track1_postprocess" routines are called by the
+\Hyperrefr:track1track1 routine. [Additionally, if the element being tracked through has its
+tracking method set to "custom", the "track1_custom" routine is called.] The
+"track1_preprocess" and "track1_postprocess" routines are useful for a number of things. For
+example, if the effect of an electron cloud is to be modeled, these two routines can be used to put
+in half the electron cloud kick at the beginning of an element and half the kick at the end.
+
+The routine "track1_preprocess" has an additional feature in that it has an argument
+"radiation_included" that can be set to "True" if the routine "track1_custom" will be
+called and "track1_custom" will be handling radiation damping and excitation effects.
+
+The "track1_wake_hook" can be used to apply custom wakes.
+
+-----------------------------------------------------------------------------
+
+For back compatibility reasons, a nonstandard method for using "init_custom" is supported.
+This method involves not bothering to set the "init_custom_ptr" 
+and simply including a custom "init_custom" routine that is included in the list
+of routines to link to. The problem with this method is that it is not guaranteed to work
+on all platforms. In particular, this method is known to fail with MacOS and the "gcc"
+compiler. Due to this, this method is discouraged. 
+
+-----------------------------------------------------------------------------
+
+Common physical and mathematical constants that can be used in any expression
+are defined in the file:
+ sim_utils/interfaces/physical_constants.f90
+
+The following constants are defined
+  pi = 3.14159265358979d0
+  twopi = 2 * pi
+  fourpi = 4 * pi
+  sqrt_2 = 1.41421356237310d0
+  sqrt_3 = 1.73205080757d0
+  complex: i_imaginary = (0.0d0, 1.0d0)
+
+  e_mass = 0.51099906d-3   ! DO NOT USE! In GeV
+  p_mass   = 0.938271998d0   ! DO NOT USE! In GeV
+
+  m_electron = 0.51099906d6  ! Mass in eV
+  m_proton   = 0.938271998d9 ! Mass in eV
+
+  c_light = 2.99792458d8             ! speed of light
+  r_e = 2.8179380d-15                ! classical electron radius
+  r_p = r_e * m_electron / m_proton  ! proton radius
+  e_charge = 1.6021892d-19           ! electron charge
+
+  h_planck = 4.13566733d-15          ! eV*sec Planck's constant
+  h_bar_planck = 6.58211899d-16      ! eV*sec h_planck/twopi
+
+  mu_0_vac = fourpi * 1e-7                   ! Permeability of free space
+  eps_0_vac = 1 / (c_light**2 * mu_0_vac)    ! Permittivity of free space
+
+  classical_radius_factor = r_e * m_electron ! Radiation constant
+
+  g_factor_electron = 0.001159652193    ! Anomalous gyro-magnetic moment
+  g_factor_proton   = 1.79285           ! Anomalous gyro-magnetic moment
+
+-----------------------------------------------------------------------------
+
+The routine \Hyperrefr:lat.geometrylat_geometry will compute the global floor coordinates at the
+end of every element in a lattice.  "lat_geometry" works by repeated calls to
+\Hyperrefr:ele.geometryele_geometry which takes the floor coordinates at the end of one element
+and calculates the coordinates at the end of the next. For conversion between orientation matrix
+W  and the orientation angles \theta, \phi, \psi, the routines
+\Hyperrefr:floor.angles.to.w.matfloor_angles_to_w_mat and
+\Hyperrefr:floor.w.mat.to.anglesfloor_w_mat_to_angles can be used.
+
+The routine \Hyperrefr:s.calcs_calc calculates the longitudinal s positions for the elements
+in a lattice.
+
+-----------------------------------------------------------------------------
+
+\index reference energy
+The reference energy and time for the elements in a lattice is calculated by
+\Hyperrefr:lat.compute.ref.energy.and.timelat_compute_ref_energy_and_time.  The reference energy
+associated with a lattice element is stored in
+  ele%value(E_tot_start$)   ! Total energy at upstream end of element (eV)
+  ele%value(p0c_start$)     ! Momentum * c_light at upstream end of element (eV)
+  ele%value(E_tot$)         ! Total energy at downstream end (eV)
+  ele%value(p0c$)           ! Momentum * c_light at downstream end(eV)
+Generally, the reference energy is constant throughout an element so that "%value(E_tot_start$"
+= "%value(E_tot$" and "%value(p0c_start$" = "%value(p0c$". Exceptions are elements of
+type:
+  custom,
+  em_field,
+  hybrid, or
+  lcavity
+In any case, the starting "%value(E_tot_start$" and "%value(p0c_start$" values of a given
+element will be the same as the ending "%value(E_tot$" and "%value(p0c$" energies of the
+previous element in the lattice.
+
+The reference time and reference transit time is stored in
+  ele%ref_time                ! Ref time at downstream end
+  ele%value(delta_ref_time$)
+
+The reference orbit for computing the reference energy and time is
+stored in
+  ele%time_ref_orb_in        ! Reference orbit at upstream end
+  ele%time_ref_orb_out       ! Reference orbit at downstream end
+Generally "ele%time_ref_orb_in" is the zero orbit. The exception comes when an element is a
+"super_slave". In this case, the reference orbit through the super_slaves of a given
+"super_lord" is constructed to be continuous. This is done for consistency sake. For example, to
+ensure that when a marker is superimposed on top of a wiggler the reference orbit, and hence the
+reference time, is not altered.
+
+"group" , "overlay" , and "super_lord" elements inherit
+the reference from the last slave in their slave list . For "super_lord"
+elements this corresponds to inheriting the reference energy of the slave at the downstream end of
+the "super_lord". For "group" and "overlay" elements a reference energy only makes sense if
+all the elements under control have the same reference energy.
+
+Additionally, photonic elements like "crystal", "capillary",
+"mirror" and "multilayer_mirror" elements have an associated photon reference wavelength
+  ele%value(ref_wavelength$)      ! Meters.
+
+-----------------------------------------------------------------------------
+
+There are two common variables used by Bmad for communication between routines. These are
+"bmad_com", which is a "bmad_common_struct" structure, and "global_com" which is a
+"global_common_struct" structure. The "bmad_com" structure is documented in
+Section~.
+
+The "global_common_struct" is meant to hold common parameters that should
+not be modified by the user. 
+  type global_common_struct
+    logical mp_threading_is_safe = T    ! MP threading safe?
+    logical exit_on_error  = T          ! Exit program on error?
+  end type
+A global variable "global_com" is defined in the "sim_utils" library:
+  type (global_common_struct), save :: global_com
+And various routines use the settings in "global_com".
+
+     "%mp_threading_is_safe" 
+Toggle to prevent MP threading optimizations from being done. See Sec.~ for
+more details.
+     "%exit_on_error" 
+The "%exit_on_error" component tell a routine if it is OK to stop a program on a severe
+error. Stopping is generally the right thing when a program is simply doing a calculation and
+getting a wrong answer is not productive. In control system programs and in interactive programs
+like "Tao", it is generally better not to stop on an error.
+
+-----------------------------------------------------------------------------
+
+Bmad was initially developed without regard to parallel processing. When a demand for
+multithreading capability arose, Bmad was modified to meet the need and uses both MP
+(Multi-Processing) and MPI (Message Passing Interface) type threading. And sometimes both will be
+used within the same program.
+
+The general rule at present is that Bmad can be run multi-threaded as long as either lattice
+parameters are not varied or an array of lattices is used, one for each thread. Thus multi-threading
+with MPI is generally thread safe since, by default, different MPI threads do not share memory. With
+MP, things are more complicated.  For example, tracking a particle through a lattice is generally
+thread safe with MP. The exception is if there are "ramper"  elements since
+ramping involves the modifying lattice element parameters while tracking and is thus not MP thread
+safe. Another exception is that PTC code  is not thread safe.
+
+In order to signal routines that have MP code whether it is safe to using threading, there is the
+global switch "global_com%mp_threading_is_safe". The default is True. 
+

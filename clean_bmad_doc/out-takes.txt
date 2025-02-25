@@ -1,0 +1,58 @@
+----------------------------------------------------------------
+Form coordinates.tex
+
+  \includegraphics[width=5in]patch-coords.pdf
+The coordinate system for a patch element. The thick red lines
+delineate the entrance and exit planes. Within the "patch", the reference
+orbit is a straight line coinciding with the z axis of the entrance coordinate.
+
+The reference orbit for a "patch" element is shown in
+\figf:patch.coords.  Within the "patch", the reference orbit is
+a straight line coinciding with the z axis of the entrance
+coordinate. The "patch" has associated with it two longitudinal
+lengths: 
+*
+The "reference length" is the length that the reference particle
+travels from the entrance plane to the exit plane. The reference
+length is used to determine the change in the reference time through
+the "patch" which, in turn, is used to calculate the change in the
+phase space z coordinate (cf.~\Eqzbctt). With the reference length
+so chosen, the change in z of a particle entering the "patch" on
+the zero-orbit will be zero.
+*
+The "S-length" is the length of the patch when the s-positions of
+the elements are calculated. The S-length is the longitudinal distance
+from the entrance origin to the exit origin. The S-length is the same
+at the "z_offset" attribute of the "patch" and is also the same
+as the "l" length attribute . The S-length is used when
+calculating the track of a particle through a patch. That is, when
+Bmad calculates the trajectory of a particle transversing a patch,
+the dependent s position (relative to the beginning of the
+"patch") will vary from 0 to S-length. At s = 0 the particle is
+at the entrance face of the "patch". Between s = 0 and s
+=~S-length the particle transport is the same as a drift (this is
+assuming there are no associated fields). At s =~S-length the
+pitches, transverse offsets, and time and energy patches are applied
+and the particle is drifted to the exit face.
+
+Note: "wiggler" elements also have the reference length different
+from the S-length. With a wiggler, the S-length is the longitudinal
+length from the entrance to the exit faces. The reference length, on
+the other hand, is the path length of a particle that is on the zero
+orbit entering the wiggler. Thus, like a "patch", a particle
+entering a wiggler on the zero orbit will have no change in z at the
+end.
+
+The "floor_shift"  element does not have a
+reference orbit associated with it in between its entrance and exit
+coordinates.
+
+----------------------------------------------------------------
+From patch section in elements.tex
+
+The order of transformations for a "patch" is:
+*
+Propagate the particle a distance "z_offset". 
+*
+Apply offset, 
+

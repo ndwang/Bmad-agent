@@ -1,0 +1,1317 @@
+chapter Lattice File Statements
+
+A lattice  defines the sequence of elements that a particle will travel
+through along with the attributes (length, strength, orientation, etc.) of the elements.  A lattice
+file (or files) is a file that is used to describe an accelerator or storage ring.
+
+When Bmad was first developed, The Bmad lattice file syntax was modeled upon the format defined
+for the \mad program\citeb:maduser. Since then, the Bmad format has been developed to meet ever
+increasing simulation needs so currently there are many differences between the two formats. One
+difference, which has been present from the very start, is that there are no "action" commands
+(action commands tell the program to calculate the Twiss parameters, do tracking, etc.) in a Bmad
+lattice file. The reason for this is due to the fact that Bmad is a software library and not a
+program. That is, interacting with the user to determine what actions a Bmad based program should
+take is left to the program itself and is not part of the Bmad standard.
+
+---------------------------------------------------------------------------
+
+The following (rather silly) example shows some of the features of a
+Bmad lattice file:
+  ! This is a comment
+  parameter[E_TOT] = 5e9                   ! Parameter definition
+  pa1 = sin(3.47 * pi / c_light)                 ! Constant definition
+  bend1: sbend, type = "arc bend", l = 2.3,      ! An element definition
+      g = 2*pa1, tracking_method = bmad_standard
+  bend2: bend1, l = 3.4                          ! Another element def
+  bend2[g] = 105 - exp(2.3) / 37.5               ! Redefining an attribute
+  ln1: line = (ele1, ele2, ele3)                 ! A line definition
+  ln2: line = (ln1, ele4, ele5)                  ! Lines can contain lines
+  arg_ln(a, b): line = (ele1, a, ele2, b)        ! A line with arguments.
+  use, ln2                                       ! Which line to use for the lattice
+
+A Bmad lattice file consists of a sequence of statements. An exclamation mark (!) denotes a comment
+and the exclamation mark and everything after the exclamation mark on a line are ignored.  
+
+Bmad is generally case insensitive. Most names are converted to uppercase. Exceptions are 
+file names and atomic formulas for materials used in crystal diffraction. Also "type", "alias",
+and "descrip" string labels which can be set for any element are not converted .
+
+Normally a statement occupies a single line in the file. Several statements may be placed on the
+same line by inserting a semicolon (";") between them. A long statement can occupy multiple lines
+by putting an ampersand ("\&") at the end of each line of the statement except for the last
+line. Additionally, lines that end with an "implicit end-line continuation character" are automatically
+continued to the next line and lines that begin with an "implicit begin-line continuation character are
+automatically appended to the previous line. The implicit end-line continuation characters are:
+  ,   (   {   [   =
+The implicit begin-line continuation characters are:
+  ,   )   }   ]   =
+The following example shows a command extending over four lines
+  wall = {               ! End-line continuation character.
+    section = {s = 0.45 
+    }                    ! Begin-line continuation character.
+  }                      ! Begin-line continuation character.
+Note: The symbols "+", "-", "*", and "/" are \em not valid implicit continuation
+characters. The reason for this is to avoid confusion when a species name (for example "He++")
+comes at the end of a line.
+
+A single line in a lattice file is limited to 500 characters. Commands have no restrictions as to
+the number of lines they may be continued over and there is no limit to the length of a command.
+
+Names of constants, elements, lines, etc. are limited to 40 characters. The first character must be
+a letter ("A" --- "Z").  The other characters may be a letter, a digit ("0" --- "9") or
+an underscore ("_"). Other characters may appear but should be avoided since they are used by
+Bmad for various purposes. For example, the backslash ("\") character is used to by Bmad when
+forming the names of superposition slaves  and dots (".") are used by Bmad when
+creating names of "tagged" elements . Also use of special characters may make the
+lattice files less portable to non-Bmad programs.
+
+The following example constructs a linear lattice with two elements: 
+  parameter[geometry] = open
+  parameter[e_tot] =2.7389062E9
+  parameter[particle] = POSITRON
+  beginning[beta_a] = 14.5011548
+  beginning[alpha_a] = -0.53828197
+  beginning[beta_b] = 31.3178048
+  beginning[alpha_b] = 0.25761815
+  q: quadrupole, l = 0.6, b1_gradient = 9.011
+  d: drift, l = 2.5
+  t: line = (q, d)
+  use, t 
+here "parameter[geometry]"  is set to "open" which specifies that the lattice
+is not circular. In this case, the beginning Twiss parameters need to be specified and this is done
+by the "beginning" statements . A quadrupole named "q" and a drift element
+named "d" are specified and the entire lattice consists of element "q" followed by element
+"d".
+
+----------------------------------------------------------------------------
+
+Normally the Bmad parser routine will create what is called a "digested file" after it has parsed
+a lattice file so that when a program is run and the same lattice file is to be read in again, to
+save time, the digested file can be used to load in the lattice information.  This digested file is
+in binary format and is not human readable. The digested file will contain the transfer maps for all
+the elements.  Using a digested file can save considerable time if some of the elements in the
+lattice need to have Taylor maps computed.  (this occurs typically with map--type wigglers).
+
+Bmad creates the digested file in the same area as the lattice file.  If Bmad is not able to
+create a digested file (typically because it does not have write permission in the directory), an
+error message will be generated but otherwise program operation will be normal.
+
+Digested files contain the names of the lattice files used to create them. If a lattice file has
+been modified since the digested file has been created then the lattice files will be reread and a
+new digested file will be generated.
+
+Note: If any of the random number functions  are used in the process of creating
+the lattice, the digested file will be ignored. In this case, each time the lattice is read into a
+program, different random numbers will be generated for expressions that use such random numbers.
+
+Digested files can also be used for easy transport of lattices between programs or between sessions
+of a program. For example, using one program you might read in a lattice, make some adjustments (say
+to model shifts in magnet positions) and then write out a digested version of the lattice. This
+adjusted lattice can now be read in by another program.
+
+---------------------------------------------------------------------------
+
+A "line" defines a sequence of elements. "lines" may contain other "lines" and so a
+hierarchy may be established. One line is selected, via a "use" statement, that defines the
+lattice. For example:
+  l3: line = (l1, l2)   ! Concatenate two lines
+  l1: line = (a, b, c)  ! Line with 3 elements
+  l2: line = (a, z)     ! Another line 
+  use, l3               ! Use l3 as the lattice definition.
+In this case the lattice would be
+  (a, b, c, a, z)
+"Lines" can be defined in any order. See \crefc:sequence for more
+details.
+
+The "superimpose" construct allows elements to be placed in a lattice at a definite longitudinal
+position. What happens is that after a lattice is expanded, there is a reshuffling of the elements
+to accommodate any new superimpose elements. See for more details.
+
+---------------------------------------------------------------------------
+
+The syntax for defining a lattice element roughly follows the
+\mad\citeb:maduser program:
+  ele_name: keyword [, attributes]
+where "ele_name" is the element name, "keyword" is the type of element, and "attributes" is
+a list of the elements attributes. \crefc:elements gives a list of elements types with their
+attributes.  "Overlay" and "group" type elements have a slightly different syntax:
+  ele_name: keyword = { list }, master-attribute [= value] [, attributes]
+and "Girder" elements have the syntax
+  ele_name: keyword = { list } [, attributes]
+For example:
+  q01w: quadrupole, type = "A String", l = 0.6, tilt = pi/4
+  h10e: overlay = { b08e, b10e }, var = {hkick}
+
+The "keyword" specifying the element type can be the name of an element that has already been
+declared. In this case, the element being defined will inherit the attributes that have been
+set for the element associated with "keyword". Example:
+  qa, quad, l = 0.6, tilt = pi/4  ! Define QA.
+  qb: qa                          ! QB Inherits from QA.
+  qa[k1] = 0.12                   ! QB unaffected by modifications of QA.
+In this example, element "QB" inherits the attributes of "QA" which, in this case, are the
+length and tilt parameters of "QA". Once "QB" is defined, the elements are separate so 
+modifications of the parameters of "QA" after "QB" is defined will not affect "QB".
+
+Bmad allows element names to be abbreviations of element types. For example, ""Q"", "QU"",
+and ""QUADRUPOL"" are all valid element names but ""QUADRUPOLE"", being an exact match to
+the corresponding element type, is not. Care must be used when using elements that are abbreviations
+of element types since Bmad allows element type names to be abbreviated (but element names may not
+be abbreviated when using inheritance). For example:
+  q1: quad          ! Q1 is a quadrupole since it comes before the next line.
+  quad: sextupole   ! QUAD element is defined to be a sextupole.
+  q2: quad          ! Q2 is a sextupole as it inherits from QUAD.
+  q3: qua           ! Q3 is a quadrupole. Inherit from names cannot be abbreviated.
+
+---------------------------------------------------------------------------
+
+A valid element name may be up to 40 characters in length. The first character of the name must be a
+letter [A-Z]. After that, the rest of the name can contain only letters, digits [0-9], underscore
+"_", period ".", backslash "\", or a hash mark "#". A double hash mark "##" is not
+permitted since this interfers with the notation for finding the N\Th element with a given name
+. It is best to avoid these last three symbols since Bmad uses them to denote
+"relationships". Periods are used for tagging , and backslash and hash marks are
+used for to compose names for superposition  and multipass 
+slave elements.
+
+There is a short list of names that cannot be used as an element, line or list name. These reserved names are:
+  beam                             no_digested                  root
+  beginning                        no_superimpose               slice_lattice
+  call                             parameter                    start_branch_at
+  calc_reference_orbit             parser_debug                 superimpose
+  combine_consecutive_elements     particle_start               title
+  debug_marker                     print                        use
+  end_file                         redef                        use_local_lat_file
+  expand_lattice                   remove_elements              write_digested
+  merge_elements                   return
+Note: The one exception is if "end" is used to define a "marker". This exception is allowed
+since Bmad uses the "end" name to define a marker in any case.
+
+It is perfectly acceptable for multiple lattice elements to have the same name. Example:
+  q: quadrupole, ...
+  aline: line = (5*q)
+  use, aline
+This will produce a lattice with five elements named ""q"". The exception is "group"
+ and "overlay"  controller elements will always have unique
+names. It is important to keep in mind that elements with the same name do not necessarily have
+the same parameter values. See Section~ for an example. 
+
+---------------------------------------------------------------------------
+
+Where appropriate, for example when setting element attributes , the wild card
+characters ""*"" and ""%"" can be used to select multiple elements.  The ""*""
+character will match any number of characters (including zero) while ""%"" maches to any single
+character. Additionally, matching can be restricted to a certain element class using the syntax:
+  class::element_name
+where "class" is a class (EG: sextupole). For example:
+  m*              ! Match to all elements whose name begins with "m".
+  a%c             ! Match to "abc" but not to "ac" or "azzc".
+  quadrupole::*w  ! Match to all quadrupoles whose name ends in "w"
+Note: The character ""%"" can be used in expressions used for setting lattice element parameter
+values. In this case, the ""%"" character represents the name of the lattice element whose
+parameter is being set. This is discussed in section~.
+
+Instead of matching to an element name, matches may be made to "type", "alias",
+or "descrip" attributes  using the syntax:
+  attribute_name::string
+where "attribute_name" is one of:
+  type
+  alias
+  descrip
+and "string" is a string to match to which can include wild card characters ""*"" and
+""%"". If "string" contains blank characters, the string must be enclosed with single or
+double quotation marks. Note: An element attribute that is blank will never match. Also note that
+while "type", "alias", or "descrip" strings may have lower case characters (unlike element
+names, these strings are not converted to upper case), matching is always case insensitive. For Example:
+  type::"det bpm*"   ! Match to all elements whose "type" string starts with "det bpm".
+  alias::*           ! Match to all elements whose "alias" string is not blank.
+
+\vspace*1pt
+After lattice expansion , the general syntax to specify a set of elements is:
+  {branch_id>>}{class::}element_id
+  {branch_id>>}element_name##N                 ! N^th instance of element_name in 
+                                               !        branch with branch_id
+  {branch_id>>}{class::}element_id{##N}+M  ! M^th element after element
+  {branch_id>>}{class::}element_id{##N}-M  ! M^th element before element
+where "{...\" marks an optional component, "class" is a class name, "branch_id" is a
+branch name or index , "element_id" is and element name or element index
+, and "##N" indicates that the N\Th matching element in a branch is to be
+used. Examples:
+  x_br>>quad::q*        ! All quadrupoles of branch "x_br" whose name begins with "q".
+  2>>45                 ! element #45 of branch #2.
+  q01##3                ! The 3rd element named q01 in each branch where there are at 
+                        ! least three elements named q01.
+  q01-1                 ! Elements just before all elements named q01.
+  q01##3+0              ! Same as q01##3.
+Note: "Group" and "overlay" elements have unique names so using "##" is unnecessary.
+
+Note: When using the "##" construct, "super_lord" and "girder_lord" elements are considered 
+to be situated where their slave elements are situated in the lattice. This is independent of where
+they actually exist which is in the lord part of branch 0 .
+
+Note: When using "+M" and "-M" offsets, no space should be put around the plus or minus signs.
+Offsets cannot be used with "overlay", "group", "ramper_lord" or "multipass_lord"
+elements. If used with a "super_lord" or "girder" element, for a "-M" offset the element
+selected is the "M"\Th element before the first "slave" element of the lord and for a "+M"
+offset the element selected is the "M"\Th element after the last "slave" element of the
+lord. Also, independent of the "geometry" of the branch, the element selected will "wrap"
+around the ends of the branch.  For example, if a lattice branch looks like:
+\pagebreak[2]
+  Index  Name
+    0    Beginnning
+    1    A
+    2    B\1       ! First super_slave of B super_lord
+    3    M
+    4    B\2       ! Second super_slave of B super_lord
+    5    C
+then
+    Name  Translates to     Name  Translates to
+    ----  -------------     ----  -------------
+    B-1   A                 B+1   C
+    B-2   Beginning         B+2   Beginning
+    B-3   C                 B+3   A
+    B-4   B\2               B+4   B\1
+
+It is advised to avoid setting the parameters of differing elements that share the same
+name to differing values since this can lead problems later on. For example, consider this in a
+lattice file named, say, "lat.bmad":
+  q1: quadrupole, ...
+  a: line = (..., q1, ...)
+  b: line = (..., q1, ...)
+  c: line = (a, b)  ! There are two q1 elements. 
+                    ! One from A-line and one from B-line.
+  use, c
+  expand_lattice    ! Expand the lattice
+  q1##1[k1] = 0.1   ! Set first element whose name is q1
+  q1##2[k1] = 0.2   ! Set second element whose name is q1
+Now if later on someone wants to study just the "B" line that person could try to do this by
+creating a second file with just two lines:
+  call, file = lat.bmad
+  use, b
+Normally this would work but in this case the lattice is invalid since there is only one "q1"
+element in line "B". A more flexible solution would be to use unique names for the two "q1"
+elements.
+
+Multiple elements in a lattice may share the same name.  When multiple branches are present, to
+differentiate elements that appear in different branches, the "branch qualified" element name may
+be used. The branch qualified element name is of the form
+  branch_name>>element_name
+where "branch_name" is the name of the branch and "element_name" is the "regular" name of
+the element. Example:
+  root>>q10w
+  x_branch>>crystal3
+
+For "branch" lines , the full "branch qualified" name of an element is of
+the form
+  branch_name>>element_name
+where "branch_name" is the name of the branch and "element_name" is the "regular" name of
+the element. Example:
+  root>>q10w
+  xline>>cryst3
+Using the full name is only needed to distinguish elements that have the same regular name in
+separate branches. When parsing a lattice file, branches are not formed until the lattice is
+expanded . Therefore an "expand_lattice" statement is required before full names
+can be used in statements.
+
+After lattice expansion , when setting element attributes (, a
+comma delimited list of names can be used (the commas are actually optional). Each item in a list is
+either the name of an element or an element range. An element range has the syntax:
+  {branch>>}{class::}ele1:ele2
+where
+  branch   ! Optional branch name or index.
+  class    ! Optional element class name ("quadrupole", "sbend", etc.)
+  ele1     ! Starting element of the range which includes ele1.
+  ele2     ! Ending element of the range which includes ele2. 
+For example:
+  3,15:17          ! Elements with index 3, 15, 16, and 17 in branch 0.
+  3 15:17          ! Same as above (commas are optional).
+  2>>45:51         ! Elements 45 through 51 of branch 2.
+  q1:q5            ! Elements between q1 and q5.
+  sbend::q1:q5     ! All sbend elements between q1 and q5 including q1 and q5 if they. 
+                   ! are sbends. Notice that q1 and q5 do not have to be sbends
+if the element index of "ele1" is greater than "ele2" then the range wraps around the end of
+the lattice. For example, if branch0 has 360 tracking elements , the range
+"321:72" is equivalent to "372:360, 0:72".
+
+With a comma delimited list of names, a tilde prefix can be used to remove elements from the list.
+Adding and subtracting elements is done left to right. For example:
+  *::*, ~quadrupole::*  ! All elements except quadrupoles
+  b*, ~b1*, b13         ! All elements with names beginning with B except
+                        !   elements with names beginning with B1. However,
+                        !   elements named B13 are retained.
+
+With a list of names, an ampersand ""\&"" can be used to form the intersection of two sets.
+  100:200 \& sbend::*    ! All sbend elements whose index is between 100 and 200.
+  q* \& quad::*          ! Equivalent to "quadrupole::q*".
+  q* \& quad::* b1       ! Equivalent to "quadrupole::q*, b1".
+
+When lattice expansion occurs during parsing of a lattice , all "rbend"
+elements are converted to "sbend" elements  but there is a "sub_key" element
+parameter that is used so Bmad knows which bend elements were defined as "rbend"s in the lattice
+file. After lattice expansion, the string "sbend::*" will match to all bend elements irregardless
+of whether a bend was defined to be a "sbend" or a "rbend". On the other hand, after lattice
+expansion the string "rbend::*" will match to all bend elements that were defined as "rbend"s
+before expansion.
+
+---------------------------------------------------------------------------
+
+Any lattice element has various attributes like its name, its length, its strength, etc. The values
+of element attributes can be specified when the element is defined. For example:
+  b01w: sbend, l = 6.0, rho = 89.0 ! Define an element with attributes.
+After an element's definition, most attributes may be referred to using the syntax
+  class::element_name[attribute_name]
+Examples:
+  q01[k1]                       ! K1 attribute of element Q01.
+  sbend::b0%[dg]                ! DG attribute of sbend elements whose name
+                                !   has three characters starting with "B0"
+Some element parameters have a more complicated syntax and are listed in section.
+
+Element attributes can be set or used in an algebraic expression:
+  b01w[roll] = 6.5                  ! Set an attribute value.
+  b01w[L] = 6.5                     ! Change an attribute value.
+  b01w[L] = b01w[rho] / 12          ! OK to reset an attribute value.
+  my_const = b01w[rho] / b01w[L]    ! Use of attribute values in an expression.
+Notice that there can be no space between the element name and the "[" opening bracket.
+
+Chapter \crefc:elements lists the attributes appropriate for each element class.
+
+When setting an attribute value, if more than one element has the "element_name" then 
+such elements will be set. When setting an attribute value, if "element_name" is the name of a
+type of element, all elements of that type will be set. For example
+  q_arc[k1] = 0.234                      ! Set all elements named Q_ARC. 
+  rfcavity::*[voltage] = 3.7             ! Set all RFcavity elements.
+
+To set an attribute for multiple element at one time, The wild cards ""*"", and ""%"" can
+be used in element names . Examples:
+  *[tracking_method] = bmad_standard  ! Matches all elements.
+  quadrupole::Q*[k1] = 0.234    ! Matches all quadrupoles with names beginning with Q.
+  Q%1[k1] = 0.234               ! Matches to "Q01" but not "Q001".
+Unlike when there are no wild cards used in a name, it is not an error if a name with wild cards
+does not match to any element.  Note: A name with wild cards will never match to the "BEGINNING"
+element .
+
+The ""%"" symbol can be used in expression to represent the lattice element whose parameter is
+being set. For example:
+  s%z[k2] = %[k2] + 0.03 * ran_gauss()
+The ""s%z"" on the left hand side matches to all three letter elements whose name begins with
+""s"" and ends with ""z"". For each element that is matched, the ""%[k2]"" in the
+expression on the right hand side will be the "k2" value of that element. Thus, if there are three
+elements, named "s0z", "saz", and "s.z", in the lattice that match "s%z", the above command
+is equivalent to the following three commands
+  s0z[k2] = s0z[k2] + 0.03 * ran_gauss()
+  saz[k2] = saz[k2] + 0.03 * ran_gauss()
+  s.z[k2] = s.z[k2] + 0.03 * ran_gauss()
+
+After lattice expansion , the attributes of specific elements may be set using the
+syntax as discussed in Section~. Example:
+  expand_lattice              ! Expand the lattice.
+  97[x_offset] = 0.0023       ! Set x_offset attribute of 97th element
+  b2>>si_cryst##2[tilt] = 0.1 ! Tilt the 2nd instance of "si_cryst" in branch "b2" 
+  5:32[x_limit] = 0.3         ! Sets elements with indexes 5 through 32 in branch 0.
+
+---------------------------------------------------------------------------
+
+This section lists parameters that have a "nonstandard" syntax (not in the form
+""ename[parameter]""").  In the following, ""ename"" is an element name, and ""N"",
+""N1"", ""N2"", ""N3"" and ""M"" along with "<out>", "<n1>", and "<n2>" are
+integers.
+
+AC_kicker :
+  ename[amp_vs_time(N)%time]
+  ename[amp_vs_time(N)%amp] 
+  ename[frequencies(N)%freq]
+  ename[frequencies(N)%amp] 
+  ename[frequencies(N)%phi] 
+
+Cartesian map :
+  ename[cartesian_map(N)%field_scale]      
+  ename[cartesian_map(N)%r0(1)]
+  ename[cartesian_map(N)%r0(2)]
+  ename[cartesian_map(N)%r0(3)]
+  ename[cartesian_map(N)%master_parameter]
+  ename[cartesian_map(N)%t(M)%A]                  -- M^th term in N^th map.
+  ename[cartesian_map(N)%t(M)%kx]
+  ename[cartesian_map(N)%t(M)%ky]
+  ename[cartesian_map(N)%t(M)%kz]
+  ename[cartesian_map(N)%t(M)%x0]
+  ename[cartesian_map(N)%t(M)%y0]
+  ename[cartesian_map(N)%t(M)%phi_z]
+
+Controller knot points :
+  ename[x_knot(N)]                        -- N^th x_knot point.
+  ename[slave(M)%y_knot(N)]               -- N^th y_knot point for M^th slave.
+
+Custom attributes :
+  ename[r_custom(N1, N2, N3)]
+  ename[r_custom(N1, N2)]                 -- Equivalent to ename[r_custom(N1, N2,  0)]
+  ename[r_custom(N1)]                     -- Equivalent to ename[r_custom(N1,  0,  0)]
+
+Cylindrical map :
+  ename[cylindrical_map(N)%phi0_fieldmap]  
+  ename[cylindrical_map(N)%theta0_azimuth]
+  ename[cylindrical_map(N)%field_scale]
+  ename[cylindrical_map(N)%dz]
+  ename[cylindrical_map(N)%r0(1)]
+  ename[cylindrical_map(N)%r0(2)]
+  ename[cylindrical_map(N)%r0(3)]
+  ename[cylindrical_map(N)%master_parameter]
+
+Gen_Grad map :
+  ename[gen_grad_map(N)%field_scale]     
+  ename[gen_grad_map(N)%r0(1)]
+  ename[gen_grad_map(N)%r0(2)]
+  ename[gen_grad_map(N)%r0(3)]
+  ename[gen_grad_map(N)%master_parameter]
+
+Grid_field :
+  ename[grid_field(N)%phi0_fieldmap] 
+  ename[grid_field(N)%interpolation_order]
+  ename[grid_field(N)%harmonic]
+  ename[grid_field(N)%geometry]
+  ename[grid_field(N)%ename_anchor_pt]
+  ename[grid_field(N)%phi0_fieldmap]
+  ename[grid_field(N)%field_scale]
+  ename[grid_field(N)%dr(1)]
+  ename[grid_field(N)%dr(2)]
+  ename[grid_field(N)%dr(3)]
+  ename[grid_field(N)%r0(1)]
+  ename[grid_field(N)%r0(2)]
+  ename[grid_field(N)%r0(3)]
+  ename[grid_field(N)%master_parameter]
+
+Long range wake :
+  ename[lr_wake%amp_scale]
+  ename[lr_wake%time_scale]
+  ename[lr_wake%freq_spread
+  ename[lr_wake%mode(N)%freq_in]       
+  ename[lr_wake%mode(N)%freq]     
+  ename[lr_wake%mode(N)%r_over_q]  
+  ename[lr_wake%mode(N)%damp]       
+  ename[lr_wake%mode(N)%phi]       
+  ename[lr_wake%mode(N)%polar_angle]
+  ename[lr_wake%mode(N)%polarized] 
+
+Surface curvature :
+  ename[curvature%spherical]
+  ename[curvature%elliptical_x]
+  ename[curvature%elliptical_y]
+  ename[curvature%elliptical_z]
+  ename[curvature%x(N1)y(N2)]
+
+Taylor terms :
+  ename[tt<out><n1><n2>...]      ! Orbital terms. EG: rot[tt13] -> M13 matrix term
+  ename[ttS0<n1><n2><n3>...]     ! S0 spin quaternion terms.
+  ename[ttSx<n1><n2><n3>...]     ! Sx spin quaternion terms.
+  ename[ttSy<n1><n2><n3>...]     ! Sy spin quaternion terms.
+  ename[ttSz<n1><n2><n3>...]     ! Sz spin quaternion terms.
+
+Wall for vacuum chambers and masks :
+  ename[wall%section(N)%s]
+  ename[wall%section(N)%wall%dr_ds]
+  ename[wall%section(N)%v(M)%x]
+  ename[wall%section(N)%v(M)%y]
+  ename[wall%section(N)%v(M)%radius_x]
+  ename[wall%section(N)%v(M)%radius_y]
+  ename[wall%section(N)%v(M)%tilt]
+
+---------------------------------------------------------------------------
+
+Real scalar and vector custom element attributes may be defined for any class of element and real
+scaler parameters can be defined for the lattice as a whole.  Custom element attributes are useful
+with programs that need to associate "extra" information with particular lattice elements or the
+lattice itself and it is desired that this extra information be settable from within a lattice
+file. For example, a program might need an error tolerance for the strength of quadrupoles.
+
+Adding custom attributes will not disrupt programs that are not designed to use the custom
+attributes. Currently, up to 40 named custom attributes may be defined for any given element
+class. The syntax for defining custom attributes is:
+  parameter[custom_attributeN] = {class_name::}attribute_name
+Where ""N"" is an integer between 1 and 40 and ""attribute_name"" is the name of the
+attribute. To restrict the custom attribute to a particular element class, the element class can be
+prefixed to the attribute name. To define a global parameter for the lattice, use "parameter""
+as the class name.
+Examples:
+  parameter[custom_attribute1] = quadrupole::error_k1
+  parameter[custom_attribute1] = mag_id
+  parameter[custom_attribute1] = sextupole::error_k2
+  parameter[custom_attribute2] = color
+  parameter[custom_attribute2] = parameter::quad_mag_moment
+The first line in the example assigns, for the first custom attribute group
+("custom_attribute1"), a name of "error_k1" to all quadrupoles. The second line in the example
+assigns to the first custom attribute group the name "mag_id" to all element classes except
+quadrupoles since that class of element already has an assigned name. The third line assigns, for
+the first custom attribute group, a name of "error_k2" to all sextupoles overriding the
+"mad_id" name. The fourth line in the above example assigns, for the second custom attribute
+group, a name of "color" to all element classes. Finally, the last line defines a global parameter
+called "quad_mag_moment".
+
+Once a custom attribute has been defined it may be set for an element
+of the correct class. Example:
+  parameter[custom_attribute2] = lcavity::rms_phase_err
+  parameter[custom_attribute3] = parameter::cost
+  ...
+  parameter[cost] = 140000000
+  l2a: lcavity, rms_phase_err = 0.0034, ...
+Notice that defining the name for a custom attribute must come before its use.
+
+Custom attributes that are assigned to an individual element class, like "error_k1" above, are
+called ""class-specific"" attributes. Custom attributes, like "mag_id" above, that are
+assigned to all element classes, are called ""common"" attributes. For a given custom attribute
+group, The setting of a "class-specific" attribute will take precedence over the setting of a
+"common" attribute. Thus, in the above example, the fact that "quadrupole::error_k1" comes
+before "mag_id" and "sextupole::error_k2" appears after does not affect anything. Once a
+"common" attribute is defined for a given custom attribute group, it cannot be
+changed. Similarly, once a "class-specific" attribute is defined for a given class for a given
+custom attribute group it cannot be changed. Trying to redefine a given custom attribute using a 
+new name that is the same as the old name is not considered an error. For example, the following is OK:
+  parameter[custom_attribute2] = color
+  parameter[custom_attribute2] = color   ! OK since the same name is used.
+
+Custom attributes are global in a program and not lattice-specific. That is, if a program reads in two
+different lattices the custom attribute settings of both lattices will be combined.
+
+For someone creating a program, section~ describes how to make the appropriate
+associations.
+
+Note: If custom string information needs to be associated with an element, the "type", "alias"
+and "descrip" element components  are available.
+
+Besides the named custom attributes described above, there is a three dimensional vector, called
+"r_custom", associated with each element that can be used to store numbers.  
+For example:
+  qq: quadrupole, r_custom(-2,1,5) = 34.5, r_custom(-3) = 77.9
+Negative indices are accepted and if only one or two indices are present, the others
+are assumed to be zero. Thus "r_custom(-3)" is equivalent to "r_custom(-3,0,0)".
+
+Note: When there is a superposition , the "super_slave" elements that are formed
+do \em not have any custom attributes assigned to them even when their "super_lord" elements
+have custom attributes. This is done since the Bmad bookkeeping routines are not able to handle the
+situation where a "super_slave" element has multiple "super_lord" elements and thus the custom
+attributes from the different "super_lord" elements have to be combined. Proper handling of this
+situation is left to any custom code that a program implements to handle custom attributes.
+
+---------------------------------------------------------------------------
+
+There are five types of parameters in Bmad: reals, integers, switches, logicals (booleans), and
+strings. Acceptable logical values are
+   true    false
+   t       f
+For example
+  rf1[is_on] = False
+
+String literals can be quoted using double quotes (") or single quotes (').  If there are no blanks
+or commas within a string, the quotes can be omitted. For example:
+  Q00W: Quad, type = "My Type", alias = Who_knows, &
+                                  descrip = "Only the shadow knows"
+Unlike most everything else, strings are not converted to uppercase.
+
+Switches are parameters that take discrete values. For example:
+  parameter[particle] = positron          
+  q01w: quad, tracking_method = bmad_standard 
+The name "switch" can refer to the parameter (for example, "tracking_method") or to a value
+that it can take (for example, "bmad_standard"). The name "method" is used interchangeably with
+switch.
+
+---------------------------------------------------------------------------
+
+For the purpose of assigning names to simulated particles, particles are divided into four
+groups. One group are are "fundamental particles". These are:
+  electron,  positron
+  muon,      antimuon
+  proton,    antiproton
+  neutron    anti_neutron
+  deuteron   anti_deuteron
+  pion+,     pion0,      pion-
+  helion     anti_helion        ! #3He 
+  photon
+For historical reasons, names for the fundamental particles are \em not case sensitive.
+
+Another group are atoms. The general syntax for atoms is:
+  {#nnn}AA{ccc}
+The curly brackets {...} denote optional prefixes and suffixes. "AA" here is the
+atomic symbol, "#nnn" is the number of nucleons, and "ccc" is the charge. Examples:
+  parameter[particle] = #12C+3       ! Triply charged carbon-12.
+  parameter[p0c] = 12 * 500e6         ! Reference momentum is total momentum for particle.
+  parameter[particle] = He--          ! Doubly charged He.
+If the number of nucleons is given, the appropriate weight for that isotope is used. If the number
+of nucleons is not present, the mass is an average weighted by the isotopic abundances of the
+element. The charge may be given by using the appropriate number of plus (+) or minus (-) signs or
+by using a plus or minus sign followed by a number. Thus ""--"-" is equivalent to
+"-3". Names here are case sensitive. "@M" must be used and not "@m" for specifying the mass.
+The mass of an atom is adjusted by the number of electrons relative to neutral. That is
+  m_\mboxatom = m_\mboxneutral atom - C \cdot m_\mboxelectron
+where C is the charge in units number of electrons relative to neutral. No adjustment is made for
+mass shifts due to finite electron binding energies. This shift is small typically being well less
+than 1% of the mass of the electron.
+
+Anti-atoms made with antimatter have names using the prefix ""anti"". For example, a bare
+gold anti-atom nucleous would be designated "antiAu-79".
+
+Note: When setting the reference momentum "parameter[p0c]", or reference total energy
+"parameter[E_tot]", the total for the whole particle is used. \em Not the value per nucleon.
+
+Another group of particles are the "known" molecules. The syntax for these are:
+  BBB{@Mxxxx}{ccc}
+"@Mxxxx" is the mass in AMU, "ccc" is the charge, and "BBB" is the molecular formula. The
+mass may to specified to hundredths of an AMU. The known molecules are:
+  CO       CO2      
+  D2       D2O      
+  OH       O2      
+  H2       H2O      HF
+  N2       NH2      NH3      
+  CH2      CH3      CH4      
+  C2H3     C2H4     C2H5
+Like with atoms, if the mass is not specified, the average isotopic mass is used. Examples:
+  C2H3@M28.4+     ! Singly charged C2H3 with mass of 28.4
+  CH2             ! Neutral CH2
+Like the atomic formulas, molecular formulas are case sensitive. Like atoms, the mass of a known molecule
+is adjusted by the number of electrons relative to neutral.
+
+The last group of particle are particles where only the mass and charge are specified.  The syntax
+for these are:
+  @Mxxxx{ccc}
+Example:
+  @M37.54++    ! Doubly charged molecule of mass 37.54 AMU.
+
+Note: When setting the value of a variable to be a particle species ID, use the "species" function as discussed
+in.
+
+Bmad uses SI (Syst`eme International) units as shown in Table~\reft:units.  Note that \mad uses
+different units. For example, \mad's unit of Particle Energy is GeV not eV. 
+
+Note: For compatibility with \mad, the "beam, energy = xxx" command  uses GeV
+and the "emass" and "pmass" constants (see below this section) also use GeV. It is recommended that
+the use of these constructs be avoided.
+
+  \em Quantity     \em Units        
+  Angles                radians         
+  Betatron Phase        radians        
+  Current               Amps            
+  Frequency             Hz              
+  Kick                  radians         
+  Length                meters          
+  Magnetic Field        Tesla           
+  Particle Energy       eV              
+  RF Phase Angles       radians/2\pi  
+  Voltage               Volts           
+
+Bmad defines commonly used physical and mathematical constants shown in Table~\reft:constants.
+All symbols use straight SI units except for "emass" and "pmass" which are provided for
+compatibility with \mad and \large\em should be avoided.
+
+As an alternative, the "mass_of", and "anomalous_moment_of" functions
+ may be used in place of the defined constants for mass and anomalous
+magnetic moment.
+
+Note: The standard definition of the magnetic moment g-factor for spin 1/2 fundamental particles is
+  \f\mu = g \, \fracq2 \, m \, S
+where \f\mu is the magnetic moment, q is the particle charge, and m is the mass. The
+anomalous moment a is then defined to be
+  a = \fracg-22
+For nuclei and other composite baryonic particles, it is conventional to define the g-factor using
+  \f\mu = g \, \frace2 \, m_p \, S
+where m_p is the mass of the proton. This is inconvenient for calculations since an equation like
+\Eqorpt would not work for all particles. To get around this, the g-factors used by Bmad are
+always derived from \Eqmgq2m (think of this as an "effective" g-factor).
+
+  \em Symbol          \em Value                \em Units  \em Name            
+  pi                    3.141592653589793                                            
+  twopi                 2 * pi                                                       
+  fourpi                4 * pi                                                       
+  e                     2.718281828459045                                            
+  e_log                 2.718281828459045                                            
+  sqrt_2                1.414213562373095                                            
+  degrad                180 / pi                               From rad to deg       
+  degrees               pi / 180                               From deg to rad       
+  raddeg                pi / 180                               From deg to rad       
+  anom_moment_deuteron  -0.1425617662                        Deuteron anomalous magnetic moment^* 
+  anom_moment_electron  0.00115965218128                     Electron anomalous magnetic moment     
+  anom_moment_muon      0.00116592089                        muon anomalous magnetic moment         
+  anom_moment_proton    1.792854734463                       proton anomalous magnetic moment       
+  anom_moment_he3       -4.184153686                         He^3 anomalous magnetic moment^*    
+  fine_struct_const     0.0072973525693                      Fine structure constant                
+  m_deuteron            1.87561294257 \pow9    eV          Deuteron mass         
+  m_electron            0.51099895000 \pow6    eV          Electron mass         
+  m_neutron             0.93956542052 \pow9    eV          Neutron mass          
+  m_muon                105.6583755 \pow6      eV          Muon mass             
+  m_pion_0              134.9766 \pow6         eV          \pi^0 mass          
+  m_pion_charged        139.57018 \pow6        eV          \pi^+, \pi^- mass 
+  m_proton              0.93827208816d \pow9   eV          Proton mass           
+  c_light               2.99792458 \pow8       m/sec       Speed of light        
+  r_e                   2.8179403262 \pow-15   m           Electron radius       
+  r_p                   1.5346982647 \pow-18   m           Proton radius         
+  e_charge              1.602176634 \pow-19    Coul        Electron charge       
+  h_planck              4.135667696 \pow-15    eV*sec      Planck's constant     
+  h_bar_planck          6.582118990 \pow-16    eV*sec      Planck / 2\pi       
+  emass                 0.51099895000 \pow-3   GeV         Electron mass (please avoid using)   
+  pmass                 0.93827208816            GeV         Proton mass (please avoid using)      
+^* Effective anomalous moments. See the discussion after \Eqmgq2m.
+
+---------------------------------------------------------------------------
+
+Arithmetic expressions can be used in a place where a real value is required.
+The standard operators are defined: 
+                
+  a + b           Addition        
+  a - b           Subtraction     
+  a \, \ast \, b  Multiplication  
+  a \; / \; b     Division        
+  a \, ^\scriptstyle\wedge \, b Exponentiation  
+
+Bmad also has a set of intrinsic functions. A list of these is given
+in.
+
+Literal constants can be entered with or without a decimal point. An
+exponent is marked with the letter E. For example
+  1, 10.35, 5E3, 314.159E-2
+Symbolic constants can be defined using the syntax
+  constant_name = expression
+Alternatively, to be compatible with \mad, using ":=" instead of "=" is accepted
+  constant_name := expression
+Examples:
+  my_const = sqrt(10.3) * pi^3
+  abc     := my_const * 23
+Unlike \mad, Bmad uses immediate substitution so that all constants in an expression must have been
+previously defined. For example, the following is \em not valid:
+  abc      = my_const * 23      ! No: my_const needs to be defined first.
+  my_const = sqrt(10.3) * pi^3
+here the value of "my_const" is not known when the line ""abc" = \ldots" is parsed. Note:
+To get the effect of delayed evaluation, use "overlay"  or "group"
+ controller elements.
+
+Once defined, symbolic constants cannot be redefined. For example:
+  my_const = 1
+  my_const = 2  ! No! my_const cannot be redefined.
+The restriction against redefining constants was implemented to avoid hard to find problems.
+On very rare occasions, it is convenient to be able to redefine constants so if the redefinition
+has a "redef:" prefix, a constant can be redefined
+  my_const = 1
+  redef: my_const = 2  ! OK 
+It is advised not to use "redef" unless there a very good reason for its use.
+
+"group"  and "overlay"  controller elements are an
+exception to the immediate evaluation rule. Since controller elements may control elements
+that do not exist until "lattice expansion" , the arithmetic
+expressions associated with controller elements are not evaluated until lattice expansion.
+Example:
+  s_20W: sextupole, l = 0.27
+  sk: overlay = {s_20W[a1]:-2*s_20W[L]}, var = {k1}, k1 = 0.2
+  s_20W[L] = 0.34
+  s_30E: s_20W
+  ...
+  expand_lattice
+Here the expression of overlay "sk" is evaluated, when the lattice is expanded, to be
+"-0.68 = -2*0.34". This uses the length of element "s_20W" at the point when
+the lattice is expanded and not at the point when "sk" was defined. Additionally, the
+element "s_30E", which inherits the attributes of "s_20W", inherits a value of zero
+for "a1" (skew multipole moment) since inheritance uses immediate evaluation just like
+the setting of constants.
+
+Element attributes can be used after they have been defined but not
+before.  Example:
+  sa: sextupole, l = 0.3, k2 = 0.01 * sa[L]  ! Good
+  sb: sextupole, k2 = 0.01 * sb[L], l = 0.3  ! BAD SET OF K2. L IS DEFINED AFTER.
+In this example, the "k2" attribute of element "sa" is correctly
+set since "k2" is defined after "l". On the other hand, "k2"
+of element "sb" will have a value of zero since "l" of "sb"
+defaults to zero before it is set.
+
+One potential pitfall with immediate substitution is that when
+an element attribute changes, it does not affect prior evaluations.
+Example:
+  s1: sextupole, k2 = 2.3
+  aa = s1[k2]              ! aa = 2.3
+  s1[k2] = 1.7             ! value of aa does not change
+Here the value of constant "aa" will remain fixed at 2.3 no matter how
+the value of "s1[k2]" is altered after "aa" is defined.
+
+Another potential pitfall is when using
+dependent element attributes . For example:
+  b01w: sbend, l = 0.5, angle = 0.02
+  a_const = b01w[g]    ! No: bend g has not yet been computed 
+Here the bend strength "g"  will eventually be computed to be 0.04 (= angle / l)
+but that computation does not happen until lattice expansion . In this case, the
+value of "a_const" will be the default value of "g" which is zero.  As a rule of thumb, never
+rely on dependent attributes having their correct value.
+
+---------------------------------------------------------------------------
+
+The following intrinsic functions are recognized by Bmad: 
+                
+  "sqrt"(x)                  Square Root                                    
+  "log"(x)                   Logarithm                                      
+  "exp"(x)                   Exponential                                    
+  "sin"(x), "cos"(x)      Sine and cosine                                
+  "tan"(x), "cot"(x)      Tangent and cotangent                          
+  "sinc"(x)                  Sin(x)/x Function                              
+  "asin"(x), "acos"(x)    Arc sine and Arc cosine                        
+  "atan"(x)                  Arc tangent                                    
+  "atan2"(y, x)              Arc tangent of y/x                             
+
+  "sinh"(x), "cosh"(x)    Hyperbolic sine and cosine                     
+  "tanh"(x), "coth"(x)    Hyperbolic tangent and cotangent               
+  "asinh"(x), "acosh"(x)  Hyperbolic arc sine and Arc cosine             
+  "atanh"(x), "acoth"(x)  Hyperbolic arc tangent and cotangent           
+
+  "abs"(x)                   Absolute Value                                 
+  "factorial"(n)             Factorial                                      
+  "ran"()                    Random number between 0 and 1                  
+  "ran_gauss"()              Gaussian distributed random number             
+  "ran_gauss"(sig_cut)       Gaussian distributed random number             
+  "int"(x)                   Nearest integer with magnitude less then x     
+  "nint"(x)                  Nearest integer to x                           
+  "sign"(x)                  1 if x positive, -1 if negative, 0 if zero     
+  "floor"(x)                 Nearest integer less than x                    
+  "ceiling"(x)               Nearest integer greater than x                 
+  "modulo"(a, p)             a - floor(a/p) * p. Will be in range [0, p].   
+  "mass_of"(A)               Mass of particle A                             
+  "charge_of"(A)             Charge, in units of the elementary charge, of particle A 
+  "anomalous_moment_of"(A)   Anomalous magnetic moment of particle A        
+  "species"(A)               Species ID of A
+
+"ran_gauss" is a Gaussian distributed random number with unit RMS.  Both "ran" and
+"ran_gauss" use a seeded random number generator.  To choose the seed set
+  parameter[ran_seed] = <Integer>
+A "value" of zero will set the seed using the system clock so that different sequences of random
+numbers will be generated each time a program is run.  The default behavior if
+"parameter[ran_seed]" is not present is to use the system clock for the seed.
+
+The "ran_gauss(cut)" function with an argument truncates the distribution so that no values are returned
+with an absolute value greater than "cut". If "cut" is non-positive, it is ignored so that, for example,
+"ran_gauss(-1)" is equivalent to "ran_gauss()".
+
+If an element is used multiple times in a lattice, and if "ran" or "ran_gauss" is used to set
+an attribute value of this element, then to have all instances of the element have different
+attribute values the setting of the attribute must be after the lattice has been expanded
+. For example:
+  a: quad, ... 
+  a[x_offset] = 0.001*ran_gauss()
+  my_line: line = (a, a)
+  use, my_line
+Here, because Bmad does immediate evaluation, the "x_offset" values for "a" gets set in line
+2 and so both copies of "a" in the lattice get the same value. This is probably not what is
+wanted.  On the other hand if the attribute is set after lattice expansion:
+  a: quad, ...
+  my_line: line = (a, a)
+  use, my_line
+  expand_lattice
+  a[x_offset] = 0.001*ran_gauss()
+Here the two "a" elements in the lattice get different values for "x_offset".
+
+The following functions take a species ID as the argument:
+  mass_of(A),              charge_of(A)
+  anomalous_moment_of(A),  species(A)
+See for the syntax of naming particles.
+
+The "mass_of", "charge_of", and "anomalous_moment_of" functions give the mass of, charge of
+(in units of the elementary charge), and anomalous moment of, a particle.  Example:
+  parameter[particle] = deuteron
+  am = anomalous_moment_of(parameter[particle])^2
+  my_particle = species(He++)      ! my_particle now represents He++
+  chg1 = charge_of(my_particle)    ! chg = charge of He++
+  chg2 = charge_of(He++)           ! Same as previous line
+  chg3 = charge_of(species(He++))  ! Same as previous line
+The "species" function is needed in the definition of "my_particle" in the above example so
+that Bmad knows that the string "He++" represents a type of particle. Inside functions like
+"mass_of", the use of "species" is optional since, in this case, Bmad can correctly parse the
+argument. 
+
+The value returned by the "mass_of" function accounts for the ionization state of a particle in
+that there is a correction for the change in the number of electrons a particle has.  Thus the
+values of "mass_of#3He" will be heavier than "mass_of#3He++" by two electron masses.
+This correction only involves multiples of the electron mass and variations in the particle mass due
+to electron binding energies is not accounted for. These binding energy corrections are generally
+very small. If the isotopic state is not specified for an atom, the average weighted by the natural
+abundance is used.
+
+-----------------------------------------------------------------------------
+
+With some exceptions, statements in a lattice file can be in any order. For example, the lines
+ specified in a "use" statement  can come after the "use"
+statement. And "group"  and "overlay"  controller elements
+may be defined before the slave elements whose parameters they control are defined.
+
+The exceptions to this rule are:
+* 
+If there is an "expand_lattice" statement , everything necessary for
+lattice expansion must come before. In particular, all "line"s
+, "list"s , and "use"  statements
+necessary for lattice expansion must come before.
+*
+Immediate evaluation of arithmetic expressions  mandates that values be defined
+before use.
+*
+A lattice element must be defined before any of its parameters are set. Example:
+  pp[z_offset] = 0.1    ! WRONG! PP HAS NOT BEEN DEFINED YET 
+  pp: patch             ! Here PP is defined
+In this example, the "z_offset" of the element "pp" is set before "pp" has been
+defined. This is an error. As a corollary to this rule, element parameters that are set 
+using wild card characters will only affect those parameters that have been already defined. For
+example:
+  crystal::*[b_param] = 0.2
+  c5: crystal
+In this example, the "b_param" of all "crystal" elements is set to "0.2" \em except for
+"c5" and all other crystal elements that are defined after the set.
+
+-----------------------------------------------------------------------------
+
+The "print" statement prints a message at the terminal when the 
+lattice file is parsed by a program. Syntax:
+  print <string>
+Where "<string>" is the string to be printed. Variable values can be printed by using
+\textbfback-tick characters. For example:
+  print Remember! Q01 quad strength of \backtickq01[k1]\backtick not yet optimized 
+  print Optimization is as easy as 2 + 2 = \backtick2+2\backtick.
+will result in the following being printed:
+  Message in Lattice File: Remember! Q01 quad strength of 0.4526 not yet optimized 
+  Message in Lattice File: Optimization is as easy as 2 + 2 = 4.
+
+The "print" statement is useful to remind someone using the lattice of important details.
+
+-----------------------------------------------------------------------------
+
+The "title" statement sets a title string which can be used by a program.  For consistency with
+\mad there are two possible syntaxes
+  title, <String>
+or the statement can be split into two lines
+  title
+  <String>
+For example
+  title
+  "This is a title"
+
+--------------------------------------------------------------------------
+
+It is frequently convenient to separate the lattice definition into several files.  Typically there
+might be a file (or files) that define the layout of the lattice (something that doesn't change
+often) and a file (or files) that define magnet strengths (something that changes more often).  The
+"call" is used to read in separated lattice files. The syntax is
+  call, filename = <file-name>
+Example:
+  call, filename = "../layout/my_layout.bmad"      ! Relative pathname
+  call, filename = "/nfs/cesr/lat/my_layout.bmad"  ! Absolute pathname
+  call, filename = "$LATDIR/my_layout.bmad"        ! Absolute pathname
+Environment variables in the file name will be expanded. Bmad will read the called file until a
+"return" or "end_file" statement is encountered or the end of the file is reached.
+
+For filenames that have a relative pathname, the called file will be searched for relative to the
+directory of the calling file.  Thus, in the above example, if the file containing the call
+statements is in the directory "/path/to/lat_dir", the first call will open the file:
+  /path/to/lat_dir/../layout/my_layout.bmad 
+To call a file relative to the current working directory, use the environment variable
+"PWD". Example:
+  call, filename = $PWD/here.bmad
+
+Where a called file is searched for may be modified by using a "use_local_lat_file"
+statement. See Section~ for more details.
+
+--------------------------------------------------------------------------
+
+Any lattice elements will have a set of attributes that need to be defined.  As a convenience, it is
+possible to segregate an element attribute or attributes into a separate file and then "call" this
+file using an "inline call". The inline call has three forms:
+  <ele_name>: <ele_type>, ..., call::<file_name>, ...                       ! or
+  <ele_name>: <ele_type>, ..., <attribute_name> = call::<file_name>, ...    ! or
+  <ele_name>[<attribute_name>] = call::<file_name>
+where "<attribute_name>" is the name of the attribute and "<file_name>" is the name of the
+where the attribute structure is given. The Environment variables in the file name will be expanded.
+Example:
+  c: crystal, call::$AB/my_curvature.bmad, h_misalign = call::my_surface.bmad, ...
+
+For "grid_fields", which can take some time to parse, a "HDF5" binary file can to created and then
+the HDF5 file, which must have a ".h5" or ".hdf5" suffix, can be read in with an inline call Example:
+  qq: quadrupole, grid_field = call::my_grid.h5, ...
+To create hdf5 files, first create a lattice with the grid_field defined with plain text. Next read
+the lattice into any program that can create Bmad lattice files (for example, the Tao program
+ can do this) and have the program then generate a lattice file.
+
+--------------------------------------------------------------------------
+
+It is sometimes convenient to override where Bmad looks for called files (see). For
+example, suppose it is desired to temporarily override the settings in a called file without
+modifying the called file itself. In this case, the "use_local_lat_file" statement can be
+used. When this statement is encountered in a lattice file, the local directory (that is, the
+directory from which the program is run) is searched first for the called file and if a file of the
+correct name is found, that file is used.
+
+An example will make this clear. Suppose lattice file "/A/lat.bmad"
+contains the call:
+  call, filename = "/B/sub.bmad"
+Now suppose that you want to use "lat.bmad" with a modified "sub.bmad" but you do not want to
+modify "/A/lat.bmad" or "/B/sub.bmad". The solution is to create two new files. One file, call
+it "new.bmad", which can be situated in any directory, has two lines in it:
+  use_local_lat_file
+  call, filename = "/A/lat.bmad"
+The second new file is the modified "sub.bmad" and it must be in the directory from which the
+program is run.
+
+--------------------------------------------------------------------------
+
+In certain cases it is useful to turn off superposition . The "no_superposition"
+statement will do this. To turn off all superpositioning, this statement can appear anywhere as long
+as it is before any "expand_lattice"  statement. If the lattice has an
+"expand_lattice" statement, and the "no_superposition" statement appears after, the
+"no_superposition" statement will only block superpositions that are defined after the
+"no_superposition" statement.
+
+--------------------------------------------------------------------------
+
+"Return" and "end_file" have identical effect and tell Bmad to ignore anything beyond the
+"return" or "end_file" statement in the file.
+
+----------------------------------------------------------------------------
+
+Normally, lattice expansion happens automatically at the end of the parsing of the lattice file but
+an explicit "expand_lattice" statement in a lattice file will cause immediate expansion. See
+ for details. Subsequent "expand_lattice" statements after the first one are
+ignored and have no effect on the lattice.
+
+----------------------------------------------------------------------------
+
+At some point in parsing a lattice file, the ordered sequence (or sequences if there are multiple
+branches) of elements that form a lattice must be constructed. This process is called "lattice
+expansion" since the element sequence can be built up from sub--sequences
+. Normally, lattice expansion happens automatically at the end of the parsing of
+the lattice file (or files) but an explicit "expand_lattice" statement in a lattice file will
+cause immediate expansion. The reason why lattice expansion may be necessary before the end of the
+file is due to the fact that some operations need to be done after lattice expansion. This includes:
+* 
+The "ran" and "ran_gauss" functions, when used with elements
+that show up multiple times in a lattice, generally need to be used
+after lattice expansion. See.
+*
+Some dependent parameters may be set as if they are independent
+parameters but only if done before lattice expansion. See.
+* 
+Setting the "phi0_multipass" attribute for an 
+"Lcavity" or "RFcavity" multipass
+slave may only be done after lattice expansion .
+*
+Setting individual element attributes for tagged elements can only be done
+after lattice expansion .
+
+Notice that all "line"s , "list"s , and "use"
+ statements necessary for lattice expansion must come before an "expand_lattice"
+statement.
+
+Lattice expansion is only done once so it is an error if multiple
+"expand_lattice" statements are present.
+
+The steps used for lattice expansion are:
+*
+Instantiate all of the lines listed in the last "use" statement . If an instantiated line has
+"fork" or "photon_fork"  elements, instantiate the lines connected to the fork
+elements if the "fork" or "photon_fork" is connected to a new branch. Instantiation of a given
+line involves:
+*
+Line expansion  where the element sequence is constructed from the line and sub-lines.
+*
+Adding any superpositions .
+*
+Form multipass lords and mark the appropriate multipass slaves .
+*
+Add girder control elements .
+*
+Add group  and overlay  control elements.
+
+A lattice file where all the statements are post lattice expansion valid is called a ""secondary
+lattice file"".  To promote flexibility, Bmad has methods for parsing lattices in a two step
+process: First, a "primary" lattice file that defines the basic lattice is read. After the primary
+lattice has been parsed and lattice expansion has been done, the second step is to read in one or
+more secondary lattice files. Such secondary lattice files can be used, for example, to set such
+things as element misalignments. The point here is that there are no calls  of the
+secondary files in the primary file so the primary lattice file does not have to get modified when
+different secondary files are to be used.
+
+--------------------------------------------------------------------------
+
+The "calc_reference_orbit" statement triggers the computation of the "standard" reference orbit
+which is defined to be the closed orbit if the geometry (set by "parameter[geometry]"
+) is closed and which is defined to be the orbit as calculated from the starting
+position (set by any "particle_start" statements ) if the geometry is open.
+
+The "calc_reference_orbit" statement is used before a "merge_elements" statement
+ to signal that the maps of the Taylor elements produced by the
+"merge_elements" statement are computed from the standard reference orbit and not the zero
+orbit.
+
+The "calc_reference_orbit" statement must come after an "expand_lattice" command
+.
+
+The "calc_reference_orbit" statement can only be used if the standard reference orbit can
+be computed. For example, for a lattice with closed geometry, the closed orbit must exist.
+
+The "calc_reference_orbit" statement has no arguments. Example:
+  expand_lattice          ! Expand the lattice.
+  calc_reference_orbit    ! Compute the reference orbit.
+
+--------------------------------------------------------------------------
+
+The "merge_elements" statement is used to merge groups of consecutive elements into single
+taylor elements  for faster tracking. The syntax of this statement is
+  merge_elements <list>
+where "<list>" is a list of elements that are \em not to be combined.
+
+Example:
+  call, file = my_ring.bmad     ! Read in a lattice
+  parameter[taylor_order] = 3   ! Set the taylor order for the maps
+  expand_lattice                ! Expand the lattice
+  calc_reference_orbit          ! ref orbit calc.
+  merge_elements sbend::*, bb ! Merge everything but sbend elements and 
+                                !   any elements named BB.
+In this example, groups of elements that are between bends (with the exception of any elements named
+"BB"), are replaced by "taylor" elements. The order of the Taylor maps is set by
+"parameter[taylor_order]" .
+
+The "merge_elements" statement must come after an "expand_lattice" command
+.
+
+If there is a "calc_reference_orbit" statement before the "merge_elements" statement, the
+"standard" reference orbit  is used for the computation of the Taylor
+maps. Otherwise the zero orbit is used as the reference orbit.
+
+--------------------------------------------------------------------------
+
+The "combine_consecutive_elements" statement is used to combine consecutive elements with the same name into a
+single element. If a marker element has been placed in between two element with the same name, the
+marker element will be discarded. This can be a useful statement to add when given a lattice where
+elements have been split into two.\footnote
+  
+This is common in lattices translated from MAD.
+  
+The "combine_consecutive_elements" statement must come after lattice expansion . Example:
+  m: marker
+  myline: line = (q1, m, q1)
+  use, myline
+  expand_lattice
+  combine_consecutive_elements
+In this case the finished line will will have a single "q1" element whose length will be twice the length of q1
+
+--------------------------------------------------------------------------
+
+The "remove_elements" statement is used to remove elements from the lattice. The
+"remove_elements" statement must come after lattice expansion . The syntax of
+the "remove_elements" statement is
+  remove_elements <element-list>
+where "<element-list>" is a list of elements . For example
+  expand_lattice              ! Lattice expansion must happen first
+  remove_elements overlay::*
+In this example, all overlay elements are to be removed. This is useful, for example, when direct control
+of overlay slave parameters is desired.
+
+--------------------------------------------------------------------------
+
+The "slice_lattice" statement is used to remove elements from the lattice. The "slice_lattice"
+is useful when analysis of only part of the lattice is desired and the analysis of the entire
+lattice can take a significant amount of time.
+
+The "slice_lattice" statement must come after lattice expansion . The syntax of
+the "slice_lattice" statement is
+  slice_lattice <element-list>
+where "<element-list>" is a list of elements . For example
+  expand_lattice           ! Lattice expansion must happen first
+  slice_lattice q1##2:357,end
+In this example, all elements outside of the range from element "q1##2" (the second instance of
+"q1" in the lattice) to element with index number 357 are discarded except for the element named
+"end" (which is typically the last element in any lattice branch). Additionally, the lord
+elements  of any elements that remain are retained and the "beginning"
+element at the start of any branch is also retained.
+
+For any lattice branch where elements are removed, the Twiss parameters and reference energy is
+computed, and the Twiss parameters and reference energy at the entrance end of the first element
+that is not removed is transferred to the beginning branch element. The branch "geometry" is also
+set to "open".
+
+For a lattice branch with a closed geometry, the Twiss parameters are computed with the RF on. That
+is, the reference momentum at the beginning of the sliced lattice branch, which is computed from the
+closed orbit phase space p_z of the unsliced lattice, may be non-zero. This will affect the Twiss
+calculation. If this is not what is wanted, the RF can be turned off before the "slice_lattice"
+command which will ensure the reference momentum is zero at the beginning of the lattice
+branch. Example:
+  expand_lattice
+  rfcavity::*[is_on] = False    ! Turn RF off
+  slice_lattice q1##2:357       ! Slice the lattice
+  ! This shows how to reset the RF and geometry if needed.
+  rfcavity::*[is_on] = True     ! Turn RF back on
+  parameter[geometry] = closed  ! Change the geometry.
+  ... etc ...
+
+To create a lattice slice that wraps around the lattice ends, that is, joins a section at the end of
+the lattice followed by a section at the beginning of the lattice, use a "start_branch_at"
+statement before a slice_lattice statement. Example:
+  expand_lattice
+  start_branch_at Q9
+  slice_lattice Q9:Q1   ! With Q1 being before Q9 in the original lattice.
+
+--------------------------------------------------------------------------
+
+The "start_branch_at" statement is used to shift the starting point of a lattice branch while
+keeping the relative order of the elements the same. The syntax of the "start_branch_at"
+statement is
+  start_branch_at <lattice-element>                    ! or
+  start_branch_at, move_end_marker <lattice-element>
+where "<lattice-element>" is the name or index of a lattice element to be moved to the start of
+the branch the element is in. The "start_branch_at" statement must come after lattice expansion
+.
+
+The shifting only applies to elements in the tracking part of the lattice . The
+"BEGINNING" element of the branch  and any lord elements are unaffected. The
+"end" marker element , if it is present (that is, if no
+"parameter[no_end_marker]" is used), will also remain at the end of the branch except if the
+"move_end_marker" option is used with "start_branch_at". For example:
+  expand_lattice           ! Lattice expansion must happen first
+  start_branch_at Q3
+In this example, the elements in the lattice branch containing "Q3" would be shifted so that the
+"Q3" element is the first element in the branch. Thus, if the lattice branch originally consisted
+of the elements
+  Beginning, Q1,  Q2,  Q3,  Q4,  Q5,  Q6, End
+then the shifted lattice would be
+  Beginning, Q3,  Q4,  Q5,  Q6, Q1,  Q2, End
+Elements that originally come before the new starting point are always wrapped around to the end of
+the branch. If the move_end_marker is present:
+  start_branch_at, move_end_marker Q3
+then the shifted lattice would be
+  Beginning, Q3,  Q4,  Q5,  Q6, End, Q1,  Q2
+
+Also see the "slice_lattice" statement .
+
+--------------------------------------------------------------------------
+\sectionRename Statement
+\labels:rename
+
+The "rename" statement is used to rename elements in the lattice to produce elements with unique names.
+For example, suppose a lattice has a number of elements named "
+
+--------------------------------------------------------------------------
+
+There are a few statements which can help in debugging the Bmad lattice parser itself. That is,
+these statements are generally only used by programmers.  These statements are:
+  debug_marker
+  no_digested
+  parser_debug
+  write_digested
+
+The "debug_marker" statement is used for marking a place in the lattice file
+where program execution is to be halted. This only works when running
+a program in conjunction with a program debugging tool. 
+
+The "no_digested" statement if present, will prevent Bmad from 
+creating a digested file . That is, the lattice file will always
+be parsed when a program is run. The "write_digested" statement will cancel a
+"no_digested" statement.
+
+The "parser_debug" statement will cause information about the lattice to be printed out at the
+terminal. The syntax is
+  parser_debug <switches>
+Valid "<switches>" are
+  particle_start      ! Print the particle_start information.
+  const               ! Print table of constants defined in the lattice file.
+  ele <n1> <n2> ...   ! Print full info on selected elements.
+  lattice             ! Print a list of lattice element information.
+  lord                ! Print full information on all lord elements.
+  seq                 ! Print sequence information.
+  slave               ! Print full information on all slave elements.
+  time                ! Print timing information.
+Here <n1>, <n2>, etc. are the index of the selected elements in
+the lattice.  Example
+  parser_debug var lat ele 34 78
+
