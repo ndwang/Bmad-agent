@@ -23,19 +23,19 @@ export OPENAI_API_KEY="your-api-key-here"
 Run the agent in interactive mode to ask questions about Bmad:
 
 ```bash
-python bmad_agent.py
+python agent.py
 ```
 
 ### Single Query Mode
 
 ```bash
-python bmad_agent.py "How does quadrupole tracking work in Bmad?"
+python agent.py "How does quadrupole tracking work in Bmad?"
 ```
 
 ### Additional Options
 
 ```bash
-python bmad_agent.py --model gpt-4o --verbose "What is a group element in Bmad?"
+python agent.py --model gpt-4o --verbose "What is a group element in Bmad?"
 ```
 
 ## Features
@@ -49,7 +49,7 @@ python bmad_agent.py --model gpt-4o --verbose "What is a group element in Bmad?"
 
 - `clean.py`: Preprocessing script for cleaning LaTeX files
 - `build_db.ipynb`: Notebook for building the FAISS vector database
-- `bmad_agent.py`: Main query interface for the RAG pipeline
+- `agent.py`: Main query interface for the RAG pipeline
 - `bmad_doc/`: Original Bmad manual files
 - `clean_bmad_doc/`: Processed text files
 - `faiss_tex/`: Vector database files
