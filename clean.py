@@ -101,7 +101,7 @@ def clean_latex_file(input_file, output_file):
                 continue
 
             # Skip lines with only '\newpage' or '--------'
-            if line.strip() == '\\newpage' or line.strip() == '%-----------------------------------------------------------------':
+            if line.strip() == '\\newpage' or line.strip().startswith('%---'):
                 continue
                 
             # Handle leftover eliminates from previous lines
