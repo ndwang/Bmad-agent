@@ -105,6 +105,27 @@ class BmadTaoAgent:
                         "required": ["file_path"]
                     }
                 }
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "init_tao_instance",
+                    "description": "Initializes a Tao instance with a specified lattice file.",
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "lattice_path": {
+                                "type": "string",
+                                "description": "Path to the Bmad lattice file to initialize Tao with."
+                            },
+                            "options": {
+                                "type": "string",
+                                "description": "Additional options for Tao initialization (default: -noplot)."
+                            }
+                        },
+                        "required": ["lattice_path"]
+                    }
+                }
             }
         ]
         
@@ -113,11 +134,12 @@ class BmadTaoAgent:
             {
                 "role": "system",
                 "content": """You are an expert assistant for Bmad and Tao, specialized in particle accelerator physics and simulations.
-You have four main capabilities:
+You have five main capabilities:
 1. You can answer questions about Bmad by searching the manual using query_bmad_manual.
 2. You can execute Tao commands using execute_tao_command to interact with the simulation.
 3. You can write Bmad lattice files to disk using write_bmad_lattice.
 4. You can read Bmad lattice files from disk using read_bmad_lattice.
+5. You can initialize a Tao instance during the conversation using init_tao_instance.
 
 When responding:
 - For conceptual questions about Bmad, use query_bmad_manual to find relevant information.
@@ -130,6 +152,7 @@ When responding:
 - When working with Tao, you might need to execute multiple commands in sequence to complete an analysis.
 - Be precise and technically accurate in your explanations.
 - When executing Tao commands, explain what the command does and interpret the results.
+- If Tao is not initialized and the user wants to run Tao commands, offer to initialize it with a lattice file.
 
 If you don't know the answer, say so. Don't make up information."""
             }
@@ -146,14 +169,18 @@ If you don't know the answer, say so. Don't make up information."""
         Args:
             lattice_path (str): Path to the Bmad lattice file
             options (str): Additional options for Tao initialization
+            
+        Returns:
+            str: Success or error message
         """
         try:
             init_command = f"-lat {lattice_path} {options}"
             self.tao = Tao(init_command)
-            return True
+            return f"Tao successfully initialized with lattice file: {lattice_path}"
         except Exception as e:
-            print(f"Error initializing Tao: {str(e)}")
-            return False
+            error_msg = f"Error initializing Tao: {str(e)}"
+            print(error_msg)
+            return error_msg
     
     def execute_tao_command(self, command):
         """
@@ -296,24 +323,31 @@ If you don't know the answer, say so. Don't make up information."""
                 function_name = tool_call.function.name
                 arguments = json.loads(tool_call.function.arguments)
                 
-                # Execute the appropriate tool
-                if function_name == "execute_tao_command":
-                    result = self.execute_tao_command(arguments['command'])
-                    result_content = '\n'.join(result)
+                # Map function names to their corresponding methods
+                tool_map = {
+                    "execute_tao_command": lambda args: '\n'.join(self.execute_tao_command(args['command'])),
+                    "query_bmad_manual": lambda args: self.query_bmad_manual(args['query']),
+                    "write_bmad_lattice": lambda args: self.write_bmad_lattice(args['file_path'], args['content']),
+                    "read_bmad_lattice": lambda args: self.read_bmad_lattice(args['file_path']),
+                    "init_tao_instance": lambda args: self.init_tao(args['lattice_path'], args.get('options', '-noplot'))
+                }
+                
+                # Execute the appropriate tool using the map
+                if function_name in tool_map:
+                    result_content = tool_map[function_name](arguments)
+                    
+                    # Handle verbose logging based on function type
                     if self.verbose:
-                        print(f"Tool result for {function_name}: {result_content[:100]}...")
-                elif function_name == "query_bmad_manual":
-                    result_content = self.query_bmad_manual(arguments['query'])
-                    if self.verbose:
-                        print(f"Tool result for {function_name}: {arguments['query']}, length: {len(result_content)}")
-                elif function_name == "write_bmad_lattice":
-                    result_content = self.write_bmad_lattice(arguments['file_path'], arguments['content'])
-                    if self.verbose:
-                        print(f"Tool result for {function_name}: {result_content}")
-                elif function_name == "read_bmad_lattice":
-                    result_content = self.read_bmad_lattice(arguments['file_path'])
-                    if self.verbose:
-                        print(f"Tool result for {function_name}: file length: {len(result_content)}")
+                        if function_name == "execute_tao_command":
+                            print(f"Tool result for {function_name}: {result_content[:100]}...")
+                        elif function_name == "query_bmad_manual":
+                            print(f"Tool result for {function_name}: {arguments['query']}, length: {len(result_content)}")
+                        elif function_name == "write_bmad_lattice":
+                            print(f"Tool result for {function_name}: {result_content}")
+                        elif function_name == "read_bmad_lattice":
+                            print(f"Tool result for {function_name}: file length: {len(result_content)}")
+                        elif function_name == "init_tao_instance":
+                            print(f"Tool result for {function_name}: {result_content}")
                 else:
                     result_content = f"Error: Unknown tool {function_name}"
                     if self.verbose:
