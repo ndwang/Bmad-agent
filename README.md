@@ -20,16 +20,27 @@ export OPENAI_API_KEY="your-api-key-here"
 
 ### Interactive Mode
 
-Run the agent in interactive mode to ask questions about Bmad and interact with Tao:
+There are two interactive modes available:
 
+1. **Agent Interactive Mode** - Full agent with Tao integration:
 ```bash
 python agent.py
 ```
 
-Special commands in interactive mode:
+Special commands in agent mode:
 - `/help` - Display available commands
 - `/clear` - Reset conversation history
 - `/exit` - Exit the program
+
+2. **Database Query Mode** - Direct database queries without the agent:
+```bash
+python bmad_db.py
+```
+
+In database query mode, you can:
+- Enter queries to search the Bmad documentation directly
+- See raw context matches from the vector database
+- Type 'quit' or 'exit' to end the session
 
 ### Single Query Mode
 

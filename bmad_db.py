@@ -54,3 +54,29 @@ class BmadDatabase:
             print("=========================\n")
             
         return context
+        
+    def run_interactive(self):
+        """
+        Run an interactive query session with the database.
+        Users can enter queries and see retrieved context.
+        Enter 'quit' or 'exit' to end the session.
+        """
+        print("Welcome to Bmad Database Interactive Query")
+        print("Enter your queries, or 'quit'/'exit' to end\n")
+        
+        while True:
+            query = input("Query> ").strip()
+            if query.lower() in ['quit', 'exit']:
+                break
+            if not query:
+                continue
+                
+            context = self.get_context(query)
+            print("\nRetrieved Context:")
+            print("==================")
+            print(context)
+            print("==================\n")
+
+if __name__ == "__main__":
+    db = BmadDatabase(verbose=False)
+    db.run_interactive()
