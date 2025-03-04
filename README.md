@@ -30,6 +30,7 @@ Special commands in interactive mode:
 - `/help` - Display available commands
 - `/clear` - Reset conversation history
 - `/exit` - Exit the program
+- `/cost` - Show token usage and estimated cost of the conversation
 
 ### Single Query Mode
 
@@ -60,6 +61,7 @@ python agent.py --model gpt-4o --verbose --db-path faiss_clean "What is a group 
 - **Semantic Search**: Retrieval of relevant context from the Bmad manual based on semantic similarity
 - **Tool-based Architecture**: OpenAI function calling for specialized operations
 - **Configurable Models**: Support for different OpenAI models with customizable parameters
+- **Cost Tracking**: Monitor token usage and estimate cost of conversations
 
 ## Capabilities
 

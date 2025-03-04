@@ -23,6 +23,7 @@ class BmadTaoAgent:
         self.client = OpenAI()
         self.model_name = model_name
         self.verbose = verbose
+        self.token_counts = {"prompt": 0, "completion": 0}
         
         # Initialize the database
         self.db = BmadDatabase(db_path=db_path, verbose=verbose)
@@ -308,6 +309,10 @@ If you don't know the answer, say so. Don't make up information."""
                 tool_choice="auto"
             )
             
+            # Track token usage
+            self.token_counts["prompt"] += completion.usage.prompt_tokens
+            self.token_counts["completion"] += completion.usage.completion_tokens
+            
             # Add the response to the conversation history
             assistant_message = completion.choices[0].message
             self.messages.append(assistant_message)
@@ -376,8 +381,44 @@ Available commands:
   /help   - Show this help message
   /clear  - Clear conversation history
   /exit   - Exit the program
+  /cost   - Show estimated cost of the conversation
 """
         print(help_text)
+        
+    def estimate_cost(self):
+        """Calculate and display the estimated cost of the conversation based on token usage"""
+        # Current pricing (subject to change)
+        model_prices = {
+            "gpt-4o": {"prompt": 5.0, "completion": 15.0},  # $5 per 1M prompt tokens, $15 per 1M completion tokens
+            "gpt-4": {"prompt": 10.0, "completion": 30.0},  # $10 per 1M prompt tokens, $30 per 1M completion tokens
+            "gpt-3.5-turbo": {"prompt": 0.5, "completion": 1.5}  # $0.5 per 1M prompt tokens, $1.5 per 1M completion tokens
+        }
+        
+        # Default pricing if model not in the list
+        default_price = {"prompt": 5.0, "completion": 15.0}
+        
+        # Get price for current model or use default
+        price = model_prices.get(self.model_name, default_price)
+        
+        # Calculate cost in USD
+        prompt_cost = (self.token_counts["prompt"] / 1_000_000) * price["prompt"]
+        completion_cost = (self.token_counts["completion"] / 1_000_000) * price["completion"]
+        total_cost = prompt_cost + completion_cost
+        
+        # Display token counts and cost
+        cost_text = f"""
+Token Usage:
+  Prompt tokens:     {self.token_counts["prompt"]:,}
+  Completion tokens: {self.token_counts["completion"]:,}
+  Total tokens:      {self.token_counts["prompt"] + self.token_counts["completion"]:,}
+
+Estimated Cost:
+  Model:             {self.model_name}
+  Prompt cost:       ${prompt_cost:.6f}
+  Completion cost:   ${completion_cost:.6f}
+  Total cost:        ${total_cost:.6f}
+"""
+        print(cost_text)
         
     def run_interactive(self):
         """Run the agent in interactive mode"""
@@ -385,7 +426,8 @@ Available commands:
         commands = {
             "/clear": self.clear_history,
             "/exit": lambda: "exit",  # Special return value to signal exit
-            "/help": self.show_help
+            "/help": self.show_help,
+            "/cost": self.estimate_cost
         }
         
         print("Type /help to see available commands")
