@@ -1,10 +1,9 @@
-chapter Tracking of X-Rays
+###chapter Tracking of X-Rays
 
 Bmad can track both charged particles and X-rays. This chapter deals
 with X-rays. Charged particles are handled in chapter~.
 
--------------------------------------------------------------------------
--------------------------------------------------------------------------
+###section Coherent and Incoherent Photon Simulations
 
 Bmad can track photons either "coherently" or "incoherently".
 In both cases, the photon has a transverse electric field 
@@ -16,7 +15,7 @@ In addition to coherent and incoherent tracking, partially coherent simulations 
 sets of photons with the photons in any one set treated as coherent and the photons between sets
 being treated as incoherent.
 
--------------------------------------------------------------------------
+###subsection Incoherent Photon Tracking
 
 In a simulation with incoherent photons, some number of photons,
 N_0, will be generated and the i\Th photon (i = 1, \ldots, N_0)
@@ -80,7 +79,7 @@ from a surface into a \Omega_0 = 2 \, \pi solid angle then
 \what E_2 is infinite here but since no photons are generated in channel 2
 this is not a problem.
 
--------------------------------------------------------------------------
+###subsection Coherent Photon Tracking
 
 In a simulation with coherent photons, some number of photons,
 N_0, will be generated and the i\Th photon (i = 1, \ldots, N_0)
@@ -169,7 +168,7 @@ case of isotropic emission from a surface as in the example in
  (cf. \Eqroo) is
   \what E_1 = \frac\Omega_1\Omega_0
 
--------------------------------------------------------------------------
+###subsection Partially Coherent Photon Simulations
 
 When there is partial coherence the photons must be divided into
 sets. All of the photons of a given set are considered coherent while
@@ -180,8 +179,7 @@ calculate the field using equation \Eqpanda2. The fields of
 different sets are then combined to calculate a power using
 \Eqpanda1.
 
--------------------------------------------------------------------------
--------------------------------------------------------------------------
+###section Element Coordinate System
 
 The general procedure for tracking through an element makes use of
 "element reference" coordinates (also called just "element"
@@ -212,15 +210,13 @@ Track through the element ignoring any misalignments.
 At the exit end of the element, transform from the element coordinates
 to the "laboratory" "exit" coordinates.
 
--------------------------------------------------------------------------
-
   \includegraphics[width=5in]photon-ele-coords.pdf
 The three element coordinate systems for "crystal" (Bragg
 configuration), "mirror", and "multilayer_mirror" elements.  The
 origin O of all three are the same but are shown spread out for
 clarity.  hat n is the normal to the element surface.
 
--------------------------------------------------------------------------
+###subsection Transform from Laboratory Entrance to Element Coordinates
 
 For elements that have a reference orbit kink
 , the element coordinates here are the
@@ -242,7 +238,7 @@ be zero at the end of the transform to element coordinates (remember
 that z is the distance from the start of the element
 ).
 
--------------------------------------------------------------------------
+###subsection Transform from Element Exit to Laboratory Coordinate
 
 The back transformation from element to laboratory coordinates is
 accomplished by the transformation
@@ -255,12 +251,11 @@ Apply the reverse "tilt" to the electric field (\Eqertee).
 Apply reverse offsets, pitches and tilt using the formulas in
  along with \Eqswws, and \eqswww.
 
--------------------------------------------------------------------------
--------------------------------------------------------------------------
+###section [Mirror and Crystal Element Transformation]
 Transformation for Mirror and Crystal Elements Between 
 Laboratory and Element Coordinates
 
--------------------------------------------------------------------------
+###subsection Transformation from Laboratory to Element Coordinates
 
 With photons, the intensities must also be transformed.  The transformation from the entrance
 laboratory coordinates to the entrance element coordinates is:
@@ -291,7 +286,7 @@ with \theta_tot being
     "ref_tilt" + "tilt" "for mirror elements"
 The "tilt_corr" correction is explained in.
 
--------------------------------------------------------------------------
+###subsection Transformation from Element to Laboratory Coordinates
 
 The back transformation from exit element coordinates to exit laboratory coordinates is accomplished
 by the transformation
@@ -338,8 +333,6 @@ entrance laboratory frame. The transformation is
   y_5= y_4 + O_out,y - p_y4 \, O_out,z 
   z_5= z_4 + O_out,z 
 
--------------------------------------------------------------------------
-
   \includegraphics[width=5in]crystal-diffraction.pdf
 Reference trajectory reciprocal space diagram for for A) Bragg diffraction and B) Laue
 diffraction. The bar over the vectors indicates that they refer to the reference trajectory. The
@@ -351,8 +344,7 @@ Kbar_H originating at the Q point. For Laue diffraction, the crystal faces are a
 parallel.  For Bragg diffraction the crystal normal is in the -hat x direction while for Laue
 diffraction the crystal normal is in the -hat z direction
   
--------------------------------------------------------------------------
--------------------------------------------------------------------------
+###section Crystal Element Tracking
 
 \textit\large [Crystal tracking developed by Jing Yee Chee, Ken Finkelstein, and David Sagan]
 
@@ -363,3 +355,576 @@ reference trajectory must be calculated. This means calculating the incoming gra
 transformations between the various coordinate systems. This is done in,
 , and.  The second part is the actual tracking of the photon
 and this is covered in and
+% and.
+
+###subsection Calculation of Entrance and Exit Bragg Angles
+
+\figf:crystal.diffraction shows the geometry of the problem. The bar over the vectors indicates
+that they refer to the reference trajectory. The reference trajectory is calculated such that the
+reference photon will be in the center of the Darwin curve. That is, the internal wave vectors
+Kbar_0 and Kbar_H originate from the Q point (See \citeb:batterman Figs.~8 and 29).
+
+The external wave vectors  k_0, and  k_H and the internal wave vectors
+have magnitude
+  | k_0|= | k_H| = \frac1\lambda 
+  |Kbar_0|= |Kbar_H| = \frac1 - \delta\lambda
+where \lambda is the wavelength, and \delta is
+  \delta = \frac\lambda^2 r_e2 \, \pi \, V \, F_0' = \frac\Gamma2 \, F_0'
+  = \frac12 \, \Gamma \, F_0'
+with r_e being the classical electron radius, V the unit cell volume, and F_0' is the real
+part of the F_0 structure factor.
+
+In element surface coordinates (which will be the coordinate system used henceforth), kbar_0
+lies in the x-z plane. Kbar_0 is related to kbar_0 via Batterman Eq.~(25)
+  K_0 = k_0 + q_0 \, hat n
+where the value of q_0 is to be determined. Here, and in equations below, if the equation is true
+in general, and not just for the reference trajectory, the bar superscript is dropped.
+
+Since hat n is in the -hat x direction, Kbar_0 is also in the x-z plane. Thus
+kbar_0 and Kbar_0 can be written in the form
+  kbar_0= \frac1\lambda \, 
+    -\cos\theta_B,in 
+    0 
+    \sin\theta_B,in
+  \; , \qquad
+  Kbar_0= \frac1 - \delta\lambda \, 
+    -\cos\theta_0 
+    0 
+    \sin\theta_0
+  \qquad\text[Bragg] \CRNO
+  kbar_0= \frac1\lambda \, 
+    \sin\theta_B,in 
+    0 
+    \cos\theta_B,in
+  \; , \qquad
+  Kbar_0= \frac1 - \delta\lambda \, 
+    \sin\theta_0 
+    0 
+    \cos\theta_0
+ \qquad \text[Laue] 
+Where, as shown in \figf:crystal.diffraction, \theta_B,in, and
+\theta_0 are the angles of kbar_0 and Kbar_0 with respect
+to the x-axis for Bragg reflections and with respect to the z-axis
+for Laue reflection. 
+
+\alpha_H ("alpha_angle") is the angle that H makes with
+respect to the -hat z axis and \psi_H ("psi_angle") is the
+rotation of H around the -hat z axis such that for \psi_H =
+0, H is in the x-z plane and oriented as shown in
+\figf:crystal.diffraction. Thus
+  H 
+  \equiv \frac1d \, hatH 
+  = \frac1d
+       -\sin \alpha_H \, \cos \psi_H  \sin \alpha_H \, \sin \psi_H  -\cos \alpha_H
+where hatH is H normalized to 1. \alpha_H is determined
+via the setting of "b_param" and via \Eqbatat.
+
+The vectors K_0 and H must add up to the reciprocal lattice vector K_H
+  K_H = K_0 + H
+Taking the length of both sides of this equation and using
+\Eqskk1l2, \eqk1lst, and \eqh1daa gives for
+\theta_0
+  \sin \theta_0 = 
+    \dsfrac-\beta \, \whatH_z - \whatH_x \, \sqrt\whatH_x^2 + \whatH_z^2 - \beta^2
+    \whatH_x^2 + \whatH_z^2 "Bragg" 
+    \dsfrac-\beta \, \whatH_x + \whatH_z \, \sqrt\whatH_x^2 + \whatH_z^2 - \beta^2
+    \whatH_x^2 + \whatH_z^2 "Laue"
+where
+  \beta \equiv \frac\lambda2 \, d \, (1 - \delta)
+Once \theta_0 has been calculated, \theta_B,in can be calculated from \Eqkkqn1
+  \cos\theta_B,in= (1 - \delta) \, \cos\theta_0 \quad [\textBragg] 
+  \sin\theta_B,in= (1 - \delta) \, \sin\theta_0 \quad [\textLaue] 
+
+The outgoing reference wave vector k_H is computed using the equation
+  K_H = k_H + q_H \, hat n
+Using this with \Eqsh1daa and \eqkkh gives
+  \kbar_H,x= \Kbar_H,z = \frac1d \, \whatH_x + \kbar_0,x \CRNO
+  \kbar_H,y= \Kbar_H,y = \frac1d \, \whatH_y 
+  \kbar_H,z= \sqrt\frac1\lambda^2 - \kbar_H,x^2 - \kbar_H,y^2 \nonumber
+
+The total bending angle of the reference trajectory is then
+  \theta_bend = \tan^-1 
+  \left( \frac | kbar_0 \cross kbar_H | kbar_0 \dotproduct kbar_H \right) 
+The outgoing Bragg angle \theta_B,out is then \em defined to be
+the difference between the total bend angle and the entrance Bragg angle.
+  \theta_B,out \equiv \theta_bend - \theta_B,in
+
+###subsection Crystal Coordinate Transformations
+
+There are four transformations needed between coordinates
+denoted by \f\Sigma_1, \f\Sigma_2, \f\Sigma_3, and \f\Sigma_4
+  \f\Sigma_1  Transform from laboratory entrance to element entrance coordinates.  
+  \f\Sigma_2  Transform from element entrance to surface coordinates.  
+  \f\Sigma_3  Transform from surface to element exit coordinates.  
+  \f\Sigma_4  Transform from element exit to laboratory exit coordinates.  
+The total transformation is just the map represented by S and
+V of \Eqsvwlv and \eqwws
+  [S, V] = \f\Sigma_4 \, \f\Sigma_3 \, \f\Sigma_2 \, \f\Sigma_1
+
+The transformation \f\Sigma_1 is given in
+ and the transformation \f\Sigma_4 is
+given in. In general, the transformation
+\f\Sigma_1 needs a "tilt correction" (\Eqtttt), as explained
+below, when \psi_H is nonzero.  [The exception is when the
+"undiffracted" or "forward_diffracted" beam is tracked with Laue
+geometry. In these cases, no tilt correction is needed.] Since this
+tilt correction is independent of any misalignments, the tilt
+correction calculation proceeds assuming here that there are no
+misalignments. The finite V due to the finite crystal thickness
+in Laue diffraction will also be ignored for the moment.
+
+Without misalignments, and with \psi_H zero, the transformation
+\f\Sigma_1 is, as it is for every other type of element,
+just the unit matrix. 
+  \f\Sigma_1 = I
+That is, the two coordinate systems are
+identical. Furthermore, the transformation \f\Sigma_2 from element
+entrance coordinates to surface coordinates is a rotation around the y
+axis
+  \f\Sigma_2= R_y(\theta_B,in) \equiv \beginpmatrix
+     \cos\theta_B,in 0 \sin\theta_B,in 
+     0                 1 0                 
+    -\sin\theta_B,in 0 \cos\theta_B,in 
+  \qquad\text[Laue]
+ = R_y(\theta_B,in - \frac\pi2)
+  \qquad\text[Bragg] \nonumber
+The transformation from element surface coordinates to element exit
+coordinates, \f\Sigma_3, is another rotation around the y axis 
+  \f\Sigma_3= R_y(\theta_B,out)
+  \qquad\text[Laue] 
+ = R_y(\theta_B,out + \frac\pi2)
+  \qquad\text[Bragg] \nonumber
+and the transformation from element exit coordinates
+to laboratory exit coordinates, \f\Sigma_out is the unity matrix
+  \f\Sigma_4 = I
+Thus, the combined transformation S from laboratory entrance to
+laboratory exit coordinates is a rotation around the y axis of
+\theta_B,in+\theta_B,out as explained in section
+
+  S = \f\Sigma_4 \, \f\Sigma_3 \, \f\Sigma_2 \, \f\Sigma_1 
+  = R_y(\theta_B,in+\theta_B,out)
+
+When \psi_H is non-zero, the situation is complicated since, if
+S as calculated above is used, the vector kbar_H would be
+bent out of the x-z plane even though it has been assumed that the
+"ref_tilt" \theta_t is zero. But kbar_H points in the same
+direction as the z axis of the outgoing reference
+trajectory. Furthermore, by \em definition, the reference trajectory
+has the form given by \Equstt with the R_z(\theta_t) matrix
+depending only upon the "ref_tilt" parameter (which is here taken
+to be zero). To satisfy \Equstt, the crystal must be reoriented to
+keep the k_H vector in the x-z plane of the laboratory
+entrance coordinates.  The reorientation is done by rotating the
+crystal about the laboratory entrance z axis by an amount
+\theta_corr ("tilt_corr").
+
+With this tilt correction the transformation \f\Sigma_1 is a
+rotation about the z axis
+  \f\Sigma_1 = 
+    \cos\theta_corr -\sin\theta_corr 0 
+    \sin\theta_corr  \cos\theta_corr 0 
+    0                  0                 1                
+To calculate a value for \theta_corr, note that
+the transformation \f\Sigma_2 from element entrance coordinates to element surface
+coordinates is not affected by a finite \psi_H and so \Eqmt0t010
+is unmodified. The k_H vector, expressed in laboratory entrance
+coordinates, is \f\Sigma_1^-1 \, \f\Sigma_2^-1 \, k_H where the
+components of k_H are given by \Eqk1dapl. To
+satisfy \Equstt, this vector must have zero y component
+  \left( \f\Sigma_1^-1 \, \f\Sigma_2^-1 \, k_H \right) \dotproduct
+  = 0
+Solving gives
+  \theta_corr = \tan^-1 
+  \frack_H,yk_H,z \, \sin\theta_B,in - k_H,x \, \cos\theta_B,in
+The transformation \f\Sigma_3 from element surface coordinates to
+element exit coordinates is now obtained by requiring that the total
+transformation from laboratory entrance to laboratory exit coordinates
+be the R_y(-\alpha_b) matrix given in \Equstt
+  \f\Sigma_3 \, \f\Sigma_2 \, \f\Sigma_1 = 
+    \cos\theta_bend 0 -\sin\theta_bend 
+    0          1 0           
+    \sin\theta_bend 0 \cos\theta_bend
+In the above equation, the transformation \f\Sigma_4 has been
+dropped since it is the unit matrix independent of \psi_H.
+
+For Laue diffraction when the non-diffracted beam is tracked, the exit
+coordinate system corresponds to the entrance coordinate system. That
+is, V is the unit matrix. In this case, there is no tilt
+correction and \f\Sigma_3 = R_y(-\theta_B,in) is just the
+inverse of \f\Sigma_2.
+
+\includegraphics[width=4in]crystal-energy.pdf
+Energy flow used to determine the reference orbit for Laue diffraction.
+  
+###subsection Laue Reference Orbit
+
+For Laue diffraction, with the reference orbit following the "undiffracted" beam, the reference
+orbit at the exit surface is just the extension of the reference orbit at the entrance
+surface. Since the reference orbit's direction is kbar_0.  the reference orbit displacement
+vector L (cf.~\Eqvwlv) is given by
+  L = \fract^2dkbar_0 \dotproduct t \, dkbar_0
+  \qquad \text[undiffracted]
+where
+  t = \beginpmatrix
+    0  0  t
+with t being the crystal thickness and the z-axis pointing into the crystal as illustrated in
+\figf:crystal.energy. The S rotation matrix (\Eqwws) for the undiffracted beam 
+will be the unit matrix.
+
+With the reference orbit following the "forward_diffracted" or "Bragg_diffracted" beam, the
+displacement vector L follows the energy flow associated with the tie points labeled A or B
+in \figf:crystal.energy. These tie points are defined by the intersection of the dispersion
+surfaces and the vector n originating from the point T as shown in the figure.  The energy
+flow is perpendicular to the dispersion surface and it can be shown that since, by construction,
+n goes through the Q point, and since the dispersion surfaces are hyperboles, the energy
+flows from A and B tie points are colinear. The direction of the energy flow is given by:
+  Kbar_f = \xi_H \, Kbar_H + \xi_0 \, Kbar_0
+where \xi_H and \xi_0 are given by \citeb:batterman Eq.~(18) (See section below).
+L is thus
+  L = \fract^2Kbar_f \dotproduct t \, Kbar_f
+At the exit surface, if the reference orbit is following the "forward_diffracted" beam, the
+orientation of the "element exit" coordinates will be the same as the orientation of the
+"element entrance" coordinates. That is, S (\Eqwws) is the unit matrix.  If the reference
+orbit is following the "Bragg diffracted" beam, S is the same as for Bragg diffraction
+  S = 
+    \cos\theta_bend 0 -\sin\theta_bend 
+    0                 1 0           
+    \sin\theta_bend 0 \cos\theta_bend
+
+###subsection Crystal Surface Reflection and Refraction
+
+%%\beginfigure[tb]
+%%  \centering
+%%  \includegraphics[width=5in]crystal-surface-reflect.pdf
+%%  \caption[Reflection from a crystal surface.]
+%%Reflection from a crystal surface.
+%%  \labelf:crystal.reflect
+%%\endfigure
+
+There are corrections to the field amplitude and phase when a photon reflects or refracts from the
+surface of a crystal. A plane wave is incident on a crystal surface with
+  E = \what E_0 \, \exp(i \, k_0 \, r)
+An outgoing plane wave has a field
+  E = \what E_1 \, \exp(i \, k_1 \, r)
+A simulation of this condition will start with a number of photons with wave vector k_0 and
+electric field E_0. After reflecting from the surface, the photons will have wave vector
+k_1. Now imagine a set of N photons that flow through an planar area dA_0, perpendicular to
+the incoming beam, before being reflected from the surface.
+
+Since the electric field is \what E_0, when tracking incoherent photons
+  \what E_0^2 = \frac\alpha_p \, E_0^2 \, NdA_0
+where \alpha_p is the simulation constant (cf.~\Eqpanda1. 
+After the photons are reflected they will have some field E_1 and thus
+  \what E_1^2 = \frac\alpha_p \, E_1^2 \, NdA_1
+Where dA_1 is the area that the photons flow through which is related
+to dA_0 via
+  \fracdA_1dA_0 = \frack_1 \dotproduct zk_0 \dotproduct z \equiv |b|
+Combining the above three equations, the change in field for a photon
+as it reflects from the surface is
+  \fracE_1E_0 = \frac\what E_1\what E_0 \, \sqrt|b| 
+  \qquad \textIncoherent
+
+For coherent photon tracking the electric field at dA_0 is
+  \what E_0 = \frac\alpha_p \, E_0 \, NdA_0
+After the photons are reflected they will have some field E_1 and thus
+  \what E_1 = \frac\alpha_p \, E_1 \, NdA_1
+Combining these equations the change in field for a photon
+as it reflects from the surface is
+  \fracE_1E_0 = \frac\what E_1\what E_0 \, |b| 
+  \qquad \textCoherent
+
+Additionally, for coherent tracking, all photons in a plane wave must
+have the same phase when passing through an area transverse to the
+wave. Thus the two photons labeled a and b in
+\figf:crystal.reflect must have the same phase advance in going from
+dA_0 to dA_1. The difference in the phase advance for photon b
+relative to a from dA_0 to the surface is k_0 \dotproduct r
+where r is the vector between where photon b hits the surface
+relative to photon a. Similarly, the difference in the phase advance
+for photon b relative to a from the surface to dA_0 is -k_1
+\dotproduct r. Since the total phase advance for both photons is the
+same from dA_0 to dA_1 the phase shift d\phi_b of photon b as
+it is reflected from the surface relative to the phase shift d\phi_a
+is
+  d\phi_b = d\phi_a - (k_1 - k_0) \dotproduct r
+
+This shift in the reflection phase can be related to the lattice
+diffraction planes. The wave vector difference can be written
+  k_1 - k_0 = H + q \, hat n
+where hat n is perpendicular to the surface. Combining
+\Eqsdpbdpa and \eqk1k0 and since r is in
+the plane of the surface
+  d\phi_b = d\phi_a - H \dotproduct r
+This shows that the reflection shift has the same periodicity as the
+pattern of the lattice planes at the surface of the crystal. Notice
+that for a mirror, where one point on the surface is the same as any
+other, d\phi_b must be equal to d\phi_a. Using this in \Eqdpbdpa
+gives 
+  k_1 \dotproduct r = k_0 \dotproduct r
+and since |k_1| = |k_0| this proves that the angle of
+incidence is equal to the angle of reflection for a mirror.
+
+In practice, the registration of the surface planes with respect to
+the surface is not specified in a simulation. Thus the reflection
+phase shift can only be calculated up to a constant offset. 
+
+###subsection Bragg Crystal Tracking
+
+The starting photon coordinates are specified in the laboratory entrance coordinates. The
+transformation from laboratory entrance coordinates to element entrance coordinates tilde k_0
+is given in. The transformation to element surface coordinates k_0 is
+  k_0 =  \f\Sigma_2 \, tilde k_0
+with \f\Sigma_2 given by \Eqmt0t010.
+The outgoing wave vector k_H is related to k_0 via
+  k_H =  k_0 + H + q_t \, hat n
+where q_t is determined by using \Eqsk1lst and \eqh1daa in \Eqkk1l1
+  k_H,x= k_0,x + H_x \nonumber \CRNO
+  k_H,y= k_0,y + H_y 
+  k_H,z= \sqrt\lambda^2 - k_H,x^2 - k_H,y^2 \nonumber
+
+To compute the field amplitude of the outgoing photon, the equation to be solved is
+(\citeb:batterman Eq.~(21))
+  \xi_0 \, \xi_H = \frac14 \, k^2 \, P^2 \, \Gamma^2 \, F_H \, F_\bar H
+where \xi_0 and \xi_H are given by \citeb:batterman Eq.~(18) and P is the polarization
+factor
+  P = 
+    1               \sigma \text polarization state 
+    \cos 2\theta_g  \pi \text polarization state
+2\theta_g is the angle between K_0 and K_H which is well
+approximated by \theta_B,in + \theta_B,out.
+
+The solution to \Eqxx14 is (\citeb:batterman Eq.~(31))
+  \xi_0= \frac12 \, k \, |P| \, \Gamma \, [F_H \, F_\bar H]^1/2 \, 
+    |b|^1/2 \, [\eta \pm (\eta^2 + \sign(b))^1/2] \CRNO
+  \xi_H= \frac12 \, k \, |P| \, \Gamma \, [F_H \, F_\bar H]^1/2 \, 
+    \frac1|b|^1/2 \, [\eta \pm (\eta^2 + \sign(b))^1/2]
+where the + part of \pm is for the \alpha branch and the - part of \pm is for the \beta
+branch and \sign is the sign function
+  \sign(b) \equiv \begincases 1 b > 0  -1 b < 0 \endcases
+and \eta is given by \citeb:blasdell Eq.~(5)
+  \eta = \frac-b \, a + \Gamma \, F_0 \, (1 - b)2 \, \Gamma \, |P| \, \sqrt|b| \, F_H \, F_\bar H
+with the asymmetry factor b for the photon being tracked being given by \citeb:blasdell Eq.~(3)
+  b \equiv \frachat n \dotproduct hat k_0hat n \dotproduct (\widehatk_0 + H)
+and the angular deviation variable a is given by \citeb:blasdell Eq.~(4)
+  a \equiv \fracH^2 + 2 \, k_0 \dotproduct Hk_0^2 
+  = -2 \, \Delta \theta \, \sin(2\theta_B)
+Once \xi_0 and \xi_H are determined, the ratio of the incoming and outgoing fields for the
+\alpha or \beta branches can be computed via (\citeb:batterman Eq.~(24))
+  r_E \equiv \fracE_HE_0 
+  = \frac- \, 2 \, \xi_0k \, P \, \Gamma \, F_\bar H \,
+  = \, \frac- \, k \, P \, \Gamma \, F_H2 \, \xi_H 
+where the \alpha or \beta subscript has been suppressed.  The total field which is the sum of the
+fields on the branches is computed using the boundary conditions
+  E_0 = E_0\alpha + E_0\beta, \qquad\qquad 
+  0 = E_H\alpha + E_H\beta
+Using the above two equations gives
+  E_0\alpha= E_0 \, \fracr_E\betar_E\beta - r_E\alpha \qquad\qquad
+  E_H\alpha  = E_0 \, \fracr_E\alpha \, r_E\betar_E\beta - r_E\alpha \CRNO
+  E_0\beta= -E_0 \, \fracr_E\alphar_E\beta - r_E\alpha \qquad\qquad
+  E_H\beta  = -E_0 \, \fracr_E\alpha \, r_E\betar_E\beta - r_E\alpha 
+
+As can be seen from Battermann and Cole Figs.~(8) and (29), the \alpha tie point is excited and
+the \beta tie point is not if \xi_0\alpha < \xi_0\beta and vice versa. Since only one tie
+point is excited, The external field ratio is equal to the internal field ratio
+  \fracE_H^eE_0^i = \fracE_HjE_0j
+where j is \alpha or \beta as appropriate.
+
+###subsection Coherent Laue Crystal Tracking
+
+Laue diffraction has two interior wave fields (branches), labeled \alpha and \beta,
+corresponding to the two tie points that are excited on the two dispersion surfaces. For coherent
+tracking, a photon has some probability to be channeled to follow the \alpha or \beta
+branch. The electric field ratios \what E_\alpha and \what E_\beta (cf.~\Eqrpss2) are taken to
+be equal to each other. With this choice, the probabilities P_\alpha and P_\beta for being
+channeled to the \alpha or \beta branches are such that a branch with a greater intensity will
+have a greater number of photons channeled down it.
+
+When a crystal's "ref_orbit_follows" parameter is set to "bragg_diffracted", The branching
+probabilities are
+  P_\alpha = \frac|E_H\alpha||E_H\alpha| + |E_H\beta| , \qquad
+  P_\beta = \frac|E_H\beta||E_H\alpha| + |E_H\beta| , \qquad
+  \what E_H\alpha = \what E_H\beta  = \frac|E_H\alpha| + |E_H\beta||E_0^i|
+where (see Battermann and Cole\citeb:batterman Eqs~(42)), 
+  E_H\alpha= -E_0^i \, \dsfrac|b|^1/22 \, \cosh v \, 
+    \frac|P|P \, 
+    \frac[F_H \, F_\Hbar]^1/2F_H \, 
+    \exp(-2 \, \pi \, i \, K'_H\alpha \dotproduct r_\alpha) \,
+    \exp(-2 \, \pi \, K"_H\alpha \dotproduct r_\alpha) \CRNO
+  E_H\beta= E_0^i \, \dsfrac|b|^1/22 \, \cosh v \, 
+    \frac|P|P \, 
+    \frac[F_H \, F_\Hbar]^1/2F_H \, 
+    \exp(-2 \, \pi \, i \, K'_H\beta \dotproduct r_\beta) \,
+    \exp(-2 \, \pi \, K"_H\beta \dotproduct r_\beta)
+where r_\alpha and r_\beta are the vectors from the entrance surface to the exit surface
+for the \alpha and \beta wave fields
+  r_\alpha = \fract^2S_\alpha \dotproduct t \, S_\alpha , \qquad
+  r_\beta = \fract^2S_\beta \dotproduct t \, S_\beta
+with
+  S_\alpha= e^-2 \, v \, s_0 + \left| b \, \fracF_H \, F_\HbarF_H^2 \right| \, s_H \CRNO
+  S_\beta= e^2 \, v \, s_0 + \left| b \, \fracF_H \, F_\HbarF_H^2 \right| \, s_H 
+The phase shift of the electric field is obtained from the phase of E_H\alpha if the photon is
+channeled into the \alpha branch and E_H\beta if the photon is channeled into the \beta
+branch.
+
+When a crystal's "ref_orbit_follows" parameter is set to "forward_diffracted" or
+"undiffracted", the algorithm is similar to the "bragg_diffracted" case except E_0\alpha
+and E_0\beta are used in place of E_H\alpha and E_H\beta with
+  E_0\alpha= E_0^i \, \dsfrace^-v2 \, \cosh v \, 
+    \exp(-2 \, \pi \, i \, K'_0\alpha \dotproduct r_\alpha) \,
+    \exp(-2 \, \pi \, K"_0\alpha \dotproduct r_\alpha) \CRNO
+  E_0\beta= E_0^i \, \dsfrace^-v2 \, \cosh v \, 
+    \exp(-2 \, \pi \, i \, K'_0\beta \dotproduct r_\alpha) \,
+    \exp(-2 \, \pi \, K"_0\beta \dotproduct r_\beta)
+
+Since a simulation photon has two polarization components, the above equations are used for one
+polarization component and for the second polarization component the same branch is used as for the
+first with an appropriately scaled \what E.
+
+###subsection Incoherent Laue Crystal Tracking
+\labels:incoherent.laue
+
+Laue diffraction has two interior wave fields (branches), labeled \alpha and \beta,
+corresponding to the two tie points that are excited on the two dispersion surfaces. For incoherent
+tracking it is assumed that these wave fields overlap at the exit surface (\citeb:batterman
+Eq.~(87)) and so add coherently. This is a good approximation if the crystal is very thin where the
+wave fields do not travel an appreciable spatial distance and is also a good approximation when the
+crystal is thick since the \beta branch will be heavily attenuated. At intermediate thicknesses
+this approximation is good when a photon is near the Bragg angle since, in this case, the fields
+will be traveling in similar directions.
+
+Another approximation is that the path
+
+\beginfigure[tb]
+ \centering
+ \includegraphics[width=5in]mosaic-crystal.pdf
+ \caption[Mosaic crystal Monte Carlo tracking.]Mosaic crystal representation used for Monte Carlo tracking.
+ \labelf:mosaic.crystal
+\endfigure
+
+%-------------------------------------------------------------------------
+###subsection Mosaic Crystal Tracking
+\labels:mosaic.track
+
+Tracking through a mosaic crystal tracking is illustrated in Figure~\reff:mosaic.crystal. The
+Bmad algorithm is similar to the method presented by Alianelli et al. \citeb:mosaic. The mosaic
+crystal is idealized as a number of small perfect crystals, called crystallites, all of which have
+the same specified thickness T_m (the "mosaic_thickness" parameter of the crystal). The
+crystallites are all misoriented with angular probability distribution W given by
+\beginequation
+ W(\theta, \phi) = \frac12 \, \pi \, \sigma_in \, \sigma_out \exp \left(-
+ \frac\theta^22 \, \sigma_in^2 - \frac\phi^22 \, \sigma_out^2 \right)
+ \labelw12p
+\endequation
+where \theta is the misorientation angle in the diffraction plane and \phi is the misorientation
+angle out of the diffraction plane. The sigmas, \sigma_in and \sigma_out, correspond to the
+parameters of a crystal element  "mosaic_angle_rms_in_plane" and
+"mosaic_angle_rms_out_plane" respectively.
+
+The crystalites are modeled to lie in layers of thickness T_m. For "Laue" diffraction
+("b_param" > 0), the actual thickness T_m used is adjusted so that there is an integer number
+of mosaic layers. That is
+\beginequation
+ T_m(\textin simulation = \fracT\textnint (T/T_m)
+\endequation
+where T is the crystal thickness and "nint" is the nearest integer function. 
+
+Tracking is done step-by-step with a photon either traversing or being reflected by a crystalite.
+Interference effects between crystallites are not taken into account so the tracking is incoherent
+.
+
+At the beginning of a step the photon is in between two layers and will be traveling towards one of
+these layers. A random number generator along with \Eqw12p is used to determine the misorientation
+of the crystallite that the photon is going through. Factoring this misorientation into account, the
+amplitude scattering R and transmission T probabilities are calculated using dynamical diffraction theory.
+
+A random number generator is used to determine if the photon is scattered or transmitted. If P_T is the
+probability assigned for the probability of transmission, then
+\beginequation
+ r_T = 
+\endequation
+
+###section X-ray Targeting
+
+X-rays can have a wide spread of trajectories resulting in many "doomed" photons that hit
+apertures or miss the detector with only a small fraction of "successful" photons actually
+contributing to the simulation results. The tracking of doomed photons can therefore result in an
+appreciable lengthening of the simulation time. To get around this, Bmad can be setup to use what
+is called "targeting" to greatly reduce the number of doomed photons generated.
+
+Photons can be generated either at a source like a "wiggler" element or at a place where
+diffraction is simulated like at a "diffraction_plate" element. To be able to do targeting, an
+element with apertures defined must be present downstream from the generating element. The idea is
+to only generate photons that are going in the general direction of the "target" which is the
+space within the aperture.
+
+A necessary restriction for targeting to work is that the photon must travel in a straight line
+through all elements between the generating element and the element with the apertures. So, for
+example, a "crystal" element would not be allowed between the two two elements. A "crystal"
+element could be the aperture element as long as the aperture was defined before photons were
+diffracted. That is, if the aperture was at the upstream end of the crystal or was defined with
+respect to the "crystal" surface.
+
+The target is defined by the four corners of the aperture. In "element" coordinates, the (x, y,
+z) values of the corners are:
+  (-x1_limit, -y1_limit, z_lim)
+  (-x1_limit,  y2_limit, z_lim)
+  ( x2_limit, -y1_limit, z_lim)
+  ( x2_limit,  y2_limit, z_lim)
+where "x1_limit", etc. are the aperture limits  and "z_lim" will be zero
+except if the element's "aperture_at" parameter is set to "entrance_end" in which case
+"z_lim" will be set to "-L" where "L" is the length of the element.
+
+If the aperture is associated with a curved surface (for example with a "crystal" element), four
+extra corner points are also used to take into account that the aperture is not planar. These extra
+points have (x, y, z) values in "element" coordinates of
+  (-x1_limit, -y1_limit, z_surface(-x1_limit, -y1_limit))
+  (-x1_limit,  y2_limit, z_surface(-x1_limit,  y2_limit))
+  ( x2_limit, -y1_limit, z_surface( x2_limit, -y1_limit))
+  ( x2_limit,  y2_limit, z_surface( x2_limit,  y2_limit))
+where "z_surface(x,y)" is the z value of the surface at the particular (x, y) point being
+used. Notice that in this case "z_lim" is zero.
+
+The coordinates of the four or eight corner points are converted from "element" coordinates of
+the aperture element to "element" coordinates of the photon generating element. Additionally, the
+approximate center of the aperture, which in "element" coordinates of the aperture element is
+(0, 0, z_lim), is converted to "element" coordinates of the photon generating element.
+
+The above calculation only has to be done once at the beginning of a simulation.
+
+When a photon is to be emitted from a given point (x_emit, y_emit, z_emit), the problem is
+how to restrict the velocity vector (\beta_x, \beta_y, \beta_z) (which is normalized to 1) to
+minimize the number of doomed photons generated. The problem is solved by constructing a vector \f
+r for each corner point:
+  r = (x_lim, y_lim, z_lim) - (x_emit, y_emit, z_emit)
+The direction of each r is characterized in polar coordinates (\phi, y) defined by
+  y= \fracr_y|r| \CRNO
+  \tan\phi= \fracr_xr_z 
+For now make the assumption that r_z is positive and larger than r_x and r_y for all r.
+Let \phi_max and \phi_min be the maximum and minimum \phi values over all the \f
+r. Similarly, let y_min and y_max be the minimum and maximum y values over all the \f
+r. The rectangle in (\phi, y) space defined by these four min and max values almost covers the
+projection of the aperture onto the unit sphere. There is a correction that must be made due to the
+fact that a straight line of constant y in (x, y, z) space projects to a curved line when
+projected onto (\phi, y) space. Therefore a correction must be made to y_min when y_min <
+0:
+  y_min \rightarrow 
+  \fracy_min\sqrt(1 - y_min^2) \, \cos^2 (phi_max - \phi_min)/2 + y_min^2
+with a similar correction for y_max that must be made when y_max > 0.
+
+The above prescription works as long as the projection of the aperture onto (\phi, y) space does
+not touch the branch cut at \phi = \pi or cover the singular points y = \pm 1. Generally these
+restrictions are fullfilled since z is the direction of the reference orbit. If this is not
+the case, a transformation can be made where rotation matrices are constructed to transform between
+the "element" coordinates of the emitting element and what are called "target" coordinates
+defined so that r for the "center" point has the form (0, 0, |r|). The procedure for
+calculating the photon velocity vector is now
+  *
+Rotate all the corner r from "element" to "target" coordinates.
+  *
+Calculate min and max values for \phi and y.
+  *
+Calculate the velocity vector such that the (\phi, y) of this vector
+falls within the min and max values in the last step.
+  *
+Rotate the velocity vector back to "element" coordinates.
+

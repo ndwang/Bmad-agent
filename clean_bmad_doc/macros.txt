@@ -119,3 +119,155 @@ End Etienne stuff
 
 \newcommand\tot\texttot
 
+%\newcommand\dotproduct\mathbin\scriptscriptstyle\stackrel\bullet
+\newcommand\dotproduct\mathbin\boldsymbol\cdot
+\newcommand\cross\mathbin\boldsymbol\times
+
+\newcommand\what\widehat
+\newcommand\wt\widetilde
+\newcommandhat[1]\widehat  #1
+\newcommandtilde[1]\widetilde #1
+\newcommand\xw\widetilde x
+\newcommand\yw\widetilde y
+\newcommand\rw\widetilde r
+\newcommand\pw\widetilde p
+
+\newcommand\tstyle\textstyle
+\newcommand\dstyle\displaystyle
+\newcommand\stilde\widetilde s
+\newcommand\tWl\widetildeW^SR_\parallel
+\newcommand\WlSW^SR_\parallel
+\newcommand\WtSW^SR_\perp
+\newcommand\WtLW^LR_\perp
+
+\newcommand\hyperbf[1]\textbf\hyperpage#1
+\newcommand\Hyperref[2]\index[routine]#2\hyperref[#1]#2
+
+\newcommand\om\omega
+\newcommand\qqquad\qquad \qquad
+\newcommand\ks\widetilde k_s
+\newcommand\kone\widetilde k_1
+
+\newcommand\hphphp\hphantom\dfrack_xk_y
+\newcommand\Ce\textC
+\newcommand\Se\textS
+\newcommand\Ch\textCh
+\newcommand\Sh\textSh
+
+\newcommand\CR
+\newcommand\CRNO\nonumber 
+
+\newcommand\fig[1]Fig.~\ref#1
+\newcommand\figs[1]Figs.~\ref#1
+
+\newcommand\pow[1]\cdot 10^#1
+\newcommandTao\sl Tao\xspace
+\newcommandBmad\sl Bmad\xspace
+\newcommand\mad\sl MAD\xspace
+\newcommand\quickplot\sl Quick Plot\xspace
+\newcommand\cppC\hskip-0.3ex\raisebox0.2ex\scriptsize ++\xspace
+\newcommand\CPPC\hskip-0.3ex\raisebox.3ex\large ++\xspace
+%\newcommand\CPPC\small ++\xspace
+
+\newcommand\eq[1](\ref#1)
+\newcommand\Eq[1]Eq.~(\ref#1)
+\newcommand\Eqs[1]Eqs.~(\ref#1)
+
+\newcommand\sref[1]\S\ref#1
+\newcommand\Sref[1]Sec.~
+\newcommand\cref[1]Chapter~\ref#1
+\newcommand\s\S
+
+\newcommand\toffset\vskip 0.01in
+\newcommand\rot[1]\beginrotate-45#1\endrotate
+
+\newcommand\ave[1]\left\langle #1 \right\rangle
+
+\newcommand\txt[1]\text#1
+\newcommand\vn\begingroup\catcode`_=11 \catcode`%=11 \dottcmd
+\newcommand\dottcmd[1]\texttt#1\endgroup
+
+\newcommand\ttverb
+ \bgroup\let\do\@makeother\dospecials\catcode`=1 \catcode`=2 \DSAcode
+\newcommand*\DSAcode[1]\texttt#1\egroup
+
+\newcommand\kxxk_x (x + x_0)
+\newcommand\kyyk_y (y + y_0)
+\newcommand\kzzk_z z + \phi_z
+\newcommand\CRNEG\nonumber *[-1.5\jot]
+\newcommand\CRneg\nonumber *[-1\jot]
+\newcommand 
+
+\newcommand\plus\; + \;
+
+\newcommand\Th^th\xspace
+\newcommand\Nd^nd\xspace
+\newcommand\Rd^rd\xspace
+\newcommand\St^st\xspace
+\newcommand}\backslash
+
+\newlength\dPar
+\setlength\dPar1.5ex
+
+Since a non-zero parskip is used, the alltt environment needs to be modified to keep
+the white space before and after from being too large.
+
+Note: Use  ...  for inline equations in example mode. 
+Use \[ ... \] for display equations.
+\sb and \sp need to be used for subscripts and superscripts instead of "_" and "^".
+
+\newenvironmentexample
+  \vspace-3.0ex \beginalltt
+  \endalltt \vspace-2.5ex
+
+\newenvironmentexample2
+  \vspace-2.5ex \beginalltt
+  \endalltt \vspace-2.0ex
+
+\newenvironmentItemize
+  \beginlist\bullet
+    \addtolength\topsep-1.5ex 
+     \addtolength*sep-1ex
+    
+  \endlist \vspace*1ex
+
+\ExampleNum is for numbering "example" blocks using the same numbering counter
+as the "equation" counter
+
+\newcommand\ExampleNum[1] \refstepcounterequation (\arabicequation)\label#1
+
+From pg 64 of The LaTex Companion.
+
+\newenvironmentventry[1]
+  \beginlist
+    \renewcommand\makelabel[1]\textsf##1
+     \settowidth\labelwidth\textsf#1
+     \addtolength*sep-1.5ex
+     \addtolength\topsep-1.0ex 
+     \setlength\leftmargin5em
+    
+  \endlist
+
+\AR gives an overline raised up a little bit (otherwise it is too close to what is below).
+\newcommand\AR[1]\overline\raisebox0pt[\dimexpr\height+0.15ex\relax]#1
+
+Superscript or subscript minus and plus looks better if smaller and bolder than normal.
+\newcommand\bpkplus\mbox\fontfamilypbk\fontseriesdb\selectfont+  % This is too bold
+
+\newcommand\pbkminus\mbox\fontfamilypbk\selectfont-
+\newcommand\mmin\hspace-0.1em \raisebox-0.5ex\scalebox1.4[1.4]\pbkminus
+
+\newcommand\pbkplus\mbox\fontfamilypbk\selectfont+
+\newcommand\ppls\hspace-0.1em \raisebox-0.4ex\scalebox1.0[1.0]\pbkplus
+
+\newcommand\DAG^\dagger
+\newcommand\DDAG^\ddagger
+
+%% Table of Contents spacing.
+\makeatletter   % So can use @ sign in \renewcommand
+\renewcommand\l@section\@dottedtocline11.5em3.3em
+\renewcommand\l@subsection\@dottedtocline23.8em4.2em
+\renewcommand\l@figure\@dottedtocline11.5em3.3em
+\renewcommand\l@table\@dottedtocline11.5em3.3em
+\renewcommand\l@subsection\@dottedtocline21.5em3.5em
+\makeatother    % Reset 

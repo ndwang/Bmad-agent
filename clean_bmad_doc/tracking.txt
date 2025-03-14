@@ -1,6 +1,6 @@
-chapter Tracking and Transfer Maps
+###chapter Tracking and Transfer Maps
 
-----------------------------------------------------------------
+###section The coord_struct
 
 The "coord_struct" holds the coordinates of a particle The definition of the "coord_struct" is
   type coord_struct
@@ -169,7 +169,7 @@ Here "init_coord" will initialize "start_orb" appropriately for
 tracking through element "lat%ele(i)" with the particle species set to the 
 species of the reference particle given by "lat%param%particle". 
 
-----------------------------------------------------------------
+###section Tracking Through a Single Element
 
 \Hyperrefr:track1track1 is the routine used for tracking through a
 single element
@@ -206,7 +206,7 @@ a bunch has z = 0. Also, in a ring, "ele%ref_time" is only the reference time fo
 through an element. Since Bmad does not keep track of turn number, there is no way for Bmad to know
 what the true reference time is other than to calculate it from the value of z 
 
-----------------------------------------------------------------
+###section Tracking Through a Lattice Branch
 
 When tracking through a lattice branch, one often defines an array of "coord_struct"s -- one for
 each element of the lattice branch. In this case, the i\Th "coord_struct" corresponds to the
@@ -315,7 +315,7 @@ exit end of the n\Th element.
     enddo
   end subroutine
 
-----------------------------------------------------------------
+###section Forking from Branch to Branch
 
 Tracking from a "fork" or "photon_fork"  element
 to the downstream "branch" is not "automatic". That is, since the
@@ -375,7 +375,7 @@ element, called "to_ele" in the "to_branch" that is connected to
 Notice that, by convention, the transferred orbit is located at the
 exit end of the "to_ele".
 
-----------------------------------------------------------------
+###section Multi-turn Tracking
 
 Multi-turn tracking over a branch is simply a matter of
 setting the coordinates at the beginning zeroth element equal to the
@@ -401,7 +401,7 @@ In this case, the above reduces to
     orbit(0) = orbit(lat%n_ele_track)
   end do
 
-----------------------------------------------------------------
+###section Closed Orbit Calculation
 
 For a circular lattice the closed orbit may be calculated using
 "closed_orbit_calc". By default this routine will track in the
@@ -415,7 +415,7 @@ strong enough, this can fail to converge. An alternative routine is
 "closed_orbit_from_tracking" which tries to do things in a more
 robust way but with a large speed penalty.
 
-----------------------------------------------------------------
+###section Partial Tracking through elements
 
 There are several routines for tracking partially through an element:
   \Hyperrefr:twiss.and.track.at.stwiss_and_track_at_s
@@ -438,7 +438,7 @@ the case where a given element is to be sliced, one or the other of the two slic
 given above must be first used to create an element slice then this slice can be used for
 tracking.
 
-----------------------------------------------------------------
+###section Apertures
 
 The routine \Hyperrefr:check.aperture.limitcheck_aperture_limit
 checks the aperture at a given element. The "ele%aperture_type"
@@ -487,12 +487,12 @@ vertically. "z_plane$" indicates that the particle was turned around in an "lcav
 element. That is, the cavity was decelerating the particle and the particle did not not have enough
 energy going into the cavity to make it to the exit.
 
-----------------------------------------------------------------
+###section  Custom Tracking
 
 Custom code can be used for tracking. This is discussed in detail in sections
 and.
 
-----------------------------------------------------------------
+###section  Tracking Methods
 
 For each element the method of tracking may be set either via the
 input lattice file (see) or directly in the
@@ -520,7 +520,7 @@ For determining what tracking methods are valid for a given element, use
 Bmad simulates radiation damping and excitation by applying a kick
 just before and after each element. 
 
-----------------------------------------------------------------
+###section Using Time as the Independent Variable
 
 Time tracking uses time as the independent variable as opposed to the standard s based
 tracking. Time tracking is useful when a particle's trajectory can reverse itself
@@ -534,7 +534,7 @@ reverse directions.  See the "dark_current_tracker" program as an example.
 Note: Using time as the independent variable can be used with both absolute and relative time
 tracking .
 
-----------------------------------------------------------------
+###section Absolute/Relative Time Tracking
 
 Absolute or relative time tracking  can be set after the lattice file is parsed,
 by setting the "%absolute_time_tracking" component of the "lat_struct". when
@@ -542,7 +542,7 @@ by setting the "%absolute_time_tracking" component of the "lat_struct". when
 \Hyperrefr:autoscale.phase.and.ampautoscale_phase_and_amp must be called to reset the
 appropriate phase offsets and scale amplitudes.
 
-----------------------------------------------------------------
+###section Taylor Maps
 
 A list of routines for manipulating Taylor maps is given in~. The order of the Taylor
 maps is set in the lattice file using the "parameter" statement . In a program
@@ -604,7 +604,7 @@ directly.  The order of the integrator  is given by
 "%ele%integrator_order".  PTC  currently implements integrators of order 2, 4, or
 6.
 
-----------------------------------------------------------------
+###section Tracking Backwards
 
 Tracking backwards happens when a particle goes in the direction of decreasing "s". This is
 indicated in the "coord_struct" by "coord%direction = -1". 
@@ -625,13 +625,13 @@ One restriction with backwards tracking is that, for simplicity's sake, Bmad doe
 compute transfer matrices for propagation in the backwards direction. Tracking with reversed
 elements does not have this restriction.
 
-----------------------------------------------------------------
+###section Reversed Elements and Tracking
 
 With a lattice element that is reversed ("s:ele.reverse"), the transfer map and transfer matrix
 that is stored in the element is, just like for a non-reversed element, appropriate for a particle
 traveling in the +s direction.
 
-----------------------------------------------------------------
+###section Beam (Particle Distribution) Tracking
 
 Tracking with multiple particles is done with a "beam_struct" instance:
   type beam_struct
@@ -687,7 +687,7 @@ particle must be tracked either forward or backwards by an appropriate amount. S
 generally involves only very short distances, it is usually acceptable to ignore any fields and to
 propagate the particles as if they were in a field free region.
 
-----------------------------------------------------------------
+###section Spin Tracking
 
 See Section~ for a list of spin tracking methods available. To turn spin
 tracking on, use the "bmad_com%spin_tracking_on" flag. "ele%spin_tracking_method" sets the
@@ -700,7 +700,7 @@ effect is included in a simulation is determined by the setting of
 "bmad_com%spin_sokolov_ternov_flipping_on".  Also, spin flipping will \em not be done if spin
 tracking is off or both radiation damping and excitation are off.
 
--------------------------------------------------------------------------
+###section X-ray Targeting
 
 X-rays can have a wide spread of trajectories resulting in many
 "doomed" photons that hit apertures or miss the detector with only a
@@ -718,8 +718,7 @@ stored in:
 where "gen_ele" is the 
 generating element (not the element with the aperture).
 
--------------------------------------------------------------------------
-\sectionRecording the Track Through an Element
+###section Recording the Track Through an Element
 \labels:track.track
 
 Occasionally it is useful to record the track through an element when tracking with Runge-Kutta,

@@ -1,10 +1,10 @@
-chapter Beam Lines and Replacement Lists
+###chapter Beam Lines and Replacement Lists
 
 This chapter describes how to define the ordered list of elements that make up a lattice branch
 .  In a lattice, branches may be connected together using "fork" or
 "photon fork" elements ("s:fork"), or by using "multipass" .
 
------------------------------------------------------------------------------
+###section Branch Construction Overview
 
 A lattice branch  is defined in a lattice file using what are called "beam lines"
  and "replacement lists" .  The "beam lines" are
@@ -28,7 +28,7 @@ starting with index 0. When there are multiple branches in a lattice, the refere
 depends upon this and calculates the reference orbits of the branches one at a time starting with
 the first branch.
 
------------------------------------------------------------------------------
+###section Beam Lines and Lattice Expansion
 
 A "beam line" without arguments has the format
   label: line = (member1, member2, ...)
@@ -101,7 +101,7 @@ reference them.
 
 A line can have the "multipass" attribute. This is covered in.
 
------------------------------------------------------------------------------
+###section Line Slices
 
 A line ""slice"" is a section of a line from some starting element to some ending element.  A
 line slice can be used to construct a new line similar to how an unsliced line is used to construct
@@ -135,7 +135,7 @@ substituted in). Thus, the following makes sense:
   line2: line = (z1, line1, z2)
   line3: line = (line2[z1:c])
 
------------------------------------------------------------------------------
+###section Element Orientation Reversal
 
 An element's orientation is "reversed" if particles traveling through it enter at the "exit" end and leave at
 the "entrance" end. Being able to reverse elements is useful, for example, in describing the
@@ -173,7 +173,7 @@ and "b00_rev" serves as a reversed version of "b00".
 Internally, Bmad associates an "orientation" attribute with each element. This attribute is set
 to -1 for reversed elements and 1 for unreversed elements.
 
------------------------------------------------------------------------------
+###section Beam Lines with Replaceable Arguments
 
 "Beam lines" can have an argument list using the following syntax
   line_name(dummy_arg1, dummy_arg2, ...): LINE = (member1, member2, ...)
@@ -188,7 +188,7 @@ Unlike \mad, "beam line" actual arguments can only be elements or "beam lines".
 Thus the following is not allowed
   line2: line = (h, line1(2*y, z), g)   ! NO: 2*y NOT allowed as an argument.
 
------------------------------------------------------------------------------
+###section Lists
 
 When a lattice is expanded, all the lattice members that correspond to a name of a "list" are
 replaced successively, by the members in the "list". The general syntax is
@@ -211,7 +211,7 @@ A repetition count is permitted
   my_list1: list = (2*a, b) 
   my_list2: list = (a, a, b) ! Equivalent to my_list1
 
------------------------------------------------------------------------------
+###section Use Statement
 
 The particular line or lines that defines the root branches  to be used in the
 lattice is selected by the "use" statement. The general syntax is
@@ -234,7 +234,7 @@ branch.
 To set such things as the geometry of a branch, beginning Twiss parameters, etc., see Section
 "s:beginning".
 
------------------------------------------------------------------------------
+###section Tagging Lines and Lists
 
 When a lattice has repeating lines, it can be desirable to differentiate
 between repeated elements. This can be done by tagging lines with a "tag". 

@@ -1,9 +1,9 @@
-chapter Lattice Examples
+###chapter Lattice Examples
 
 This chapter gives some examples of how lattice files can be constructed to describe various machine
 geometries.
 
------------------------------------------------------------------------------
+###section Example: Injection Line
 
   \includegraphics[width=5in]injection.pdf
   
@@ -32,7 +32,7 @@ which offsets the reference trajectory so that the following element, "BND2", is
 The beginning of "BND2" is marked by a black dashed line in the figure.  At the end of "BND2"
 the fork element "BR" connects "INJ_L" with the marker "M" in "RING_L".
 
------------------------------------------------------------------------------
+###section Example: Chicane
 
   \includegraphics[width=5.5in]chicane.pdf
 the beam orbit magnified by a factor of 100. B) Incorrectly implemented chicane where the "g"
@@ -75,9 +75,9 @@ zero. That is, the bends will always be pure sector bends. [In a situation where
 to be varied and it is desired to keep bends rectangular, the appropriate variation of the "e1"
 and "e2" can be put in the controlling overlay.]
 
------------------------------------------------------------------------------
+###section Example: Energy Recovery Linac"
 
-An Energy Recovery Linac (ERL) is illustrated in \figf:erl"A. The ERL starts with an injection line
+An Energy Recovery Linac (ERL) is illustrated in \figf:erlA. The ERL starts with an injection line
 that feeds a linac which accelerates the beam to some energy. The beam then transverses a return
 "arc" which reinjects the bunches into the linac. The length of the return arc is such that, on
 the second pass, the beam is decelerated giving its energy back to the RF cavities. Finally, the
@@ -126,7 +126,7 @@ flexible if a "floor_position" element is used in the dump line (Bmad will work 
 backwards from a "floor_position" element so that a "floor_position" element may be placed
 anywhere in the dump line).
 
------------------------------------------------------------------------------
+###section Example: Colliding Beam Storage Rings
 
   \includegraphics[width=5in]colliding-beams.pdf
 The beam in the "A" ring rotates clockwise and in the "B" ring
@@ -186,7 +186,7 @@ from the true center at the Source element. B) The detector image when the radiu
 the bent crystal is "perfect". That is, twice the radius of the Rowland circle. C) The detector
 image when the radius of curvature of the crystal is shifted 1% from perfect.
   
------------------------------------------------------------------------------
+###section Example: Rowland Circle X-Ray Spectrometer
 
 This example shows how Bmad can be used to simulate X-rays. In this case, the present example is
 taken from a case study where simulations were done in order to understand how imperfections in a Rowland
@@ -288,7 +288,7 @@ produces a well focused spot on the "detector". In \figf:rowlandC the "crystal" 
 is shifted by 1% by setting "err" equal to 0.01. This error degrades the focusing and leads to a
 spot that is enlarged along the x-axis.
 
------------------------------------------------------------------------------
+###section Example: Backward Tracking Through a Lattice
 
 By creating a reversed lattice, one can track a particles backwards through the lattice. For
 example, assume that you have a lattice file called "original_lattice.bmad" which defines a line

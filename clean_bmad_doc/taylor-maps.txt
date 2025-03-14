@@ -1,4 +1,6 @@
-chapter Taylor Maps
+###chapter Taylor Maps
+
+###section Taylor Maps
 
 A transport map \cal M: \cal R^6 \rightarrow \cal R^6 through an element or a section of a
 lattice is a function that maps the starting phase space coordinates r(\In) to the ending
@@ -68,6 +70,8 @@ where
 Taylor maps using complex numbers is also used by Bmad. The output of such maps is similar to the
 output for real maps as shown above except that the coefficient has a real and imaginary part.
 
+###section Spin Taylor Map
+
 A Taylor map that fully describes spin  and orbital motion, would consist of nine
 Taylor series (six for the orbital phase space variables and three for the spin components) and each
 Taylor series would be a polynomial in nine variables.
@@ -97,6 +101,8 @@ will not be shown (it is exactly the same as the orbital phase space reference o
 Note: When tracking a particle's spin through a map, the quaternion used to rotate the spin is
 always normalized to one so that the magnitude of the spin will be invariant.
 
+###section Symplectification
+
 If the evolution of a system can be described using a Hamiltonian then
 it can be shown that the linear part of any transport map (the Jacobian)
 must obey the symplectic condition. If a matrix M is not symplectic,
@@ -118,6 +124,8 @@ formed via
   W = \fracV + V^t2
 A symplectic matrix F is now obtained by inverting \eqe:vsimi
   F = (I + S W) (I - S W)^-1
+
+###section Map Concatenation and Feed-Down
 
 Of importance in working with Taylor maps is the concept of
 "feed-down".  This is best explained with an example. To keep the
@@ -149,6 +157,8 @@ maps? One possibility is to go to a coordinate system where the
 constant terms vanish. In the above example that would mean using the
 coordinate \widetilde x_0 at point 0 given by
   \widetilde x_0 = x_0 + 2
+
+###section Symplectic Integration
 
 Symplectic integration, as opposed to concatenation, never has
 problems with feed--down. The subject of symplectic integration is too

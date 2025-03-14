@@ -1,4 +1,4 @@
-chapter Lattice File Statements
+###chapter Lattice File Statements
 
 A lattice  defines the sequence of elements that a particle will travel
 through along with the attributes (length, strength, orientation, etc.) of the elements.  A lattice
@@ -13,7 +13,7 @@ lattice file. The reason for this is due to the fact that Bmad is a software lib
 program. That is, interacting with the user to determine what actions a Bmad based program should
 take is left to the program itself and is not part of the Bmad standard.
 
----------------------------------------------------------------------------
+###section File Example and Syntax
 
 The following (rather silly) example shows some of the features of a
 Bmad lattice file:
@@ -83,7 +83,7 @@ by the "beginning" statements . A quadrupole named "q" and a drift element
 named "d" are specified and the entire lattice consists of element "q" followed by element
 "d".
 
-----------------------------------------------------------------------------
+###section Digested Files
 
 Normally the Bmad parser routine will create what is called a "digested file" after it has parsed
 a lattice file so that when a program is run and the same lattice file is to be read in again, to
@@ -109,7 +109,7 @@ of a program. For example, using one program you might read in a lattice, make s
 to model shifts in magnet positions) and then write out a digested version of the lattice. This
 adjusted lattice can now be read in by another program.
 
----------------------------------------------------------------------------
+###section Element Sequence Definition
 
 A "line" defines a sequence of elements. "lines" may contain other "lines" and so a
 hierarchy may be established. One line is selected, via a "use" statement, that defines the
@@ -127,7 +127,7 @@ The "superimpose" construct allows elements to be placed in a lattice at a defin
 position. What happens is that after a lattice is expanded, there is a reshuffling of the elements
 to accommodate any new superimpose elements. See for more details.
 
----------------------------------------------------------------------------
+###section Lattice Elements
 
 The syntax for defining a lattice element roughly follows the
 \mad\citeb:maduser program:
@@ -162,7 +162,7 @@ be abbreviated when using inheritance). For example:
   q2: quad          ! Q2 is a sextupole as it inherits from QUAD.
   q3: qua           ! Q3 is a quadrupole. Inherit from names cannot be abbreviated.
 
----------------------------------------------------------------------------
+###section Lattice Element Names
 
 A valid element name may be up to 40 characters in length. The first character of the name must be a
 letter [A-Z]. After that, the rest of the name can contain only letters, digits [0-9], underscore
@@ -195,7 +195,7 @@ This will produce a lattice with five elements named ""q"". The exception is "gr
 names. It is important to keep in mind that elements with the same name do not necessarily have
 the same parameter values. See Section~ for an example. 
 
----------------------------------------------------------------------------
+###section Matching to Lattice Element Names
 
 Where appropriate, for example when setting element attributes , the wild card
 characters ""*"" and ""%"" can be used to select multiple elements.  The ""*""
@@ -352,7 +352,7 @@ of whether a bend was defined to be a "sbend" or a "rbend". On the other hand, a
 expansion the string "rbend::*" will match to all bend elements that were defined as "rbend"s
 before expansion.
 
----------------------------------------------------------------------------
+###section Lattice Element Parameters
 
 Any lattice element has various attributes like its name, its length, its strength, etc. The values
 of element attributes can be specified when the element is defined. For example:
@@ -408,7 +408,7 @@ syntax as discussed in Section~. Example:
   b2>>si_cryst##2[tilt] = 0.1 ! Tilt the 2nd instance of "si_cryst" in branch "b2" 
   5:32[x_limit] = 0.3         ! Sets elements with indexes 5 through 32 in branch 0.
 
----------------------------------------------------------------------------
+###section Nonstandard Parameter Syntax
 
 This section lists parameters that have a "nonstandard" syntax (not in the form
 ""ename[parameter]""").  In the following, ""ename"" is an element name, and ""N"",
@@ -513,7 +513,7 @@ Wall for vacuum chambers and masks :
   ename[wall%section(N)%v(M)%radius_y]
   ename[wall%section(N)%v(M)%tilt]
 
----------------------------------------------------------------------------
+###section Custom Element Attributes
 
 Real scalar and vector custom element attributes may be defined for any class of element and real
 scaler parameters can be defined for the lattice as a whole.  Custom element attributes are useful
@@ -589,7 +589,7 @@ situation where a "super_slave" element has multiple "super_lord" elements and t
 attributes from the different "super_lord" elements have to be combined. Proper handling of this
 situation is left to any custom code that a program implements to handle custom attributes.
 
----------------------------------------------------------------------------
+###section Parameter Types
 
 There are five types of parameters in Bmad: reals, integers, switches, logicals (booleans), and
 strings. Acceptable logical values are
@@ -611,7 +611,7 @@ The name "switch" can refer to the parameter (for example, "tracking_method") or
 that it can take (for example, "bmad_standard"). The name "method" is used interchangeably with
 switch.
 
----------------------------------------------------------------------------
+###section Particle Species Names
 
 For the purpose of assigning names to simulated particles, particles are divided into four
 groups. One group are are "fundamental particles". These are:
@@ -674,6 +674,8 @@ Example:
 
 Note: When setting the value of a variable to be a particle species ID, use the "species" function as discussed
 in.
+
+###section Units and Constants
 
 Bmad uses SI (Syst`eme International) units as shown in Table~\reft:units.  Note that \mad uses
 different units. For example, \mad's unit of Particle Energy is GeV not eV. 
@@ -746,7 +748,7 @@ always derived from \Eqmgq2m (think of this as an "effective" g-factor).
   pmass                 0.93827208816            GeV         Proton mass (please avoid using)      
 ^* Effective anomalous moments. See the discussion after \Eqmgq2m.
 
----------------------------------------------------------------------------
+###section Arithmetic Expressions
 
 Arithmetic expressions can be used in a place where a real value is required.
 The standard operators are defined: 
@@ -833,7 +835,7 @@ but that computation does not happen until lattice expansion . In this case, the
 value of "a_const" will be the default value of "g" which is zero.  As a rule of thumb, never
 rely on dependent attributes having their correct value.
 
----------------------------------------------------------------------------
+###section Intrinsic functions
 
 The following intrinsic functions are recognized by Bmad: 
                 
@@ -923,7 +925,7 @@ to electron binding energies is not accounted for. These binding energy correcti
 very small. If the isotopic state is not specified for an atom, the average weighted by the natural
 abundance is used.
 
------------------------------------------------------------------------------
+###section Statement Order
 
 With some exceptions, statements in a lattice file can be in any order. For example, the lines
  specified in a "use" statement  can come after the "use"
@@ -952,7 +954,7 @@ example:
 In this example, the "b_param" of all "crystal" elements is set to "0.2" \em except for
 "c5" and all other crystal elements that are defined after the set.
 
------------------------------------------------------------------------------
+###section Print Statement
 
 The "print" statement prints a message at the terminal when the 
 lattice file is parsed by a program. Syntax:
@@ -967,7 +969,7 @@ will result in the following being printed:
 
 The "print" statement is useful to remind someone using the lattice of important details.
 
------------------------------------------------------------------------------
+###section Title Statement
 
 The "title" statement sets a title string which can be used by a program.  For consistency with
 \mad there are two possible syntaxes
@@ -979,7 +981,7 @@ For example
   title
   "This is a title"
 
---------------------------------------------------------------------------
+###section Call Statement
 
 It is frequently convenient to separate the lattice definition into several files.  Typically there
 might be a file (or files) that define the layout of the lattice (something that doesn't change
@@ -1004,7 +1006,7 @@ To call a file relative to the current working directory, use the environment va
 Where a called file is searched for may be modified by using a "use_local_lat_file"
 statement. See Section~ for more details.
 
---------------------------------------------------------------------------
+###section Inline Call
 
 Any lattice elements will have a set of attributes that need to be defined.  As a convenience, it is
 possible to segregate an element attribute or attributes into a separate file and then "call" this
@@ -1024,7 +1026,7 @@ To create hdf5 files, first create a lattice with the grid_field defined with pl
 the lattice into any program that can create Bmad lattice files (for example, the Tao program
  can do this) and have the program then generate a lattice file.
 
---------------------------------------------------------------------------
+###section Use_local_lat_file Statement
 
 It is sometimes convenient to override where Bmad looks for called files (see). For
 example, suppose it is desired to temporarily override the settings in a called file without
@@ -1044,7 +1046,7 @@ it "new.bmad", which can be situated in any directory, has two lines in it:
 The second new file is the modified "sub.bmad" and it must be in the directory from which the
 program is run.
 
---------------------------------------------------------------------------
+###section No_Superimpose Statement
 
 In certain cases it is useful to turn off superposition . The "no_superposition"
 statement will do this. To turn off all superpositioning, this statement can appear anywhere as long
@@ -1053,19 +1055,19 @@ as it is before any "expand_lattice"  statement. If the lattice has an
 "no_superposition" statement will only block superpositions that are defined after the
 "no_superposition" statement.
 
---------------------------------------------------------------------------
+###section Return and End_File Statements
 
 "Return" and "end_file" have identical effect and tell Bmad to ignore anything beyond the
 "return" or "end_file" statement in the file.
 
-----------------------------------------------------------------------------
+###section Expand_Lattice Statement
 
 Normally, lattice expansion happens automatically at the end of the parsing of the lattice file but
 an explicit "expand_lattice" statement in a lattice file will cause immediate expansion. See
  for details. Subsequent "expand_lattice" statements after the first one are
 ignored and have no effect on the lattice.
 
-----------------------------------------------------------------------------
+###section Lattice Expansion
 
 At some point in parsing a lattice file, the ordered sequence (or sequences if there are multiple
 branches) of elements that form a lattice must be constructed. This process is called "lattice
@@ -1122,7 +1124,7 @@ things as element misalignments. The point here is that there are no calls  of t
 secondary files in the primary file so the primary lattice file does not have to get modified when
 different secondary files are to be used.
 
---------------------------------------------------------------------------
+###section Calc_Reference_Orbit Statement
 
 The "calc_reference_orbit" statement triggers the computation of the "standard" reference orbit
 which is defined to be the closed orbit if the geometry (set by "parameter[geometry]"
@@ -1144,7 +1146,7 @@ The "calc_reference_orbit" statement has no arguments. Example:
   expand_lattice          ! Expand the lattice.
   calc_reference_orbit    ! Compute the reference orbit.
 
---------------------------------------------------------------------------
+###section Merge_Elements Statement
 
 The "merge_elements" statement is used to merge groups of consecutive elements into single
 taylor elements  for faster tracking. The syntax of this statement is
@@ -1169,7 +1171,7 @@ If there is a "calc_reference_orbit" statement before the "merge_elements" state
 "standard" reference orbit  is used for the computation of the Taylor
 maps. Otherwise the zero orbit is used as the reference orbit.
 
---------------------------------------------------------------------------
+###section Combine_Consecutive_Elements Statement
 
 The "combine_consecutive_elements" statement is used to combine consecutive elements with the same name into a
 single element. If a marker element has been placed in between two element with the same name, the
@@ -1186,7 +1188,7 @@ The "combine_consecutive_elements" statement must come after lattice expansion .
   combine_consecutive_elements
 In this case the finished line will will have a single "q1" element whose length will be twice the length of q1
 
---------------------------------------------------------------------------
+###section Remove_Elements Statement
 
 The "remove_elements" statement is used to remove elements from the lattice. The
 "remove_elements" statement must come after lattice expansion . The syntax of
@@ -1198,7 +1200,7 @@ where "<element-list>" is a list of elements . For example
 In this example, all overlay elements are to be removed. This is useful, for example, when direct control
 of overlay slave parameters is desired.
 
---------------------------------------------------------------------------
+###section Slice_Lattice Statement
 
 The "slice_lattice" statement is used to remove elements from the lattice. The "slice_lattice"
 is useful when analysis of only part of the lattice is desired and the analysis of the entire
@@ -1242,7 +1244,7 @@ statement before a slice_lattice statement. Example:
   start_branch_at Q9
   slice_lattice Q9:Q1   ! With Q1 being before Q9 in the original lattice.
 
---------------------------------------------------------------------------
+###section Start_Branch_At Statement
 
 The "start_branch_at" statement is used to shift the starting point of a lattice branch while
 keeping the relative order of the elements the same. The syntax of the "start_branch_at"
@@ -1274,14 +1276,13 @@ then the shifted lattice would be
 
 Also see the "slice_lattice" statement .
 
---------------------------------------------------------------------------
-\sectionRename Statement
+###section Rename Statement
 \labels:rename
 
 The "rename" statement is used to rename elements in the lattice to produce elements with unique names.
 For example, suppose a lattice has a number of elements named "
 
---------------------------------------------------------------------------
+###section Debugging Statements
 
 There are a few statements which can help in debugging the Bmad lattice parser itself. That is,
 these statements are generally only used by programmers.  These statements are:

@@ -1,4 +1,4 @@
-chapter Multiparticle Simulation
+###chapter Multiparticle Simulation
 
 Bmad has routines for tracking two types of objects called ""particles"" and
 ""macroparticles"". "Particles" are characterized by a six-vector representing the
@@ -18,6 +18,8 @@ Particle tracking can be divided into "single particle" tracking and "beam" trac
 particle tracking is simply tracking a single particle. Beam tracking is tracking an ensemble of
 particles divided up into a number of bunches that make up a "beam".
 
+###section Bunch Initialization
+
 \textit[Developed by Michael Saelim]
 
 To better visualize the evolution of a particle beam, it is sometimes convenient to initialize the
@@ -27,7 +29,7 @@ such a purpose.
 See Chapter~"c:beam.init" for details on the standard input format used by Bmad based programs for
 reading in bunch initialization parameters.
 
-----------------------------------------------
+###subsection Elliptical Phase Space Distribution
 
 To observe nonlinear effects on the beam, it is sometimes convenient to initialize a bunch of
 particles in a way that puts more particles in the tails of the bunch than one would normally have
@@ -92,7 +94,7 @@ and q_tot.
 The "ellipse" distribution is two dimensional in nature but can easily be 
 extended to six dimensions.
 
-----------------------------------------------
+###subsection Kapchinsky-Vladimirsky Phase Space Distribution
 
 The Kapchinsky-Vladimirsky ("KV") distribution can be thought of as a four dimensional analog of
 the "ellipse" distribution with only one elliptical shell. Consider a 4D phase space (x,x',
@@ -141,6 +143,8 @@ we must partition (I_2,\phi_x,\phi_y)-space into regions of equal volume.
 The weight of each particle is
   q = \frac1N M_x M_y = \frac1N_tot
 where N_tot is the total number of particles
+
+###section Touschek Scattering
 
 \textit[Developed by Michael Ehrlichman]
 
@@ -194,6 +198,8 @@ large in amplitude and may cause the particles to collide with the beam pipe.  T
 amplitude of J due to a scattering event that imparts a momentum deviation of \Delta p is,
   J\approx\gamma_0\cal H_0\frac\Delta p^22,
 where \gamma_0 is relativistic \gamma and \cal H_0 is the dispersion invariant.
+
+###section Macroparticles
 
 \em Note: The macroparticle tracking code is not currently maintained in favor of tracking an
 ensemble of particles where each particle is specified by a position without a sigma matrix. The
@@ -260,6 +266,8 @@ charge contained within the energy region E_k - dE_mp/2 to E_k + dE_mp/2 assumin
 distribution where the energy width dE_mp is
   dE_mp = \frac2 \, \sigma_E \, N_\sigma En_mp
 
+###section Space Charge and Coherent Synchrotron Radiation
+
 Synchrotron Radiation kick is calculated by dividing longitudinally a bunch into a number of
 bins. To smooth the computed densities, each particle of the bunch is considered to have a
 triangular density distribution.  \labelf:csr.bin
@@ -283,6 +291,8 @@ first step is to give all the particles a kick due to SC and CSR. The second ste
 all particles from one slice to the next without any interaction between particles. User settable
 parameters pertinent to the CSR calculation are listed in.
 
+###subsection 1_Dim CSR Calculation
+
 When an element's "csr_method" is set to "1_dim" , The particle-particle
 CSR kick is calculated by dividing the bunch longitudinally into a number of bins. To smooth the
 computed bin densities, each particle of the bunch is considered to have a triangular density
@@ -294,6 +304,8 @@ offset by 1/2 the bin width with respect to the first set. This gives the densit
 the original set of bins. The density is considered to vary linearly between the computed density
 points. For a description of the parameters that affect the CSR calculation see
 Section~.
+
+###subsection Slice Space Charge Calculation
 
 When an element's "space_charge_method" is set to "slice" , the
 calculation of the SC kick uses, the same particle binning as is used with the "1_dim" CSR
@@ -353,6 +365,8 @@ at the particle's x and y, at the neighboring slices and then using linear inter
 Note: Match elements  can have orbit shifts which are not well handled by the CSR
 algorithm. For this reason, match elements are ignored in the CSR calculation.
 
+###subsection FFT_3D Space Charge Calculation
+
 When an element's "space_charge_method" is set to "fft_3d" or "cathode_fft_3d"
 , the space charge calculation uses code from the OpenSC package developed by
 Rob Ryne and Christopher Mayes \citeb:opensc. The method works by calculating the field due to the
@@ -369,6 +383,8 @@ the disadvantage is that the "fft_3d" and "cathode_fft_3d" methods will be slowe
 
 Note: The mesh size is set by the "csr_pram" parameter "space_charge_mesh_size"
 .
+
+###section High Energy Space Charge
 
 Bmad has a code module for simulating the effect of space charge (SC) at high energies. This is
 separate from the regular space charge calculation of. Thus it should be noted that

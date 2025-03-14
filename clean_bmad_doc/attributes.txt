@@ -1,6 +1,8 @@
-chapter  Element Attributes
+###chapter  Element Attributes
 
 For a listing of element attributes for each type of element, see Chapter~.
+
+###section Dependent and Independent Attributes 
 
 For convenience, Bmad computes the values of some attributes based upon the values of other
 attributes. Some of these dependent variables are listed in Table~\reft:dependent. Also shown in
@@ -24,6 +26,8 @@ Table~\reft:dependent are the independent variables they are calculated from.
 For electric and magnetic field strength parameters, the "field_master" parameter
  can be used to determine if the be normalized or unnormalized, values are
 dependent or independent.
+
+###section Field_Master and Normalized Vs. Unnormalized Field Strengths
 
 The "field_master" attribute of an element sets whether the element's normalized (normalized by
 the reference energy) field strengths or the unnormalized strengths are the independent variables
@@ -60,6 +64,8 @@ permitted. For example:
   Most                       "hkick"        "bl_hkick"       
   Most                       "vkick"        "bl_vkick"        
 
+###section Type, Alias and Descrip Attributes
+
 There are three string labels associated with any element:
   type    = "<String>"
   alias   = "<String>"
@@ -75,6 +81,8 @@ control. Also these labels can be used with pattern matching when selecting elem
 Example:
   Q00W: Quad, type = "My Type", alias = Who_knows, &
                                   descrip = "Only the shadow knows"
+
+###section Group, Overlay, and Ramper Element Syntax
 
 The syntax for specifying "group" , "overlay" , or
 "ramper"  elements
@@ -257,6 +265,8 @@ old syntax
 is equivalent, in the present syntax, to:
   gr1: group = {sq[k0]:3.7, sq2[tilt]}, var = {command}, command = 2  
 
+###section [Energy and Wavelength Attributes]Energy and Wavelength Attributes: E_tot, P0C, and  Ref_Wavelength
+
 The attributes that define the reference energy and momentum at an element are:
   e_tot  = <Real>  ! Total energy in eV.
   p0c    = <Real>  ! Momentum in eV.
@@ -312,6 +322,8 @@ For "multipass" elements, the reference energy may be set by specifying one of "
 For photons, the reference wavelength, "ref_wavelength" is also a dependent attribute calculated
 from the reference energy.
 
+###section Orientation: Offset, Pitch, Tilt, and Roll Attributes
+
 By default, an element, like a quadrupole, is aligned in space coincident with the reference orbit
 running through it . A quadrupole can be displaced in space using the
 quadrupole's ""orientational"" attributes. For a quadrupole, the orientational attributes only
@@ -353,6 +365,8 @@ into this list are:
   overlay
   ramper
 
+###subsection Global Random Misalignment of Elements
+
 It is often convenient to randomly misalign sets of elements. This can be done using the "ran"
 and "ran_gauss" functions . For example:
   quadrupole::bnd10:bnd20[y_offset] = 1.4e-6*ran_gauss(5)
@@ -364,6 +378,8 @@ of random numbers are generated unless "parameter[ran_seed]" is set to a non-zer
 lattice file before "ran" or "ran_gauss" is used. To save a particular set of generated 
 random values, write out the lattice file (the "write bmad" command can be used if running Tao)
 after it has been read in.
+
+###subsection Straight Line Element Orientation
 
 The straight line elements have the following orientational attributes:
   x_offset = <Real>
@@ -413,6 +429,8 @@ element. The default tilt is \pi/(2(n+1)) where n is the order of the element:
 Note that "hkick" and "vkick" attributes are not affected by "tilt" except for "kicker"
 and "elseparator" elements.
 
+###subsection Bend Element Orientation
+
   \includegraphicsroll.pdf
 Geometry of a Bend. Like straight line elements, offsets and pitches are calculated with respect to
 the coordinates at the center of the bend. The exception is the "roll" attribute which is a
@@ -449,6 +467,8 @@ Important! Do not use "ref_tilt" when doing misalignment studies for a machine. 
 a dipole by setting "ref_tilt" will affect the positions of all downstream elements! Rather, use the
 "roll" parameter.
 
+###subsection Photon Reflecting Element Orientation
+
   \includegraphicsreflect-orient.pdf
 Geometry of a photon reflecting element orientation.  The reference coordinates used for defining
 the orientational attribute is the entrance reference coordinates.  
@@ -472,6 +492,8 @@ Frequently, it is desired to orient reflecting elements with respect to the elem
 can be done using a "girder" element  which supports the reflecting element and
 with the "girder"'s "origin_ele_ref_pt" attribute set to "center".
 
+###subsection Reference Orbit Manipulator Element Orientation
+
 The "fork", "photon_fork", "floor_shift", and "patch" elements use the following
 attributes to orient their exit edge with respect to their entrance edge:
   x_offset = <Real>
@@ -487,6 +509,8 @@ The placement of the exit edge for these elements defines the reference orbit.  
 corresponding attributes for other elements, the orientational attributes here directly control the
 reference orbit.
 
+###subsection Fiducial Element Orientation
+
 The "fiducial" element  uses the 
 following attributes to define its position:
   origin_ele        = <Name>     ! Reference element.
@@ -498,6 +522,8 @@ following attributes to define its position:
   dphi_origin       = <Real>     ! orientation angle offset.
   dpsi_origin       = <Real>     ! orientation angle offset.
 See Section~ for more details.
+
+###subsection Girder Orientation
 
 A "girder"  element uses the same attributes as a "fiducial" element
  to orient the reference girder position. In addition, the following attributes
@@ -528,6 +554,8 @@ only these elements have a "roll" attribute.
 If an element is not supported by a "girder", the values of the "*_tot" attributes will be the
 same value as the values of the corresponding non "*_tot" attributes.
 
+###section Hkick, Vkick, and Kick Attributes
+
 The kick attributes that an element may have are:
   kick,  bl_kick  = <Real>  ! Used only with a Hkicker or Vkicker
   hkick, bl_hkick = <Real>
@@ -543,6 +571,8 @@ lattice file .
 
 For an "elseparator" element, the "hkick" and "vkick" are appropriate for a positively
 charged particle. The kick for a negatively charged particle is opposite this.
+
+###section Aperture and Limit Attributes
 
   \includegraphicsapertures.pdf
   Apertures for ecollimator and rcollimator elements. 
@@ -624,6 +654,8 @@ Examples:
   q1[y_limit] = 0.03  ! equivalent to the proceeding 2 lines.  
   q1[aperture_at] = both_ends
 
+###subsection Apertures and Element Offsets
+
 Normally, whether a particle hits an aperture or not is evaluated independent of any element offsets
 . This is equivalent to the situation where a beam pipe containing an aperture is
 independent of the placement of the physical element the beam pipe passes through. That is, the beam
@@ -645,6 +677,8 @@ will be used in the calculation.
 
 Example:
   q1: quad, l = 0.6, x1_limit = 0.045, offset_moves_aperture = T
+
+###subsection Aperture Placement
 
 By default, for most elements, the aperture is evaluated at the exit face of the element. This can
 be changed by setting the "aperture_at" attribute.  Possible settings for "aperture_at" are:
@@ -697,12 +731,16 @@ Examples:
   q2: quad, aperture_type = elliptical, aperture_at = continuous
   q1: quad, l = 0.6, x1_limit = 0.045, offset_moves_aperture = T
 
+###subsection Apertures and X-Ray Generation
+
 With X-ray simulation apertures can be used by Bmad to limit the directions in which photons are
 generated. This can greatly decrease simulation times. For example, a photon passing through a
 "diffraction_plate" element will diffract in an arbitrary direction. If a \em downstream
 element has an aperture set, Bmad can restrict the velocity directions so that the photons will
 fill the downstream aperture and the amount of time wasted tracking photons that ultimately would be
 collimated is minimal.
+
+###section X-Rays Crystal \& Compound Materials
 
 For basic crystallographic and X-ray matter interaction cross-sections, Bmad uses the
 XRAYLIB\citeb:xraylib library. Crystal structure parameters in XRAYLIB are mainly from
@@ -823,6 +861,8 @@ Surface curvature geometry. The element reference frame used to describe surface
 z axis pointing towards the interior of the element, and the x axis in the plane defined by
 the entrance and exit reference orbit.
 
+###section X-Ray Reflectivity Tables
+
 Reflectivity tables are used to define reflectivity probabilities as functions of incidence angle and
 photon energy for "crystal" and "mirror" elements.
 
@@ -853,6 +893,8 @@ one for "sigma" and the other for "pi".
 
 For "crystal" elements, angles are always with respect to the Bragg angle for the energy where
 the Bragg angle is calculated without any refraction corrections.
+
+###section Surface Properties for X-Ray elements
 
 The following X-ray elements have a surface which X-rays impinge upon:
   crystal              
@@ -933,6 +975,8 @@ Example:
   c: crystal, crystal_type =  "Si(553)", b_param = -1, curvature = {x0y2 = 1 / (2 * rs), 
                       x0y4 = 1 / (8 * rs^3), x2y0 = 1 / (2 * rt), x4y0 = 1 / (8 * rt^3)}
   c[curvature%x0y2] = 1.01 * c[curvature%x0y2]  ! Put in an error
+
+###subsection Displacement, H_Misalign, and Segmented Surface Grids
 
 A surface can be broken up into a grid of rectangles. This is useful, for example, in simulating
 crystal surface roughness. The case of the "pixel" grid for a "detector" element is discussed
@@ -1042,6 +1086,8 @@ then these z values are adjusted so that
        least squares sense from the unsegmented surface.
 Note: The "pt" component is not used here.
 
+###section Walls: Vacuum Chamber, Capillary and Mask
+
 The "wall" attribute for an element is used to define:
   vacuum chamber wall
   capillary element  inside wall
@@ -1054,6 +1100,8 @@ The topics of the following subsections are:
        Capillary wall.
        Vacuum chamber wall.
        Diffraction_plate and mask element geometries.
+
+###subsection Wall Syntax
 
 The syntax of the "wall" attribute is:
   wall = {
@@ -1093,13 +1141,13 @@ of the cross-section.  Example:
 In this example an element called "this_cap" is a "capillary"
 whose wall is defined by two cross-sections.
 
-------------------
-
   \includegraphics[width=6in]chamber-wall.pdf
 A) The inside wall of a capillary or the vacuum chamber wall of a non-capillary element is defined
 by a number of cross-sectional slices.  B) Each cross-section is made up of a number of
 vertices. The segments between the vertices can be either a line segment, the arc of a circle, or a
 section of an ellipse.
+
+###subsection Wall Sections
 
 The wall is defined by a number of cross-sectional slices. For \figf:chamber.wallA shows the
 geometry for "capillary" or vacuum chamber walls.  Each cross-section is defined by a
@@ -1187,6 +1235,8 @@ x = 1 and 5 and y = -6 and 6
 Notice that while r0 is not needed in the first section for positioning of the vertices, it is
 needed in the first section to make \Eq0tt2p true.
 
+###subsection Interpolation Between Sections
+
   \includegraphics[width=4in]concave-capillary.pdf
 Example where convex cross-sections do not produce a convex volume.  Cross-sections (A) and (C) are
 ellipses with a 5 to 1 aspect ratio.  Half way in between, linear interpolation produces a convex
@@ -1228,6 +1278,8 @@ To refer to a cross-section parameters after an element has been defined, the fo
 used:
   ele_name[wall%section(n)%v(j)%x]   ! x value of j^th vertex of n^th cross-section
 
+###subsection Capillary Wall
+
 For a "capillary", "s" must be zero for the first cross-section and the length of the
 capillary is given by the value of "s" of the last cross-section.
 
@@ -1236,6 +1288,8 @@ between the cross-sections is convex. The volume will be convex if each cross-se
 s) at any given s is convex. Note that it is \em not sufficient for r_c(\theta, s) to be
 convex at the specified cross-sections as shown in \figf:concave.capillary. Also note that it is
 perfectly fine for the total capillary volume to not be convex.
+
+###subsection Vacuum Chamber Wall
 
 The vacuum chamber wall is independent of the element apertures . Unless a program
 is specifically constructed, the presence of a vacuum chamber wall will not affect particle
@@ -1282,8 +1336,6 @@ confusion as to what coordinate system a wall section belongs to, "patch" elemen
 allowed to define a wall. The wall through a patch is determined by the closest wall sections of
 neighboring elements.
 
--------------------
-
   \includegraphics[width=6in]crotch.pdf
 A) Crotch geometry: Two pipes labeled "leg1" and "leg2" merge into a single pipe called the
 "trunk" pipe. Five wall sections are used to define the crotch geometry (solid lines). Dashed
@@ -1291,8 +1343,6 @@ lines represent sections not involved in defining the crotch. For purposes of il
 three trunk sections are displaced longitudinally but in reality must have the same longitudinal
 coordinate.  B) Example layout of the trunk1, trunk2 and trunk wall sections. O_1, O_2 and O
 are the x_0, y_0 origins of the sections.
-
--------------------
 
 Each section has a "type" attribute. This attribute is not used for "capillary" elements. For
 a vacuum chamber wall, the "type" attribute is used to describe a "crotch" geometry where two
@@ -1330,6 +1380,8 @@ section. Similarly for the region between "leg2" and "trunk2" sections. Away fro
 regions interpolation is done as outlined in. However, these two regions
 need a different interpolation scheme since, "leg1" and "trunk1", as well as "leg2" and
 "trunk2" sections do not have to be parallel to each other.
+
+###subsection Mask Wall For Diffraction Plate and Mask Elements
 
   \includegraphics[width=6in]diffraction-plate.pdf
 A) The surface of a "diffraction_plate" or "mask" element is divided into "clear" (white)
@@ -1418,6 +1470,8 @@ opaque section s_5 does not affect clear section s_1 even though s_5 (completely
 s_1. This shows that the ordering of the clear sections is important but the ordering of the
 opaque sections associated with a given clear section is not important.
 
+###section Length Attributes
+
 The length attributes are
   l           = <Real>  ! 
   l_chord     = <Real>  ! Chord length of a bend. Dependent attribute.
@@ -1444,6 +1498,8 @@ of the last wall cross-section .
 The length of a crystal is zero for Bragg diffraction and is a dependent attribute dependent upon
 the crystal thickness for Laue diffraction. See for more details.
 
+###section Is_on Attribute
+
 The "is_on" attribute
   is_on = <Logical>
 is used to turn an element off. Turning
@@ -1467,6 +1523,8 @@ The following elements cannot be "turned off:"
   group
 
 A related parameter is "multipoles_on" .
+
+###section Multipole Attributes: Magnetic and Electric
 
 Multipole formulas for are given in and. Note that the
 setting of "field_master"  will determine if multipoles are interpreted as
@@ -1538,6 +1596,8 @@ affected. The exception is "multipole" and "ab_multipole" elements do not have t
 "multipoles_on" attribute. Rather they can be toggles on/off using the "is_on"
 attribute.
 
+###section Field Maps
+
 There are two general ways to specify complicated electro-magnetic field configurations
 that cannot be simply modeled using multipoles. One way is to use "custom"
 fields. Specifying a custom field is done by using custom code and linking this code with
@@ -1592,6 +1652,8 @@ field map defined for an element, etc., "component_name" is the name of the comp
 and "value" is the value to set to. Example:
   qq, quadrupole, grid_field = {field_scale = 0.5, ...}, ...
   qq[grid_field(1)%field_scale] = 0.7  ! Change field_scale value
+
+###subsection Field Map Common attributes
 
   \includegraphicsbend-grid-coords.pdf
 When used with a bend element, by default, field map coordinates will be Cartesian and not curved
@@ -1689,6 +1751,8 @@ with "L" being the length of the element.
 Example:
   rfc0: rfcavity, gen_grad_map = {r0 = (-0.23, ...), ...}, ...
 
+###subsection Cartesian_Map Field Map
+
 The "cartesian_map" is used to describe DC fields. Each term of a "cartesian_map" is a solution
 of Laplace's equation in cartesian coordinates.  as described in Sec.~.
 
@@ -1732,6 +1796,8 @@ The transverse terms in "r0" must be zero.
 *
 Since PTC evaluates the vector potential , and since "k_z" appears in the
 denominator of some terms, "k_z" must be non-negative for all terms.
+
+###subsection Cylindrical_Map Field Map
 
 The "cylindrical_map" is used to describe both DC and AC fields. Each term of a
 "cylindrical_map" is a solution of Laplace's equation in cylindrical coordinates.  as described
@@ -1825,6 +1891,8 @@ The element containing the map cannot be an "sbend" or "rbend".
 
 *
 May not be combined with other field map types.
+
+###subsection Grid_Field Field Map
 
 A "grid_field" is grid of field points specified using the syntax:
   grid_field = { 
@@ -1983,6 +2051,8 @@ Grid fields may stored in "HDF5" binary format which may then be called using an
 
 See Sec.~ for the syntax of setting "grid_field" components.
 
+###subsection Gen_Grad_Map
+
 The "gen_grad_map" characterizes DC magnetic or electric fields using "generalized gradients"
 (GG) as described by Venturini and Dragt\citeb:gen.grad. Formulas for the GG are given in
 \Srefs:gen.grad.phys.
@@ -2056,6 +2126,8 @@ In a bend with "curved_ref_frame" = False, The setting of "ele_anchor_pt" must b
 The "integrator_order" for PTC dependent tracking can be either set to 4 or 6 with 4 being the
 default"s:ptc.integ".
 
+###section RF Couplers
+
 For "lcavity" and "rfcavity" elements, the attributes that characterize the dipole transverse
 kick due to a coupler port are:
   coupler_at       = <Switch> ! What end the coupler is at
@@ -2080,6 +2152,8 @@ The energy kick is needed to keep things symplectic.
 Example:
   rf1: lcav, l = 4.5, gradient = 1.2e6, coupler_at = both_ends,
                                                   coupler_strength = 0.037
+
+###section Field Extending Beyond Element Boundary
 
 The "field_overlaps" element attribute can be used to indicate that the electric or
 magnetic fields of one element overlap another element. The syntax is:
@@ -2106,6 +2180,8 @@ elements must be the "super_lord" elements and never the slaved elements.
 
 The field, when "field_calc"  is set to "bmad_standard", never extends beyond
 the element boundary and so a "bmad_standard" field will never overlap another element.
+
+###section Automatic Phase and Amplitude Scaling of RF Fields
 
 Elements that have accelerating fields are:
   e_gun        
@@ -2175,6 +2251,8 @@ are linked).
 "field_autoscale" and "phi0_autoscale" are not needed and therefore ignored when
 "bmad_standard" tracking is done.
 
+###section Wakefields
+
 Wakefield modeling is discussed in Chapter~. The syntax for specifying
 short-range wakefields for an element is given in \Srefs:sr.wake.syntax. The syntax for specifying
 long-range wakefields is given in \Srefs:lr.wake.syntax.
@@ -2183,6 +2261,8 @@ Bmad has two modes for tracking particles. One mode tracks individual particles 
 other mode tracks bunches of particles. Which mode is used for a given program is decided by the
 program. wakefields are ignored when tracking individual particles and only used when tracking
 bunches.
+
+###subsection Short-Range Wakes
 
 The short-range wakes for a lattice element are specified via a set of "pseudo" modes.  Equations
 for short-range wakefields are given in \Srefs:sr.wake.eq.  The "sr_wake" attribute is used to set
@@ -2268,6 +2348,8 @@ Note: In a beam chamber with circular symmetry, the linear terms in the "longitu
 zero and the transverse wake has no terms independent of the transverse offsets nor terms that
 depend upon the trailing particle offset.
 
+###subsection Short-Range Longitudinal Wake With a Wake table
+
 The "z_long" substructure of "sr_wake"  is an alternative to the
 "longitudinal" substructure. With the "z_long" substructure, the wake is specified using a
 table of equally spaced points in z-position or as a function of time. The syntax for "z_long"
@@ -2304,6 +2386,8 @@ otherwise.
 
 The "z_scale" and "amp_scale" parameters of the "sr_wake" structure 
 are used with "z_long".
+
+###subsection Short-Range Wakes --- Old Format
 
 There is an old, deprecated, format for specifying short-range wakes where the wake data is
 contained in a separate file whose name is given by the "lr_wake_file" attribute.
@@ -2347,6 +2431,8 @@ For "longitudinal" modes: If the "transverse_dependence" is "none" (the default)
 "polarization" must also be "none" (other combinations do not make sense). If the
 "transverse_dependence" is \emphnot "none" for a "longitudinal" mode, the
 "polarization" must be set to "x_axis" or "y_axis".
+
+###subsection Long-Range Wakes
 
 The "lr_wake" attribute is used to set the long-range wakefield parameters for a lattice element.
 Equations for long-range wakes is given in \Srefs:lr.wake.eq.
@@ -2421,6 +2507,8 @@ frequency set by Bmad. "Freq" will only be different from "freq_in" if "freq_spr
 nonzero. Example:
   cav9[lr_wake%mode(2)%freq_in] = 1.1 * cav9[lr_wake%mode(2)%freq_in] ! Raise frequency by 10%
 
+###subsection Long-Range Wakes -- Old Format
+
 There is an old, deprecated, format for specifying long-range wakes where the wake data is
 contained in a separate file whose name is given by the "lr_wake_file" element attribute.
 Example:
@@ -2447,6 +2535,8 @@ Two deprecated element attributes that affect the long-range wake are "lr_freq_s
 
 Notice that with the old format it is not possible to specify the phase offset \phi.
 
+###section Fringe Fields
+
 Some lattice elements can have fringe fields at the element edges. Whether Bmad tries to model the
 fringe fields using the models described below first depends upon what kind of tracking is
 done. Fringe effects are \em not applied when an element's "tracking_method" is set to:
@@ -2456,6 +2546,8 @@ Additionally, no fringe effects will be used if the "tracking_method" is "runge_
 "time_runge_kutta", and the element's "field_calc"  is \em not
 "bmad_standard". This is done since, for non-"bmad_standard" field calculations, it is assumed
 that the field profile includes the fringe regions.
+
+###subsection Turning On/Off Fringe Effects
 
 For elements that have a fringe, whether fringe fields are ignored or not is determined by the
 setting of the "fringe_at" element parameter. The possible settings are
@@ -2473,6 +2565,8 @@ determines how the spin tracking is handled through a fringe region. Example:
 Here, there is no fringe effect at the entrance of the element and the fringe at the exit end of the
 element will affect the spin. The default setting of "spin_fringe_on" is "True". The
 "spin_fringe_on" attribute is useful for examining how much fringe fields affect spin precession.
+
+###subsection Fringe Types
 
 Bmad and PTC have several fringe field models for static magnetic fields. Which fringe model is
 used is set by two element attributes: " fringe_type" and "ptc_fringe_geometry" with
@@ -2600,6 +2694,8 @@ Bmad side and "bendfringe" on the PTC side is:
   x_invariant             True       
   multipole_symmetry      False       
   
+###section Instrumental Measurement Attributes
+
 "instrument", "monitor", "detector", and "marker" elements have special attributes to
 describe errors associated with orbit, betatron phase, dispersion and coupling measurements. These
 attributes are:                 

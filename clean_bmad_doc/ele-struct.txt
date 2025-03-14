@@ -1,4 +1,4 @@
-chapter The ele_struct
+###chapter The ele_struct
 
 This chapter describes the "ele_struct" which is the structure that
 holds all the information about an individual lattice element:
@@ -48,8 +48,6 @@ type ele_struct
   type (wake_struct), pointer :: wake    ! Wakes
     ele_struct definition continued on next figure...
 The complete structure is shown in this and the following figure.
-
---------------------------------------------------------------------------
 
 \footnotesize
     ... ele_struct definition continued from previous figure.
@@ -111,7 +109,7 @@ The complete structure is shown in this and the following figure.
 end type
 The complete structure is shown in this and the preceding figure.
 
---------------------------------------------------------------------------
+###section Initialization and Pointers
 
 The "ele_struct" has a number of components and subcomponents 
 that are pointers and this raises a deallocation issue.
@@ -150,7 +148,7 @@ same memory locations.
 Note: The assignment "ele1 = ele2" will not modify "ele1%ix_ele" or "ele1%ix_branch". If
 "ele1" is associated with a lattice then "ele1%lat" will also be unaffected.
 
---------------------------------------------------------------------------
+###section Element Attribute Bookkeeping
 
 When a value of an attribute in an element changes, the values of other attributes may need to be
 changed . Furthermore, in a lattice, changes to one element may necessitate changes
@@ -164,7 +162,7 @@ routines for making sure the bookkeeping overhead is keep to a minimum. However,
 bookkeeping is only done if explicitly enabled in a program. See for more
 details.
 
---------------------------------------------------------------------------
+###section String Components
 
 The "%name", "%type", "%alias", and "%descrip" components of the "ele_struct" all
 have a direct correspondence with the "name", "type", "alias", and "descrip" element
@@ -179,7 +177,7 @@ names are modified, that the nametable is updated appropriately. This is done by
 \Hyperrefr:create.lat.ele.nametablecreate_lat_ele_nametable after any element name
 modifications.
 
---------------------------------------------------------------------------
+###section Element Key
 
 The "%key" integer component gives the class of element
 ("quadrupole", "rfcavity", etc.). In general, to get the
@@ -200,7 +198,7 @@ component will be set to "sbend$" or "rbend$" whatever is appropriate.
 The "%sub_key" component does not affect any calculations and is only used in the routines that
 recreate lattice files from a "lat_struct" .
 
---------------------------------------------------------------------------
+###section The %value(:) array
 
 Most of the real valued attributes of an element are held in the "%value(:)" array. For example,
 the value of the "k1" attribute for a quadrupole element is stored in "%value(k1$)" where
@@ -257,7 +255,7 @@ If nothing has been changed, the "attribute_bookkeeper" routine knows not to was
 recalculating dependent values. Essentially what this means is that the "%old_value(:)" array
 should not be modified outside of "attribute_bookkeeper".
 
---------------------------------------------------------------------------
+###section Connection with the Lat_Struct
 
 If an element is part of a "lat_struct" , the
 "%ix_ele" and "%ix_branch" components of the "ele_struct"
@@ -284,7 +282,7 @@ instance. A slice is an "ele_struct" instance that represents some sub-section o
 element. Element slices are useful when tracking particles only part way through an element
 .
 
---------------------------------------------------------------------------
+###section Limits
 
 The aperture limits  in the "ele_struct" are:
   %value(x1_limit$)
@@ -296,14 +294,14 @@ and "%offset_moves_aperture" components are used in tracking to determine
 if a particle has hit the vacuum chamber wall. See Section~
 for more details.
 
---------------------------------------------------------------------------
+###section Twiss Parameters, etc.
 
 The components "%a", "%b", "%z", "%x", "%y", "%c_mat", 
 "%gamma_c", "%mode_flip", and "mode3" 
 hold information on the Twiss parameters, dispersion, and coupling
 at the downstream end of the element. See \crefc:normal.modes for more details.
 
---------------------------------------------------------------------------
+###section Element Lords and Element Slaves
 
 In Bmad, elements in a lattice can control other elements.
 The components that determine this control are:
@@ -318,7 +316,7 @@ The components that determine this control are:
   %component_name
 This is explained fully in the chapter on the "lat_struct" .
 
---------------------------------------------------------------------------
+###section Group and Overlay Controller Elements
 
 "Group" and "overlay" elements use the "%control_var(:)" array for storing information about
 the control variables. Each element in the array represents a single variable. "%control_var(:)"
@@ -332,7 +330,7 @@ The "%old_value" component is only used for "group" elements.
 
 See Section~ for an example of setting up a controller element within a program.
 
---------------------------------------------------------------------------
+###section Coordinates, Offsets, etc.
 
 The "upstream" and "downstream" ends of an element are, by definition,
 where the physical ends of the element would be if there were no
@@ -392,7 +390,7 @@ different bunch reference particles will be different. Another example happens w
 tracked through multiple turns. In this case the reference time at a given element will depend upon
 the turn number.
 
---------------------------------------------------------------------------
+###section Transfer Maps: Linear and Non-linear (Taylor)
 
 The routine \Hyperrefr:make.mat6make_mat6 computes the linear 
 transfer matrix (Jacobian) along with the zeroth order transfer vector. 
@@ -447,7 +445,7 @@ made, the reference point is not needed in subsequent
 calculations. However, the Taylor map itself will depend upon what
 reference point is chosen .
 
---------------------------------------------------------------------------
+###section Reference Energy and Time
 
 The reference energy and reference time are computed around a
 reference orbit which is different from the reference orbit used for
@@ -462,7 +460,7 @@ constructed to be continuous. This is done for consistancey sake. For
 example, to ensure that when a marker is superimposed on top of a
 wiggler the reference orbit, and hence the reference time, is not altered.
 
---------------------------------------------------------------------------
+###section EM Fields
 
 "%em_field" component holds information on 
 the electric and magnetic fields of an element 
@@ -490,7 +488,7 @@ Each mode has components
     type (em_field_grid_struct), pointer :: grid => null()
   end type
 
---------------------------------------------------------------------------
+###section Wakes
 
 The "ele%wake" component holds information on the wakes associated with an element.  Since
 "ele%wake" is a pointer, its association status must be tested before any of its sub--components
@@ -555,7 +553,7 @@ file. \Hyperrefr:bmad.parserbmad_parser will set "%freq" to "%freq_in" except wh
 explained in. "%polarized" is a logical that indicates whether the mode has a
 polarization angle. If so, then "%angle" is the polarization angle.
 
---------------------------------------------------------------------------
+###section  Wiggler Types
 
 The "%sub_key" component of the "ele_struct" is used to distinguish
 between "map type" and "periodic type" wigglers :
@@ -581,7 +579,7 @@ can be used for tracking purposes, etc. The setting for this
   ele%wig_term(1)%phi_z  = (ele%value(l_pole$) - ele%value(l$)) / 2
   ele%wig_term(1)%type   = hyper_y$
 
---------------------------------------------------------------------------
+###section  Multipoles
 
 The multipole components of an element (See) are
 stored in the pointers "%a_pole(:)" and "%b_pole(:)". If
@@ -594,7 +592,7 @@ stored in the pointers "%a_pole(:)" and "%b_pole(:)". If
 A list of Bmad routines for manipulating multipoles can be found in
 .
 
---------------------------------------------------------------------------
+###section Tracking Methods
 
 A number of "ele_struct" components control tracking and transfer
 map calculations.  These are:
@@ -610,7 +608,7 @@ map calculations.  These are:
   %offset_moves_apaerture
 See Chapter~ for more details.
 
---------------------------------------------------------------------------
+###section Custom and General Use Attributes
 
 There are four components of an "ele_struct" that are guaranteed to never be used by any Bmad
 routine and so are available for use by someone writing a program. These components are:
@@ -653,7 +651,7 @@ situation where a "super_slave" element has multiple "super_lord" elements and t
 attributes from the different "super_lord" elements have to be combined. Proper handling of this
 situation is left to any custom code that a program implements to handle custom attributes.
 
---------------------------------------------------------------------------
+###section Bmad Reserved Variables
 
 A number of "ele_struct" components are reserved for Bmad internal use only. These are:
   %ixx

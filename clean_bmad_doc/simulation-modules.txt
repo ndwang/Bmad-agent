@@ -1,12 +1,16 @@
-chapter Simulation Modules
+###chapter Simulation Modules
 
 In the Bmad "ecosystem", various modules have been developed to
 simulate machine hardware. This chapter provides documentation.
+
+###section Instrumental Measurements
 
 Bmad has the ability to simulate instrumental measurement errors
 for orbit, dispersion, betatron phase, and coupling measurements.
 The appropriate attributes are listed in and
 the conversion formulas are outlined below.
+
+###subsection Orbit Measurement
 
 For orbits, the relationship between measured position (x, y)_\textmeas and true position (x,
 y)_true is
@@ -48,6 +52,8 @@ can then be put in the calibration quantities. This represents a correction in s
 errors in the monitors. Further simulations of orbit measurements will show how well the actual orbit
 can be deduced from the measured orbit.
 
+###subsection Dispersion Measurement
+
 A dispersion measurement is considered to be the result of measuring the orbit at two different
 energies. The measured values are then
     \eta_x  \eta_y
@@ -65,6 +71,8 @@ energies. The measured values are then
   \right)
   \right]
 The factor of \sqrt2 comes from the fact that there are two measurements. M_m is given in \Eqm1dg.
+
+###subsection Coupling Measurement
 
 The coupling measurement is considered to be the result of measuring
 the beam at a detector over N_s turns while the beam oscillates at a
@@ -161,6 +169,8 @@ The q_x1b, q_y1b, q_x2b and q_y2b are defined by using
 relationship between K and q is then
   K_11b= \fracq_b1y \, q_b1x + q_b2y \, q_b2xq_b1y^2 + q_b2y^2 \CRNO
   K_12b= \fracq_b1y \, q_b2x - q_b2y \, q_b1xq_b1y^2 + q_b2y^2 
+
+###subsection Phase Measurement
 
 Like the coupling measurement, the betatron phase measurement is
 considered to be the result of measuring the beam at a detector over

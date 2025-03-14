@@ -1,4 +1,6 @@
-chapter Parameter Structures
+###chapter Parameter Structures
+
+###section What is a Structure?
 
 A "structure" is a collection of parameters.  Bmad has various structures which can be used for
 various tasks. For example, the "beam_init_struct" structure  is used
@@ -39,6 +41,8 @@ should be documented in the program manual.
 
 Note: Thought must be given to setting "bmad_com" and other global parameters in a lattice file
  since that will affect every program that uses the lattice.
+
+###section Bmad_Common_Struct
 
 The "bmad_common_struct" structure contains a set of global parameters. There is only one global
 instance  of this structure and this instance has the name
@@ -288,6 +292,8 @@ the equilibrium settling time.
      "taylor_order" 
 Cutoff Taylor order of maps produced by "sym_lie_ptc".
 
+###section PTC_Common_Struct
+
 The "ptc_common_struct" structure contains a set of global parameters that effect tracking when
 PTC is involved. There is only one global instance  of this structure and
 this instance has the name "ptc_com". The components of this structure along with the default
@@ -321,6 +327,8 @@ correspond to a Bmad patch is given a reference time offset equal to the Bmad re
 through the patch. This is generally what is wanted but for a PTC expert who knows what they are
 doing and really wants no time offset, "translate_patch_drift_time" can be set False.
 
+###section Bmad_Com
+
 The parameters of the "bmad_com" instance of the "bmad_common_struct" structure
  can be set in the lattice file using the syntax
   bmad_com[parm-name] = value
@@ -336,6 +344,8 @@ setting of "bmad_com" or "ptc_com" components is "sticky" and persists even when
 lattice files are read in. There are two exceptions: A program is always free to override settings
 of these parameters.  Additionally, a second lattice file can also override the setting made in a
 prior lattice file.
+
+###section Space_Charge_Common_Struct
 
 The "space_charge_common_struct" structure holds parameters for space charge (including CSR
 ) calculations.\footnote
@@ -465,6 +475,8 @@ the CSR calculation. Bmad will ignore any "taylor" elements present in the latti
 print a warning that it is doing so. To suppress the warning, "print_taylor_warning" should be
 set to False.
 
+###section Opti_DE_Param_Struct
+
 The Differential Evolution ("DE") optimizer is used in nonlinear optimization problems. This
 optimizer is based upon the work of Storn and Price\citeb:de. There are a number of parameters
 that can be varied to vary how the optimizer works. These parameters are are contained in a
@@ -499,6 +511,8 @@ the average number of crossovers is
 "randomize_F" = True means that the F that is used for a given 
 generation  is randomly chosen to be within the range 
 [0, 2*F] with average F.
+
+###section Dynamic Aperture Simulations: Aperture_Param_Struct
 
 The "dynamic_aperture_struct" is used for dynamic aperture
 calculations. This structure has components:

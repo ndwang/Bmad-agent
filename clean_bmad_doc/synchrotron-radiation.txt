@@ -1,4 +1,6 @@
-chapter Synchrotron Radiation
+###chapter Synchrotron Radiation
+
+###section Radiation Damping and Excitation
 
 Emission of synchrotron radiation by a particle can be decomposed into two parts. The deterministic
 average energy emitted produces damping while the stochastic fluctuating part of the energy spectrum
@@ -57,6 +59,8 @@ by
   \Delta p_\perp = \sqrtk_v \aveg^3 L_p \,\, \xi
 where the \xi in \Eqdpkgl is independent of the \xi in \Eqdeekk and
  k_v = \frac13 \, \rc \, \hbar24 \, \sqrt3 \, m \, c \, \gamma_0^3
+
+###section Transport Map with Radiation Included
 
 Transport maps which include radiation effects can be constructed\citeb:ohmi. The first step is to
 calculate the reference orbit which is the closed orbit for lattices with a closed geometry and for
@@ -171,6 +175,8 @@ stochastic kick coefficient F_\mkf (\Eqfk000) is independent of the transverse c
 Other approximations involve the assumption of linearity of the guide fields and the ignoring of any
 resonance or wakefield effects. To the extent that these assumptions are violated, this will lead to
 a non-Gaussian beam shape.
+
+###section Synchrotron Radiation Integrals
 
 The synchrotron radiation integrals can be used to compute emittances, the energy spread,
 etc. However, using the 6D damped and stochastic transport matrices  has

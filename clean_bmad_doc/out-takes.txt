@@ -1,4 +1,3 @@
-----------------------------------------------------------------
 Form coordinates.tex
 
   \includegraphics[width=5in]patch-coords.pdf
@@ -47,7 +46,6 @@ The "floor_shift"  element does not have a
 reference orbit associated with it in between its entrance and exit
 coordinates.
 
-----------------------------------------------------------------
 From patch section in elements.tex
 
 The order of transformations for a "patch" is:

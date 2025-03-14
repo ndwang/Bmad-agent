@@ -1,6 +1,6 @@
-chapter Normal Modes: Twiss Parameters, Coupling, Emittances, Etc.
+###chapter Normal Modes: Twiss Parameters, Coupling, Emittances, Etc.
 
------------------------------------------------------------------------------
+###section Components in the Ele_struct
 
 The "ele_struct"  has a number of components that hold information on the
 Twiss parameters, dispersion, and coupling at the exit end of the element. The Twiss parameters of
@@ -73,7 +73,7 @@ put in the "%mode3" component of the "ele_struct" which is of type "mode3_struct
 The 6-dimensional "mode3%v(6,6)" component is the analog of the 4-dimensional
 V matrix appearing in \Eqtvuv.
 
------------------------------------------------------------------------------
+###section Tune and Twiss Parameter Calculations
 
 A calculation of the Twiss parameters starts with the Twiss parameters at the beginning of the
 lattice. For linear machines, these Twiss parameters are generally set in the input lattice file
@@ -109,7 +109,7 @@ Twiss parameters at any given longitudinal location. Alternatively, to propagate
 parameters partially through a given element use the routine
 \Hyperrefr:twiss.and.track.intra.eletwiss_and_track_intra_ele.
 
------------------------------------------------------------------------------
+###section Tune Setting
 
 The routine \Hyperrefr:set.tuneset_tune can be used
 to set the transverse tunes:
@@ -122,7 +122,7 @@ To set the longitudinal (synchrotron) tune, the routine \Hyperrefr:set.z.tuneset
 used.  \Hyperrefr:set.z.tuneset_z_tune works by varying rf cavity voltages until the desired
 tune is achieved.
 
------------------------------------------------------------------------------
+###section Emittances \& Radiation Integrals
 
 See Section~ for details on the radiation integral formulas.
 
@@ -162,7 +162,7 @@ integrals on an element-by-element basis.
     type (rad_int1_struct), allocatable :: ele(:) ! Array is indexed from 0
   end type
 
------------------------------------------------------------------------------
+###section Chromaticity Calculation
 
 For a circular lattice, \Hyperrefr:chrom.calcchrom_calc calculates the chromaticity by
 calculating the tune change with change in beam energy.

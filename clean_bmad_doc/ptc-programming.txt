@@ -1,6 +1,4 @@
-chapter PTC/FPP Programming
-
-----------------------------------------------------------------------------
+###chapter PTC/FPP Programming
 
 The PTC/FPP library of \'Etienne Forest handles Taylor maps to any arbitrary order. this is also
 known as Truncated Power Series Algebra (TPSA). The core Differential Algebra (DA) package used by
@@ -25,7 +23,7 @@ via PTC. No exceptions.
 For information on using PTC within Bmad, see Chapter~.  For more information on
 PTC/FPP in general the PTC/FPP manual\citeb:ptc.
 
---------------------------------------------------------------------------
+###section Phase Space
 
 PTC uses different longitudinal phase space coordinates compared to Bmad.
 Bmad's phase space coordinates are 
@@ -44,7 +42,7 @@ that translate between the two. Actually there are a number of
 conversion routines that translate between Bmad and PTC
 structures. See for more details.
 
---------------------------------------------------------------------------
+###section PTC Initialization
 
 One important parameter in PTC is the order of the Taylor maps.  By default Bmad will set
 this to 3. The order can be set within a lattice file using the
@@ -57,7 +55,7 @@ wants to change the order in mid program.
 
 call init vs call init_all
 
---------------------------------------------------------------------------
+###section PTC Structures Compared to Bmad's
 
 Bmad uses a "lat_struct" structure to hold the information on a machine and a
 "lat_struct" has an array of "branch_struct"s (the "%branch(:)" component) with
@@ -92,13 +90,11 @@ through an element. Each "fibre" structure has a pointer to a "element" and an
 "branch_struct" roughly corresponds to the PTC "layout" and the "element_struct"
 roughly corresponds to the PTC "fibre", "element" and "elementp" structures.
 
---------------------------------------------------------------------------
-
   \includegraphicsptc-structures.pdf
 Simplified diagram showing the organization of the major PTC structures involved in
 defining a lattice contrasted with Bmad.
   
---------------------------------------------------------------------------
+###section Variable Initialization and Finalization
 
 PTC variables must be initialized and finalized. This is done with
 the"alloc()" and "kill()" routines. In addition, the "real_8_init"
@@ -108,7 +104,7 @@ routine can initialize a "real_8" array:
   call real_8_init (y8)
   call kill (y8)
 
---------------------------------------------------------------------------
+###section Correspondence Between Bmad Elements and PTC Fibres.
 
 When a PTC "layout" is created from a Bmad "lat_struct"
 instance using the routine
@@ -131,7 +127,7 @@ Remember: The attributes like reference energy, etc. for a Bmad
 element. For PTC the reference edge for a "fibre" is the entrance
 end.
 
---------------------------------------------------------------------------
+###section Taylor Maps
 
 FPP stores its "real_8" Taylor maps in such a way that it is not
 easy to access them directly to look at the particular terms. To
@@ -152,7 +148,7 @@ routines to convert between \'Etienne's
   tlr = ut                       ! Convert universal_taylor -> real_8
   ut = tlr                       ! Convert real_8 -> universal_taylor
 
---------------------------------------------------------------------------
+###section Patches
 
 There is a significant difference between how patches are treated in
 PTC and Bmad.  In PTC, a patch is just though of as a coordinate
@@ -167,7 +163,7 @@ etc. When translating a "patch" from Bmad to PTC, the "patch"
 is represented in PTC as a "marker" element with a patch at the
 exit end.
 
---------------------------------------------------------------------------
+###section Number of Integration Steps \& Integration Order
 
 "Drift like" elements in PTC will use, by default, only one
 integration step. Bmad uses the default when translating from Bmad
@@ -208,7 +204,7 @@ The default crossover limit points are
 The greater number for wigglers is a reflection of the fact that the wiggler field
 is not constant.
 
---------------------------------------------------------------------------
+###section Creating a PTC layout from a Bmad lattice
 
 For a programmer, it is sometimes useful to feed a Bmad lattice into PTC and then use PTC for all
 the calculations. As an example of how to do this, the following minimal program creates a PTC
@@ -223,7 +219,7 @@ the calculations. As an example of how to do this, the following minimal program
   call lat_to_ptc_layout (lat, .true.)
   als => lat%branch(0)%ptc%m_t_layout
 
---------------------------------------------------------------------------
+###section Internal_State
 
 The "internal_state" structure looks like:
 type internal_state

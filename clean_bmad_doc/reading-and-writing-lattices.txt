@@ -1,6 +1,6 @@
-chapter Reading and Writing Lattices
+###chapter Reading and Writing Lattices
 
-----------------------------------------------------------------------------
+###section Reading in Lattices
 
 There are two subroutines in Bmad to read in a Bmad standard lattice file:
 \Hyperrefr:bmad.parserbmad_parser and \Hyperrefr:bmad.parser2bmad_parser2. "bmad_parser"
@@ -27,7 +27,7 @@ like:
   call bmad_parser ('lattice_file', lat)       ! read in a lattice.
   call bmad_parser2 ('aperture_file', lat)     ! read in the aperture limits.
 
-----------------------------------------------------------------------------
+###section Digested Files
 
 Since parsing can be slow, once the "bmad_parser" routine has transferred the information from a
 lattice file into the "lat_struct" it will make what is called a digested file. A digested file
@@ -67,7 +67,7 @@ and then read the digested file in with the second program
 An alternative to writing a digested file is to write a lattice file
 using "write_bmad_lattice_file"
 
-----------------------------------------------------------------------------
+###section Writing Lattice files
 
 \Hyperrefr:write.bmad.lattice.filewrite_bmad_lattice_file To create a Bmad lattice file from a
 "lat_struct" instance, use the routine

@@ -1,4 +1,4 @@
-chapter Bmad Library Routine List
+###chapter Bmad Library Routine List
 
 Below are a list of Bmad and sim_utils routines sorted by their
 functionality.  Use the "getf" and "listf" 
@@ -60,7 +60,7 @@ solely meant for Bmad internal use.
   % Deprecated                                \refr:deprecated      
 \toffset
 
-------------------------------------------------------------------------
+###section Beam: Low Level Routines
 
 The following helper routines are generally not useful for general use.
 
@@ -86,7 +86,7 @@ Routine to track a bunch of particles through an element.
      track1_bunch_hom (bunch, ele, direction)  
 Routine to track a bunch of particles through an element.
 
-------------------------------------------------------------------------
+###section Beam: Tracking and Manipulation
 
 See for a discussion of using a collection of particles to simulate
 a bunch.
@@ -164,7 +164,7 @@ Routine to write a beam file.
      write_beam_floor_positions (file_name, beam, ele, new_file)  
 Routine to write a file of beam positions in global floor coordinates.
 
-------------------------------------------------------------------------
+###section Branch Handling Routines
 
 \index[routine]allocate_branch_array
      allocate_branch_array (lat, upper_bound)  
@@ -181,7 +181,7 @@ This is a plain transfer of information not using the overloaded equal.
 Routine to set branch2 = branch1. 
 This is a plain transfer of information not using the overloaded equal.
 
-------------------------------------------------------------------------
+###section Coherent Synchrotron Radiation (CSR)
 
 \index[routine]csr_bin_particles
      csr_bin_particles (ele, particle, csr, err_flag)  
@@ -195,13 +195,13 @@ Routine to cache intermediate values needed for the csr calculations.
      i_csr (kick1, i_bin, csr) result (i_this)  
 Routine to calculate the CSR kick integral.
 
-------------------------------------------------------------------------
+###section Collective Effects
 
 \index[routine]touschek_lifetime
      touschek_lifetime (mode, Tl, lat) 
 Routine to calculate the Touschek lifetime for a lat.
 
-------------------------------------------------------------------------
+###section Custom Routines
 
 \index[routine]apply_element_edge_kick_hook
      
@@ -279,7 +279,7 @@ Routine that can be customized for tracking through a wake.
      wall_hit_handler_custom (orb, ele, s)  
 This routine is called by the Runge-Kutta integrator odeint_bmad when a particle hits a wall.
 
-------------------------------------------------------------------------
+###section Electro-Magnetic Fields
 
 \index[routine]em_field_calc
      
@@ -294,7 +294,7 @@ Routine to calculate the E and B fields for an element.
                   make_matrix)  
 Custom routine for calculating fields.
 
-------------------------------------------------------------------------
+###section HDF Read/Write
 
 \index[routine]hdf5_write_attribute_string
      hdf5_write_attribute_string(root_id, attrib_name, string, error)  
@@ -419,7 +419,7 @@ Routine to read an hdf5 file that encodes an array of grid_field structures.
      hdf5_write_beam (file_name, bunches, append, error, lat)  
 Routine to write particle positions of a beam to an HDF5 binary file.
 
-------------------------------------------------------------------------
+###section Helper Routines: File, System, and IO
 
 \index[routine]append_subdirectory
      append_subdirectory (dir, sub_dir, dir_out, err)  
@@ -526,7 +526,7 @@ Routine to execute an operating system command from within the program.
      type_this_file (filename)  
 Routine to type out a file to the screen.
 
-------------------------------------------------------------------------
+###section Helper Routines: Math (Except Matrix)
 
 \index[routine]complex_error_function
      complex_error_function (wr, wi, zr, zi)  
@@ -587,7 +587,7 @@ Routine to evaluate a spline at a set of points.
 This routine is essentially ludcmp from Numerical Recipes with the added feature
 that an error flag is set instead of bombing the program when there is a problem.
 
-------------------------------------------------------------------------
+###section Helper Routines: Matrix
 
 \index[routine]mat_eigen
      mat_eigen (mat, eigen_val, eigen_vec, error, print_err)  
@@ -629,7 +629,7 @@ transfer matrix T0.
      mat_type (mat, nunit, header, num_form, lines, n_lines)  
      Routine to output matrices to the terminal or to a file
 
-------------------------------------------------------------------------
+###section Helper Routines: Miscellaneous
 
 \index[routine]date_and_time_stamp
      date_and_time_stamp (string, numeric_month, include_zone)  
@@ -678,7 +678,7 @@ optional real.
 Routine to return True or False depending upon the state of an 
 optional string.
 
-------------------------------------------------------------------------
+###section Helper Routines: String Manipulation
 
 \index[routine]all_pointer_to_string
      all_pointer_to_string (a_ptr, err) result (str)  
@@ -847,13 +847,13 @@ Routine to convert a string to upper case.
      upcase_string (string)  
 Routine to convert a string to uppercase:
 
-------------------------------------------------------------------------
+###section Helper Routines: Switch to Name
 
 \index[routine]coord_state_name
      coord_state_name (coord_state) result (state_str)  
 Routine to return the string representation of a coord%state state.
 
-------------------------------------------------------------------------
+###section Inter-Beam Scattering (IBS)
 
 \index[routine]bane1
      bane1(ele, coulomb_log, rates, n_part)  
@@ -885,7 +885,7 @@ Routine to return the string representation of a coord%state state.
  Modified Piwinski with Zotter's integral.  This is Piwinski's original derivation,
  generalized to take the derivatives of the optics functions.  
 
-------------------------------------------------------------------------
+###section Lattice: Element Manipulation
 
 These routine are for adding elements, moving elements, etc.
 
@@ -1024,7 +1024,7 @@ Routine to split a lat at a point.
                   err_value) result (value)   
 Returns the value of an element attribute.
 
-------------------------------------------------------------------------
+###section Lattice: Geometry
 
 \index[routine]bend_shift
      bend_shift(position1, g, delta_s, w_mat, ref_tilt) result(position2)  
@@ -1130,7 +1130,7 @@ Routine to return the transformation matrix for an y_pitch.
      w_mat_for_tilt (tilt, return_inverse)  
 Routine to return the transformation matrix for an tilt.
 
-------------------------------------------------------------------------
+###section Lattice: Informational
 
 \index[routine]attribute_free
      
@@ -1263,7 +1263,7 @@ Routine to return whether a given tracking method is valid for a given element.
     valid_mat6_calc_method (ele, species, mat6_calc_method) result (is_valid)   
 Routine to return whether a given mat6_calc method is valid for a given element.
 
-------------------------------------------------------------------------
+###section Lattice: Low Level Stuff
 
 \index[routine]bracket_index
      bracket_index (s, s_arr, i_min, dr, restrict) 
@@ -1286,7 +1286,7 @@ Routine to allocate an array of ele_pointer_structs.
      twiss1_propagate (twiss1, mat2, ele_key, length, twiss2, err)  
 Routine to propagate the twiss parameters of a single mode.
 
-------------------------------------------------------------------------
+###section Lattice: Manipulation
 
 \index[routine]allocate_element_array
      allocate_element_array (ele, upper_bound)  
@@ -1378,7 +1378,7 @@ See also: ele_has_kick, ele_has_offset, zero_ele_offsets.
      zero_ele_offsets (ele)  
 Routine to zero the offsets, pitches and tilt of an element.
 
-------------------------------------------------------------------------
+###section Lattice: Miscellaneous
 
 \index[routine]c_multi
      c_multi (n, m, no_n_fact, c_full) 
@@ -1411,7 +1411,7 @@ Routine to make the slave elements of a super_lord in order.
      set_flags_for_changed_attribute (ele, attrib)  
 Routine to mark an element as modified for use with "intelligent" bookkeeping.
 
-------------------------------------------------------------------------
+###section Lattice: Nametable
 
 \index[routine]create_lat_ele_nametable
      create_lat_ele_nametable (lat, nametable)  
@@ -1443,7 +1443,7 @@ Routine to initialize a nametable_struct instance.
      nametable_remove (nametable, ix_name)  
 Routine to remove a name from the nametable at index ix_name.
 
-------------------------------------------------------------------------
+###section Lattice: Reading and Writing Files 
 
 \index[routine]bmad_parser
      
@@ -1490,7 +1490,7 @@ a lat_struct.
      write_digested_bmad_file (digested_name, lat, n_files, file_names, extra, err_flag) 
 Routine to write a digested file. 
 
-------------------------------------------------------------------------
+###section Matrices
 
 \index[routine]c_to_cbar
      c_to_cbar (ele, cbar_mat) 
@@ -1598,7 +1598,7 @@ Routine to extract the Twiss parameters from the one-turn 6x6 matrix
      twiss_to_1_turn_mat (twiss, phi, mat2) 
 Routine to form the 2x2 1-turn transfer matrix from the Twiss parameters. 
 
-------------------------------------------------------------------------
+###section Matrix: Low Level Routines
 
 Listed below are helper routines that are not meant for general use.
 
@@ -1611,7 +1611,7 @@ Routine to calculate the transfer matrix for a combination solenoid/quadrupole e
 Routine to transform a 6x6 transfer matrix to a new reference frame that is 
 tilted in (x, Px, y, Py) with respect to the old reference frame. 
 
-------------------------------------------------------------------------
+###section Measurement Simulation Routines
 
 Routines to simulate errors in orbit, dispersion, betatron phase, and
 coupling measurements
@@ -1630,7 +1630,7 @@ BPM's offsets, noise, etc.
      to_phase_and_coupling_reading (ele, add_noise, reading, err) 
 Find the measured coupling values given the actual ones
 
-------------------------------------------------------------------------
+###section Multipass
 
 \index[routine]multipass_all_info
      multipass_all_info (lat, info)  
@@ -1646,7 +1646,7 @@ when there is multipass.
 Routine to find the multipass lord of a lattice element.
 A multi_lord will be found for:
 
-------------------------------------------------------------------------
+###section Multipoles
 
 \index[routine]ab_multipole_kick
      
@@ -1691,7 +1691,7 @@ Routine to put in the kick due to a multipole.
      multipole_kt_to_ab (knl, knsl, tn, an, bn) 
 Routine to convert kt (MAD standard) multipoles to ab type multipoles. 
 
-------------------------------------------------------------------------
+###section Nonlinear Optimizers
 
 \index[routine]opti_lmdif
      opti_lmdif (vec, n, merit, eps) result(this_opti)  
@@ -1717,7 +1717,7 @@ This routine is essentially mrqmin from Numerical Recipes with some added featur
 Differential Evolution for Optimal Control Problems.
 This optimizer is based upon the work of Storn and Price. 
 
-------------------------------------------------------------------------
+###section Overloading the equal sign
 
 These routines are overloaded by the equal sign so should not be called explicitly.
 
@@ -1754,7 +1754,7 @@ This routine takes care of the pointers in lat1(:).
 Routine that is used to set one PTC universal_taylor 
 structure equal to another. 
 
-------------------------------------------------------------------------
+###section Particle Coordinate Stuff
 
 \index[routine]angle_to_canonical_coords
      angle_to_canonical_coords (orbit, coord_type)  
@@ -1786,7 +1786,7 @@ Routine to initialize a coord_struct.
      type_coord (coord) 
 Routine to type out a coordinate. 
 
-------------------------------------------------------------------------
+###section Photon Routines
 
 \index[routine]bend_photon_init
      
@@ -1800,7 +1800,7 @@ Routine to initialize a photon generated by a charged particle in a bend.
 Routine to convert a "random" number in the interval [0,1] to a photon vertical emission 
 angle for a simple bend.
 
-------------------------------------------------------------------------
+###section PTC Interface Routines
 
 \index[routine]concat_real_8
      concat_real_8 (y1, y2, y3, r2_ref, keep_y1_const_terms) 
@@ -1883,9 +1883,9 @@ Routine to type out the taylor series from a real_8 array.
      universal_to_bmad_taylor (u_taylor, bmad_taylor) 
 Routine to convert from a universal_taylor map in \'Etienne's PTC to a taylor map in Bmad. 
 
-------------------------------------------------------------------------
+###section Quick Plot Routines
 
---------------------------------------
+###subsection Quick Plot Page Routines
 
 \index[routine]qp_open_page
      qp_open_page (page_type, i_chan, x_len, y_len, units, plot_file, scale)  
@@ -1899,7 +1899,7 @@ Routine to convert from a universal_taylor map in \'Etienne's PTC to a taylor ma
      qp_close_page()  
      Routine to finish plotting on a page.
 
---------------------------------------
+###subsection Quick Plot Calculational Routines
 
 \index[routine]qp_axis_niceness
      qp_axis_niceness (imin, imax, divisions) result (score)  
@@ -1938,7 +1938,7 @@ The higher the score the nicer.
      Routine to convert a "rectangle" (structure of 4 points) from
      one set of relative units to another
 
---------------------------------------
+###subsection Quick Plot Drawing Routines
 
 \index[routine]qp_clear_box
      qp_clear_box()  
@@ -2062,7 +2062,7 @@ The default color is the background color (white$).
      qp_to_axis_number_text (axis, ix_n, text)  
      Routine to form the text string for an axis number.
 
---------------------------------------
+###subsection Quick Plot Set Routines
 
 \index[routine]qp_calc_and_set_axis
      
@@ -2168,7 +2168,7 @@ Routine to set various quick plot parameters.
      qp_use_axis (x, y)  
 Routine to set what axis to use: X or X2, Y or Y2.
 
---------------------------------------
+###subsection Informational Routines
 
 \index[routine]qp_get_axis_attrib
      
@@ -2201,7 +2201,7 @@ Use qp_set_symbol or qp_set_symbol_attrib to set symbol attributes.
      qp_text_len (text)  
      Function to find the length of a text string.
 
---------------------------------------
+###subsection Conversion Routines
 
 \index[routine]qp_from_inch_rel
      qp_from_inch_rel (x_inch, y_inch, x, y, units)  
@@ -2236,14 +2236,14 @@ to the Left Bottom corner of the page.
      Routine to convert an absolute position (x, y) into inches referenced
      to the left bottom corner of the page.
 
---------------------------------------
+###subsection Miscellaneous Routines
 
 \index[routine]qp_read_data
      qp_read_data (iu, err_flag, x, ix_col, y, iy_col, z, iz_col, 
                                                                t, it_col)  
      Routine to read columns of data.
 
---------------------------------------
+###subsection Low Level Routines
 
 \index[routine]qp_clear_box_basic
      qp_clear_box_basic (x1, x2, y1, y2)  
@@ -2367,7 +2367,7 @@ Routine to set the character text background color.
      qp_text_len_basic (text)  
 Function to find the length of a text string.
 
-------------------------------------------------------------------------
+###section Spin
 
 \index[routine]calc_spin_params
      calc_spin_params (bunch, bunch_params)  
@@ -2411,7 +2411,7 @@ Return the modified T-BMT spin omega vector.
      track1_spin (start_orb, ele, param, end_orb, make_quaternion) 
 Routine to track the particle spin through one element.
 
-------------------------------------------------------------------------
+###section Transfer Maps: Routines Called by make_mat6
  
 "Make_mat6" is the routine for calculating the transfer matrix (Jacobin)
 through an element. The routines listed below are used by "make_mat6".
@@ -2442,7 +2442,7 @@ from a Taylor map.
 Routine to make the 6x6 transfer matrix for an element by 
 tracking 7 particle with different starting conditions.
 
-------------------------------------------------------------------------
+###section Transfer Maps: Complex Taylor Maps
 
 \index[routine]complex_taylor_coef
      complex_taylor_coef (bmad_taylor, expn)  
@@ -2505,7 +2505,7 @@ Subroutine to throw out all terms in a complex_taylor map that are above a certa
      type_complex_taylors (complex_taylor, max_order, lines, n_lines, file_id, out_type, clean)  
 Subroutine to output a Bmad complex_taylor map.
 
-------------------------------------------------------------------------
+###section Transfer Maps: Taylor Maps
 
 \index[routine]add_taylor_term
      
@@ -2619,7 +2619,7 @@ Routine to throw out all terms in a taylor map that are above a certain order.
      type_taylors (bmad_taylor, max_order, lines, n_lines, file_id, out_style, clean) 
 Routine to output a Bmad taylor map.
 
-------------------------------------------------------------------------
+###section Transfer Maps: Driving Terms
 
 \index[routine]srdt_calc
      srdt_calc (lat, srdt_sums, order, n_slices_gen_opt, n_slices_sxt_opt, per_ele_out) 
@@ -2650,7 +2650,7 @@ terms, then the solution sets the driving terms to zero and minimizes the sum of
 If there are fewer
 variables than driving terms, then the solution is that which minimizes the sum of the squares of the driving terms.
 
-------------------------------------------------------------------------
+###section Tracking and Closed Orbit
 
 The following routines perform tracking and closed orbit calculations.
 
@@ -2782,7 +2782,7 @@ for every element in the lat.
      wall_hit_handler_custom (orb, ele, s)  
 This routine is called by the Runge-Kutta integrator odeint_bmad when a particle hits a wall.
 
-------------------------------------------------------------------------
+###section Tracking: Low Level Routines
 
 \index[routine]absolute_time_tracking
      absolute_time_tracking (ele) result (is_abs_time)  
@@ -2803,7 +2803,7 @@ Routine to track through a drift.
      track_a_bend (orbit, ele, param, mat6, make_matrix) 
 Particle tracking through a bend element. 
 
-------------------------------------------------------------------------
+###section Tracking: Mad Routines
 
 \index[routine]make_mat6_mad
      make_mat6_mad (ele, param, c0, c1)  
@@ -2906,7 +2906,7 @@ Particle tracking through a bend element.
      make_unit_mad_map (map)  
      Routine to initialize a 2nd order transport map to unity.
 
-------------------------------------------------------------------------
+###section Tracking: Routines called by track1
 
 Note: Unless you know what you are doing do not call these routines directly. Rather use
 track1.
@@ -2963,7 +2963,7 @@ Routine to track through an element using the elements taylor series.
 Routine to track a particle through an element using 
 Runge-Kutta time-based tracking.
 
-------------------------------------------------------------------------
+###section Twiss and Other Calculations
 
 \index[routine]calc_z_tune
      calc_z_tune (branch) 
@@ -3040,7 +3040,7 @@ Routine to propagate the Twiss parameters from the start to the end.
      twiss_to_1_turn_mat (twiss, phi, mat2) 
 Routine to form the 2x2 1-turn transfer matrix from the Twiss parameters. 
 
-------------------------------------------------------------------------
+###section Twiss: 6 Dimensional
 
 \index[routine]normal_mode3_calc
      normal_mode3_calc (t6, tune, B, HV, above_transition)  
@@ -3059,7 +3059,7 @@ Routine to propagate the twiss parameters using all three normal modes.
      twiss3_at_start (lat, err_flag, ix_branch, tune3)  
 Routine to propagate the twiss parameters using all three normal modes.
 
-------------------------------------------------------------------------
+###section Wakefields
 
 \index[routine]init_wake
      init_wake (wake, n_sr_long, n_sr_trans, n_lr_mode, always_allocate)  
@@ -3082,7 +3082,7 @@ Routine to put in the long-range wakes for particle tracking.
 Routine to zero the long range wake amplitudes for the elements that have
 long range wakes in a lattice.
 
-------------------------------------------------------------------------
+###section C/C++ Interface
 
 \index[routine]fscalar2scalar
      fscalar2scalar (f_scalar, n) result (c_scalar)  
@@ -3150,7 +3150,7 @@ Subroutine to append a null (0) character at the end of a string (trimmed
 of trailing blanks) so it will look like a C character array. 
 
 ------------------------------------------------------------------------
-\sectionDeprecated
+###section Deprecated
 \labelr:deprecated
 
 \begindescription

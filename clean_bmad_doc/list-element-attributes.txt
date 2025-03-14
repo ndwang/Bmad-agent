@@ -1,4 +1,4 @@
-chapter List of Element Attributes
+###chapter List of Element Attributes
 
 Alphabetical list of element attributes for each type of element. 
 
@@ -6,14 +6,14 @@ Note for programmers: The program that generates a file of attributes indexed by
 internal reference number is:
   util_programs/element_attributes.f90 
 
- %---------------------------------
+ ###section !PTC_Com Element Attributes
  
 exact_misalign                   max_fringe_order                 vertical_kick                                                     
 exact_model                      old_integrator                                                                                     
  
- %---------------------------------
+ ###section !Space_Charge_Com Element Attributes
  
- %---------------------------------
+ ###section AB_multipole Element Attributes
  
 a0 - a20, b0 - b20               is_on                            spin_tracking_method             x_offset [m]                     
 alias                            l [m]                            superimpose                      x_offset_tot [m]                 
@@ -27,7 +27,7 @@ e_tot [eV]                       ref_origin                       x1_limit [m]  
 ele_origin                       ref_time_start [sec]             x2_limit [m]                                                      
 field_master                     reference                        x_limit [m]                                                       
  
- %---------------------------------
+ ###section AC_Kicker Element Attributes
  
 a0 - a20, b0 - b20               frequencies                      p0c [eV]                         tracking_method                  
 alias                            fringe_at                        phi0_multipass [rad/2pi]         type                             
@@ -51,7 +51,7 @@ field_calc                       num_steps                        taylor_map_inc
 field_master                     offset [m]                       tilt [rad]                       z_offset [m]                     
 field_overlaps                   offset_moves_aperture            tilt_tot [rad]                   z_offset_tot [m]                 
  
- %---------------------------------
+ ###section BeamBeam Element Attributes
  
 alias                            crab_x4 [1/m^3]                ref_origin                       x2_limit [m]                     
 alpha_a_strong                   crab_x5 [1/m^4]                ref_time_start [sec]             x_limit [m]                      
@@ -73,7 +73,7 @@ crab_x1                          offset_moves_aperture            wall
 crab_x2 [1/m]                    p0c [eV]                         wrap_superimpose                                                  
 crab_x3 [1/m^2]                ptc_integration_type             x1_limit [m]                                                      
  
- %---------------------------------
+ ###section Beginning Statement Attributes
  
 alpha_a                          e_tot [eV]                       mode_flip                        s [m]                            
 alpha_b                          e_tot_start [eV]                 p0c [eV]                         spin_dn_dpz_x                    
@@ -84,7 +84,7 @@ cmat_12                          etap_x                           phi_position [
 cmat_21                          etap_y                           psi_position [rad]               y_position [m]                   
 cmat_22                          inherit_from_fork                ref_time [sec]                   z_position [m]                   
  
- %---------------------------------
+ ###section Bends: Rbend and Sbend Element Attributes
  
 a0 - a20, b0 - b20               field_calc                       lr_wake                          static_linear_map                
 alias                            field_master                     lr_wake_file                     superimpose                      
@@ -115,9 +115,9 @@ ele_origin                       lord_pad2 [m]                    spin_tracking_
 exact_multipoles                 lr_freq_spread [Hz]              sr_wake                                                           
 fiducial_pt                      lr_self_wake_on                  sr_wake_file                                                      
  
- %---------------------------------
+ ###section Bmad_Com Statement Attributes
  
- %---------------------------------
+ ###section Capillary Element Attributes
  
 alias                            mat6_calc_method                 tilt [rad]                       x_pitch [rad]                    
 aperture [m]                     n_slice_spline                   tilt_tot [rad]                   x_pitch_tot [rad]                
@@ -131,7 +131,7 @@ e_tot [eV]                       reference                        x_limit [m]   
 ele_origin                       spin_tracking_method             x_offset [m]                     z_offset [m]                     
 l [m]                            superimpose                      x_offset_tot [m]                 z_offset_tot [m]                 
  
- %---------------------------------
+ ###section Collimators: Ecollimator and Rcollimator Element Attributes
  
 alias                            is_on                            ref_origin                       x2_limit [m]                     
 aperture [m]                     l [m]                            ref_time_start [sec]             x_limit [m]                      
@@ -154,7 +154,7 @@ fringe_type                      py_aperture_width2               wall
 hkick                            pz_aperture_center               wrap_superimpose                                                  
 integrator_order                 pz_aperture_width2               x1_limit [m]                                                      
  
- %---------------------------------
+ ###section Converter Element Attributes
  
 alias                            l [m]                            spin_tracking_method             x_pitch [rad]                    
 angle_out_max [rad]              mat6_calc_method                 superimpose                      x_pitch_tot [rad]                
@@ -170,7 +170,7 @@ e_tot_start [eV]                 ref_time_start [sec]             x_limit [m]   
 ele_origin                       reference                        x_offset [m]                                                      
 is_on                            species_out                      x_offset_tot [m]                                                  
  
- %---------------------------------
+ ###section Crab_Cavity Element Attributes
  
 alias                            gradient [eV/m]                  phi0_multipass [rad/2pi]         voltage [Volt]                   
 aperture [m]                     grid_field                       ptc_integration_type             wall                             
@@ -193,7 +193,7 @@ field_master                     offset_moves_aperture            tracking_metho
 field_overlaps                   p0c [eV]                         type                             z_offset_tot [m]                 
 gen_grad_map                     phi0 [rad/2pi]                   vkick                                                             
  
- %---------------------------------
+ ###section Crystal Element Attributes
  
 alias                            e_tot [eV]                       ref_orbit_follows                wrap_superimpose                 
 alpha_angle                      ele_origin                       ref_origin                       x1_limit [m]                     
@@ -216,7 +216,7 @@ delta_ref_time [sec]             psi_angle [rad]                  use_reflectivi
 descrip                          ptc_integration_type             v_unitcell [m^3]                                                
 displacement                     ref_cap_gamma                    wall                                                              
  
- %---------------------------------
+ ###section Custom Element Attributes
  
 alias                            lord_pad1 [m]                    static_linear_map                wall                             
 aperture [m]                     lord_pad2 [m]                    superimpose                      wrap_superimpose                 
@@ -239,7 +239,7 @@ integrator_order                 spin_tracking_method             val7          
 is_on                            sr_wake                          val8                                                              
 l [m]                            sr_wake_file                     val9                                                              
  
- %---------------------------------
+ ###section Detector Element Attributes
  
 alias                            mat6_calc_method                 tilt_tot [rad]                   y1_limit [m]                     
 aperture [m]                     n_sample                         tracking_method                  y2_limit [m]                     
@@ -259,7 +259,7 @@ ele_origin                       superimpose                      x_offset_tot [
 is_on                            tilt [rad]                       x_pitch [rad]                                                     
 l [m]                            tilt_calib [rad]                 x_pitch_tot [rad]                                                 
  
- %---------------------------------
+ ###section Diffraction_Plate Element Attributes
  
 alias                            is_on                            superimpose                      x_pitch_tot [rad]                
 aperture [m]                     mat6_calc_method                 tilt [rad]                       y1_limit [m]                     
@@ -275,7 +275,7 @@ e_tot [eV]                       reference                        x_offset [m]
 ele_origin                       segmented                        x_offset_tot [m]                                                  
 field_scale_factor               spin_tracking_method             x_pitch [rad]                                                     
  
- %---------------------------------
+ ###section Drift Element Attributes
  
 alias                            l [m]                            static_linear_map                x_offset_tot [m]                 
 aperture [m]                     lord_pad1 [m]                    superimpose                      x_pitch [rad]                    
@@ -292,7 +292,7 @@ ele_origin                       reference                        x2_limit [m]  
 field_calc                       space_charge_method              x_limit [m]                                                       
 integrator_order                 spin_tracking_method             x_offset [m]                                                      
  
- %---------------------------------
+ ###section ELSeparator Element Attributes
  
 a0 - a20, b0 - b20               gap                              r0_elec [m]                      wall                             
 alias                            gen_grad_map                     r0_mag [m]                       wrap_superimpose                 
@@ -316,7 +316,7 @@ field_overlaps                   p0c [eV]                         type
 fringe_at                        ptc_canonical_coords             vkick                                                             
 fringe_type                      ptc_integration_type             voltage [Volt]                                                    
  
- %---------------------------------
+ ###section EM_Field Element Attributes
  
 alias                            fringe_at                        phi0_err [rad/2pi]               type                             
 aperture [m]                     fringe_type                      polarity                         wall                             
@@ -340,7 +340,7 @@ field_autoscale                  p0c_start [eV]                   tilt [rad]    
 field_calc                       phi0 [rad/2pi]                   tilt_tot [rad]                                                    
 field_overlaps                   phi0_autoscale [rad/2pi]         tracking_method                                                   
  
- %---------------------------------
+ ###section E_Gun Element Attributes
  
 alias                            fringe_type                      phi0_err [rad/2pi]               voltage_tot [Volt]               
 aperture [m]                     gen_grad_map                     ptc_integration_type             wall                             
@@ -365,12 +365,12 @@ field_calc                       p0c [eV]                         type
 field_overlaps                   phi0 [rad/2pi]                   voltage [Volt]                                                    
 fringe_at                        phi0_autoscale [rad/2pi]         voltage_err [Volt]                                                
  
- %---------------------------------
+ ###section Feedback Element Attributes
  
 alias                            input_ele                        type                                                              
 descrip                          output_ele                                                                                         
  
- %---------------------------------
+ ###section Fiducial Element Attributes
  
 alias                            dy_origin [m]                    origin_ele                       spin_tracking_method             
 delta_ref_time [sec]             dz_origin [m]                    origin_ele_ref_pt                superimpose                      
@@ -380,7 +380,7 @@ dpsi_origin [rad]                l [m]                            ref_origin    
 dtheta_origin [rad]              mat6_calc_method                 ref_time_start [sec]                                              
 dx_origin [m]                    offset [m]                       reference                                                         
  
- %---------------------------------
+ ###section Floor_Shift Element Attributes
  
 alias                            l [m]                            reference                        x2_limit [m]                     
 aperture [m]                     mat6_calc_method                 spin_tracking_method             x_limit [m]                      
@@ -393,7 +393,7 @@ downstream_ele_dir               ptc_integration_type             wall          
 e_tot [eV]                       ref_origin                       wrap_superimpose                 y_pitch [rad]                    
 ele_origin                       ref_time_start [sec]             x1_limit [m]                     z_offset [m]                     
  
- %---------------------------------
+ ###section Foil Element Attributes
  
 alias                            final_charge                     scatter_test                     x_offset_tot [m]                 
 aperture [m]                     is_on                            spin_tracking_method             x_pitch [rad]                    
@@ -412,7 +412,7 @@ e_tot [eV]                       ref_time_start [sec]             x2_limit [m]  
 ele_origin                       reference                        x_limit [m]                                                       
 f_factor [???]                   scatter_method                   x_offset [m]                                                      
  
- %---------------------------------
+ ###section Fork and Photon_Fork Element Attributes
  
 alias                            is_on                            ref_origin                       wrap_superimpose                 
 aperture [m]                     ix_to_branch                     ref_species                      x1_limit [m]                     
@@ -425,7 +425,7 @@ direction                        offset_moves_aperture            to_line
 e_tot [eV]                       p0c [eV]                         tracking_method                                                   
 ele_origin                       ptc_integration_type             type                                                              
  
- %---------------------------------
+ ###section GKicker Element Attributes
  
 alias                            mat6_calc_method                 ref_time_start [sec]             x_kick [m]                       
 aperture [m]                     offset [m]                       reference                        x_limit [m]                      
@@ -437,7 +437,7 @@ descrip                          py_kick                          wrap_superimpo
 e_tot [eV]                       pz_kick                          x1_limit [m]                                                      
 ele_origin                       ref_origin                       x2_limit [m]                                                      
  
- %---------------------------------
+ ###section Girder Element Attributes
  
 alias                            dz_origin [m]                    tilt [rad]                       y_offset [m]                     
 descrip                          is_on                            tilt_tot [rad]                   y_offset_tot [m]                 
@@ -447,14 +447,14 @@ dtheta_origin [rad]              origin_ele_ref_pt                x_offset_tot [
 dx_origin [m]                    ref_tilt [rad]                   x_pitch [rad]                    z_offset_tot [m]                 
 dy_origin [m]                    ref_tilt_tot [rad]               x_pitch_tot [rad]                                                 
  
- %---------------------------------
+ ###section Group Element Attributes
  
 accordion_edge [m]               gang                             slave                            x_knot                           
 alias                            interpolation                    start_edge                       y_knot                           
 descrip                          is_on                            type                                                              
 end_edge [m]                     s_position [m]                   var                                                               
  
- %---------------------------------
+ ###section Hybrid Element Attributes
  
 alias                            e_tot [eV]                       ref_origin                       x1_limit [m]                     
 aperture [m]                     ele_origin                       ref_time_start [sec]             x2_limit [m]                     
@@ -465,7 +465,7 @@ delta_e_ref [eV]                 offset_moves_aperture            tracking_metho
 delta_ref_time [sec]             p0c [eV]                         type                                                              
 descrip                          ptc_integration_type             wrap_superimpose                                                  
  
- %---------------------------------
+ ###section Instrument, Monitor, and Pipe Element Attributes
  
 alias                            integrator_order                 spin_fringe_on                   x_limit [m]                      
 aperture [m]                     is_on                            spin_tracking_method             x_offset [m]                     
@@ -490,7 +490,7 @@ fringe_at                        ref_time_start [sec]             x_dispersion_e
 fringe_type                      reference                        x_gain_calib [m]                                                  
 hkick                            space_charge_method              x_gain_err [m]                                                    
  
- %---------------------------------
+ ###section Kicker Element Attributes
  
 a0 - a20, b0 - b20               fringe_type                      ptc_integration_type             vkick                            
 alias                            gen_grad_map                     r0_elec [m]                      wall                             
@@ -514,7 +514,7 @@ field_master                     offset_moves_aperture            tracking_metho
 field_overlaps                   p0c [eV]                         type                                                              
 fringe_at                        ptc_canonical_coords             v_displace [m^3]                                                
  
- %---------------------------------
+ ###section Kickers: Hkicker and Vkicker Element Attributes
  
 a0 - a20, b0 - b20               fringe_at                        p0c [eV]                         type                             
 alias                            fringe_type                      ptc_canonical_coords             wall                             
@@ -536,7 +536,7 @@ field_calc                       num_steps                        tilt [rad]    
 field_master                     offset [m]                       tilt_tot [rad]                   z_offset [m]                     
 field_overlaps                   offset_moves_aperture            tracking_method                  z_offset_tot [m]                 
  
- %---------------------------------
+ ###section Lcavity Element Attributes
  
 alias                            field_autoscale                  num_steps                        tilt_tot [rad]                   
 aperture [m]                     field_calc                       offset [m]                       tracking_method                  
@@ -564,7 +564,7 @@ e_tot [eV]                       lr_wake_file                     symplectify   
 e_tot_start [eV]                 mat6_calc_method                 taylor_map_includes_offsets      z_offset [m]                     
 ele_origin                       n_cell                           tilt [rad]                       z_offset_tot [m]                 
  
- %---------------------------------
+ ###section Lens Element Attributes
  
 alias                            mat6_calc_method                 tilt [rad]                       x_pitch [rad]                    
 aperture [m]                     offset [m]                       tilt_tot [rad]                   x_pitch_tot [rad]                
@@ -578,7 +578,7 @@ ele_origin                       reference                        x_limit [m]   
 focal_strength [1/m]             spin_tracking_method             x_offset [m]                     z_offset [m]                     
 l [m]                            superimpose                      x_offset_tot [m]                 z_offset_tot [m]                 
  
- %---------------------------------
+ ###section Line Statement Attributes
  
 alpha_a                          e_tot_start [eV]                 mode_flip                        spin_dn_dpz_x                    
 alpha_b                          eta_x [m]                        p0c [eV]                         spin_dn_dpz_y                    
@@ -591,7 +591,7 @@ cmat_22                          high_energy_space_charge_on      psi_position [
 default_tracking_species         inherit_from_fork                ref_time [sec]                                                    
 e_tot [eV]                       live_branch                      s [m]                                                             
  
- %---------------------------------
+ ###section Marker Element Attributes
  
 alias                            lr_wake_file                     tilt [rad]                       x_pitch [rad]                    
 aperture [m]                     mat6_calc_method                 tilt_calib [rad]                 x_pitch_tot [rad]                
@@ -611,7 +611,7 @@ lr_freq_spread [Hz]              sr_wake                          x_offset [m]  
 lr_self_wake_on                  sr_wake_file                     x_offset_calib [m]               z_offset_tot [m]                 
 lr_wake                          superimpose                      x_offset_tot [m]                                                  
  
- %---------------------------------
+ ###section Mask Element Attributes
  
 alias                            mode                             tilt_tot [rad]                   y1_limit [m]                     
 aperture [m]                     offset [m]                       tracking_method                  y2_limit [m]                     
@@ -626,7 +626,7 @@ field_scale_factor               spin_tracking_method             x_offset_tot [
 is_on                            superimpose                      x_pitch [rad]                                                     
 mat6_calc_method                 tilt [rad]                       x_pitch_tot [rad]                                                 
  
- %---------------------------------
+ ###section Match Element Attributes
  
 alias                            c22_mat1                         l [m]                            spin_tracking_method             
 alpha_a0                         create_jumbo_slave               mat6_calc_method                 spin_tracking_model              
@@ -648,7 +648,7 @@ c21_mat0 [1/m]                   etap_y1                          ref_origin    
 c21_mat1 [1/m]                   is_on                            ref_time_start [sec]             z1 [m]                           
 c22_mat0                         kick0                            reference                                                         
  
- %---------------------------------
+ ###section Mirror Element Attributes
  
 alias                            l [m]                            spin_tracking_method             x_pitch [rad]                    
 aperture [m]                     mat6_calc_method                 superimpose                      x_pitch_tot [rad]                
@@ -665,7 +665,7 @@ e_tot [eV]                       reference                        x_limit [m]
 ele_origin                       reflectivity_table               x_offset [m]                                                      
 graze_angle [rad]                segmented                        x_offset_tot [m]                                                  
  
- %---------------------------------
+ ###section Multilayer_Mirror Element Attributes
  
 alias                            graze_angle [rad]                reference                        x_limit [m]                      
 aperture [m]                     l [m]                            segmented                        x_offset [m]                     
@@ -682,7 +682,7 @@ displacement                     ref_tilt_tot [rad]               wrap_superimpo
 e_tot [eV]                       ref_time_start [sec]             x1_limit [m]                     z_offset [m]                     
 ele_origin                       ref_wavelength [m]               x2_limit [m]                     z_offset_tot [m]                 
  
- %---------------------------------
+ ###section Multipole Element Attributes
  
 alias                            k0l - k20l, t0 - t20             superimpose                      x_offset_tot [m]                 
 aperture [m]                     l [m]                            tilt [rad]                       y1_limit [m]                     
@@ -696,7 +696,7 @@ ele_origin                       ref_time_start [sec]             x2_limit [m]
 field_master                     reference                        x_limit [m]                                                       
 is_on                            spin_tracking_method             x_offset [m]                                                      
  
- %---------------------------------
+ ###section Octupole Element Attributes
  
 a0 - a20, b0 - b20               fringe_at                        ptc_canonical_coords             vkick                            
 alias                            fringe_type                      ptc_integration_type             wall                             
@@ -720,13 +720,13 @@ field_calc                       offset [m]                       tilt_tot [rad]
 field_master                     offset_moves_aperture            tracking_method                                                   
 field_overlaps                   p0c [eV]                         type                                                              
  
- %---------------------------------
+ ###section Overlay Element Attributes
  
 alias                            interpolation                    type                             y_knot                           
 descrip                          is_on                            var                                                               
 gang                             slave                            x_knot                                                            
  
- %---------------------------------
+ ###section Parameter Statement Attributes
  
 absolute_time_tracking           high_energy_space_charge_on      n_part                           ptc_exact_misalign               
 default_tracking_species         lattice                          no_end_marker                    ptc_exact_model                  
@@ -734,7 +734,7 @@ e_tot [eV]                       lattice_type                     p0c [eV]      
 electric_dipole_moment           live_branch                      particle                         taylor_order                     
 geometry                         machine                          photon_type                                                       
  
- %---------------------------------
+ ###section Particle_Start Statement Attributes
  
 e_photon [eV]                    field_y                          pz                               spin_z                           
 emittance_a [m*rad]              phase_x [rad]                    sig_pz                           t [sec]                          
@@ -742,7 +742,7 @@ emittance_b [m*rad]              phase_y [rad]                    sig_z [m]     
 emittance_z [m*rad]              px                               spin_x                           y [m]                            
 field_x                          py                               spin_y                           z [m]                            
  
- %---------------------------------
+ ###section Patch Element Attributes
  
 alias                            e_tot_start [eV]                 ref_origin                       wrap_superimpose                 
 aperture [m]                     ele_origin                       ref_time_start [sec]             x1_limit [m]                     
@@ -758,7 +758,7 @@ e_tot [eV]                       p0c_start [eV]                   upstream_ele_d
 e_tot_offset [eV]                ptc_integration_type             user_sets_length                 z_offset [m]                     
 e_tot_set [eV]                   ref_coords                       wall                                                              
  
- %---------------------------------
+ ###section Photon_Init Element Attributes
  
 alias                            energy_distribution              sig_vx [m/s]                     x1_limit [m]                     
 aperture [m]                     energy_probability_curve         sig_vy [m/s]                     x2_limit [m]                     
@@ -777,7 +777,7 @@ e_field_y [V/m]                  scale_field_to_one               velocity_distr
 e_tot [eV]                       sig_e [eV]                       wall                             z_offset [m]                     
 ele_origin                       sig_e2 [eV]                      wrap_superimpose                 z_offset_tot [m]                 
  
- %---------------------------------
+ ###section Pickup Element Attributes
  
 alias                            mat6_calc_method                 tilt_tot [rad]                   y1_limit [m]                     
 aperture [m]                     num_steps                        tracking_method                  y2_limit [m]                     
@@ -792,7 +792,7 @@ ele_origin                       spin_tracking_method             x_offset_tot [
 is_on                            superimpose                      x_pitch [rad]                                                     
 l [m]                            tilt [rad]                       x_pitch_tot [rad]                                                 
  
- %---------------------------------
+ ###section Quadrupole Element Attributes
  
 a0 - a20, b0 - b20               fq1 [m]                          offset_moves_aperture            tracking_method                  
 alias                            fq2 [m]                          p0c [eV]                         type                             
@@ -816,7 +816,7 @@ field_calc                       multipoles_on                    taylor_map_inc
 field_master                     num_steps                        tilt [rad]                       z_offset [m]                     
 field_overlaps                   offset [m]                       tilt_tot [rad]                   z_offset_tot [m]                 
  
- %---------------------------------
+ ###section RFCavity Element Attributes
  
 alias                            field_calc                       offset [m]                       type                             
 aperture [m]                     field_overlaps                   offset_moves_aperture            vkick                            
@@ -843,7 +843,7 @@ e_tot [eV]                       mat6_calc_method                 tilt [rad]
 ele_origin                       n_cell                           tilt_tot [rad]                                                    
 field_autoscale                  num_steps                        tracking_method                                                   
  
- %---------------------------------
+ ###section RF_Bend Element Attributes
  
 alias                            g [1/m]                          phi0 [rad/2pi]                   tracking_method                  
 angle [rad]                      grid_field                       phi0_multipass [rad/2pi]         type                             
@@ -868,13 +868,13 @@ field_overlaps                   offset [m]                       superimpose   
 fringe_at                        offset_moves_aperture            symplectify                      z_offset_tot [m]                 
 fringe_type                      p0c [eV]                         taylor_map_includes_offsets                                       
  
- %---------------------------------
+ ###section Ramper Element Attributes
  
 alias                            is_on                            var                                                               
 descrip                          slave                            x_knot                                                            
 interpolation                    type                             y_knot                                                            
  
- %---------------------------------
+ ###section Sad_Mult Element Attributes
  
 a0 - a20, b0 - b20               fb2 [m]                          ref_origin                       x2_limit [m]                     
 alias                            field_calc                       ref_time_start [sec]             x_limit [m]                      
@@ -895,7 +895,7 @@ ele_origin                       offset_moves_aperture            wall          
 eps_step_scale [m]               p0c [eV]                         wrap_superimpose                 z_offset_tot [m]                 
 fb1 [m]                          ptc_integration_type             x1_limit [m]                                                      
  
- %---------------------------------
+ ###section Sample Element Attributes
  
 alias                            l [m]                            spin_tracking_method             x_offset_tot [m]                 
 aperture [m]                     mat6_calc_method                 superimpose                      x_pitch [rad]                    
@@ -910,7 +910,7 @@ displacement                     ref_time_start [sec]             x2_limit [m]  
 e_tot [eV]                       reference                        x_limit [m]                      z_offset [m]                     
 ele_origin                       segmented                        x_offset [m]                     z_offset_tot [m]                 
  
- %---------------------------------
+ ###section Sextupole Element Attributes
  
 a0 - a20, b0 - b20               fringe_at                        ptc_canonical_coords             vkick                            
 alias                            fringe_type                      ptc_integration_type             wall                             
@@ -934,7 +934,7 @@ field_calc                       offset [m]                       tilt_tot [rad]
 field_master                     offset_moves_aperture            tracking_method                                                   
 field_overlaps                   p0c [eV]                         type                                                              
  
- %---------------------------------
+ ###section Sol_Quad Element Attributes
  
 a0 - a20, b0 - b20               field_overlaps                   offset_moves_aperture            tracking_method                  
 alias                            fringe_at                        p0c [eV]                         type                             
@@ -958,7 +958,7 @@ ele_origin                       multipoles_on                    taylor_map_inc
 field_calc                       num_steps                        tilt [rad]                       z_offset [m]                     
 field_master                     offset [m]                       tilt_tot [rad]                   z_offset_tot [m]                 
  
- %---------------------------------
+ ###section Solenoid Element Attributes
  
 a0 - a20, b0 - b20               fringe_at                        p0c [eV]                         tracking_method                  
 alias                            fringe_type                      ptc_canonical_coords             type                             
@@ -982,7 +982,7 @@ field_calc                       num_steps                        taylor_map_inc
 field_master                     offset [m]                       tilt [rad]                       z_offset [m]                     
 field_overlaps                   offset_moves_aperture            tilt_tot [rad]                   z_offset_tot [m]                 
  
- %---------------------------------
+ ###section Taylor Element Attributes
  
 alias                            mat6_calc_method                 symplectify                      x_pitch [rad]                    
 aperture [m]                     offset [m]                       taylor_map_includes_offsets      x_pitch_tot [rad]                
@@ -999,7 +999,7 @@ l [m]                            reference                        x_limit [m]   
 lord_pad1 [m]                    spin_tracking_method             x_offset [m]                     z_offset_tot [m]                 
 lord_pad2 [m]                    superimpose                      x_offset_tot [m]                 z_ref [m]                        
  
- %---------------------------------
+ ###section Thick_Multipole Element Attributes
  
 a0 - a20, b0 - b20               fringe_at                        ptc_canonical_coords             wall                             
 alias                            fringe_type                      ptc_integration_type             wrap_superimpose                 
@@ -1022,7 +1022,7 @@ field_calc                       offset [m]                       tracking_metho
 field_master                     offset_moves_aperture            type                                                              
 field_overlaps                   p0c [eV]                         vkick                                                             
  
- %---------------------------------
+ ###section Wiggler and Undulator Element Attributes
  
 a0 - a20, b0 - b20               g_max [1/m]                      osc_amplitude [m]                tracking_method                  
 alias                            gen_grad_map                     p0c [eV]                         type                             

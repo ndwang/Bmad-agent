@@ -1,4 +1,4 @@
-chapter Lattice File Global Parameters
+###chapter Lattice File Global Parameters
 
 This chapter deals with statements that can be used to set "global" parameter values. That is,
 parameter values that are associated with the lattice as a whole and not simply associated with a
@@ -7,7 +7,7 @@ single element.
 Discussed elsewhere are the global structures  "bmad_com" 
 and "ptc_com" .
 
------------------------------------------------------------------------------
+###section Parameter Statements
 
 "Parameter" statements are used to set a number of global variables.  If multiple branches are
 present , these variables pertain to the "root" branch. The variables that
@@ -139,7 +139,7 @@ For more information on "parameter[ran_seed]" see.
 The Taylor order  is set by "parameter[taylor_order]" and is the maximum
 order for a Taylor map.
 
------------------------------------------------------------------------------
+###section Particle_Start Statements 
 
 "particle_start" statements are used, among other things to set the starting coordinates
 for particle tracking. If multiple branches are present , these
@@ -192,7 +192,7 @@ is deprecated but still supported for backwards compatibility.
 Example
   particle_start[y] = 2 * particle_start[x]
 
------------------------------------------------------------------------------
+###section Beam Statement
 
 The "beam" statement is provided for compatibility with \mad. The syntax is
   beam, energy = GeV, pc = GeV, particle = <Switch>, n_part = <Real>
@@ -204,7 +204,7 @@ same as using "parameter[e_tot]". Similarly, setting "pc" is
 equivalent to setting "parameter[p0c]". Valid "particle" switches
 are the same as "parameter[particle]".
 
---------------------------------------------------------------------------
+###section Beginning and Line Parameter Statements
 
 For non--circular lattices, the "beginning" statement can be used to set the Twiss parameters and
 beam energy at the beginning of the first lattice branch.

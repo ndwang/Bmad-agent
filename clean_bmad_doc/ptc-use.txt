@@ -1,6 +1,4 @@
-chapter Using PTC/FPP
-
-----------------------------------------------------------------------------
+###chapter Using PTC/FPP
 
 The PTC/FPP library of \'Etienne Forest handles Taylor maps to any arbitrary order. This is also
 known as Truncated Power Series Algebra (TPSA). The core Differential Algebra (DA) package used by
@@ -19,7 +17,7 @@ via PTC. No exceptions.
 
 For the programmer, see Chapter~ for more information.
 
-----------------------------------------------------------------------------
+###section PTC Tracking Versus Bmad Tracking
 
 While such things as magnet strengths will be the same, the model that PTC uses when it tracks
 through a lattice element is independent of Bmad. That is, what approximations are made can be
@@ -29,7 +27,7 @@ parameters that affect PTC tracking. Two parameters that affect PTC accuracy are
 step size and the order of the integrator. The step size is set by each lattice element's "ds_step"
 parameter . 
 
-----------------------------------------------------------------------------
+###section PTC / Bmad Interfacing
 
 Bmad interfaces to PTC in two ways: One way, called "single element" mode, uses PTC on a per
 element basis. In this case, the method used for tracking a given element can be selected on an

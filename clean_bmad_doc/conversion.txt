@@ -1,11 +1,11 @@
-chapter Lattice File Conversion
+###chapter Lattice File Conversion
 
 A Bmad Distribution  contains a number of translation programs between Bmad
 and other formats.
 
------------------------------------------------------------------------------
+###section MAD Conversion
 
------------------------------------------------------------------------------
+###subsection Convert MAD to Bmad
 
 Python scripts to convert from MAD8 and MADX are available at:
   util_programs/mad_to_bmad
@@ -20,7 +20,7 @@ a variable's value to be zero if it is not defined.
   *
 Bmad, unlike \mad, does not allow variable values to be redefined.
 
------------------------------------------------------------------------------
+###subsection Convert Bmad to MAD
 
 To convert to MAD8 or MADX, the Tao program can be used. Additionally, there is the program
   util_programs/bmad_to_mad_sad_elegant
@@ -36,13 +36,13 @@ change. Additionally the bends and drifts are constructed to most nearly match t
 Note that the resulting model will not have the vertical cubic nonlinearity that the actual wiggler
 has.
 
------------------------------------------------------------------------------
+###section Convert to PTC
 
 A PTC ""flatfile"" can be constructed using the Tao program with the following commands:
   Tao> ptc init
   Tao> write ptc
 
----------------------------------------------------------------------------
+###section SAD Conversion
 
 Conversion from "SAD"\citeb:sad to Bmad is accomplished using the Python script
   util_programs/sad_to_bmad/sad_to_bmad.py
@@ -55,7 +55,7 @@ Misalignments in a "sol" element with "geo" = 1 cannot be handled.
 Bmad to "SAD" to conversion can be done with the Tao program or the program 
   util_programs/bmad_to_mad_sad_elegant
 
----------------------------------------------------------------------------
+###section Elegant Conversion
 
 Conversion from "Elegant"\citeb:elegant to Bmad is accomplished using the Python script
   util_programs/elegant_to_bmad/elegant_to_bmad.py
@@ -63,7 +63,7 @@ Conversion from "Elegant"\citeb:elegant to Bmad is accomplished using the Python
 Bmad to "Elegant" to conversion can be done with the Tao program or the program 
   util_programs/bmad_to_mad_sad_elegant
 
----------------------------------------------------------------------------
+###section Astra, Blender, CSRTrack, GPT, and Merlin Conversion
 
 Conversion programs to Astra, Blender, CSRTrack, GPT, and Merlin exist in the "util_programs"
 directory. Some conversion code is still in beta development so if you encounter

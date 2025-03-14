@@ -1,11 +1,11 @@
-chapter Wakefields
+###chapter Wakefields
 
 Wakefield effects are divided into short--range (within a bunch) and long--range (between
 bunches). Short--range wakes are described in \Srefs:sr.wake.eq and long--range wakes are
 described in \Srefs:lr.wake.eq. The syntax for describing wakes in a lattice file is given in
 \Srefs:wakes.
 
------------------------------
+###section Short--Range Wakes
 
 The syntax for assigning short--range wakes to a lattice element is described in
 \Srefs:sr.wake.syntax. Only the monopole and dipole wakefields are modeled.
@@ -60,7 +60,7 @@ while a calculation based upon a table of wake vs z would scale as N^2. [The dis
 that initially must perform a fit to the wake potential to generate the mode parameter
 values.]
 
------------------------------
+###section Long--Range Wakes
 
 The lattice syntax for defining long-range wakes is discussed in \Srefs:lr.wake.syntax.
 

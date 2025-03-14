@@ -1,4 +1,4 @@
-chapter Fringe Fields
+###chapter Fringe Fields
 
 It can be convient to divide the fringe field kick into two pieces. The first piece is called the "hard
 edge" fringe kick and is the kick in the limit that the longitudinal extent of the fringe is
@@ -11,7 +11,7 @@ good enough approximation.
 
 Discussion of the fringe parameters of an element are detailed in \Srefs:fringe.
 
----------------------------------------------------------------------------------
+###section Bend Second Order Fringe Map
 
 The bend fringe kick is a combination of the equations developed by Hwang and Lee\citeb:hwang
 modified to include quadrupole terms as given in Section~5.3.1 of Iselin\citeb:madphysics. The Lie
@@ -69,7 +69,7 @@ The transport for the exit fringe is
     - \frac2 \, x \, y \, K_1 \tan (e_2)(1 + p_z) \CRNO
   \Delta z= \frac\Omega_M2 - (x^2 - y^2) \, g_\tot \, \tan (e_2)/21 + p_z \nonumber
 
----------------------------------------------------------------------------------
+###section SAD Dipole Soft Edge Fringe Map
 
 The SAD dipole soft edge fringe model is adapted from the SAD program\citeb:sad. This model is
 only used for "sbend", "rbend", and "sad_mult" elements. For "sbend" and "rbend"
@@ -114,7 +114,7 @@ extent. However, in the hard edge limit, the field does not obey Maxwell's equat
 map, as F_H goes to zero, has fields that diverge to infinity and this explains why the full (hard
 + soft) limiting map is not the same as the hard edge map at the limit of zero longitudinal extent.
 
----------------------------------------------------------------------------------
+###section Sad_Mult Dipole Hard Edge Fringe Map 
 
 For "sad_mult" elements, the hard dipole edge kick is adapted from SAD. The dipole normalized
 field g = \sqrt\texta0^2 + \textb0^2 is calculated from the "a0" and "b0"
@@ -129,7 +129,7 @@ where
 
 This is used in place of the dipole hard edge fringe kick given in.
 
----------------------------------------------------------------------------------
+###section Linear Dipole Hard Edge Fringe Map
 
 The linear dipole hard edge fringe model is adapted from MAD\citeb:maduser and only includes linear
 terms. The fringe transport is
@@ -139,7 +139,7 @@ terms. The fringe transport is
 where g_\tot = g + dg is the actual field and e is "e1" if the particle is entering the
 dipole and "e2" if the particle is exiting the dipole.
 
----------------------------------------------------------------------------------
+###section Exact Dipole Hard Edge Fringe Map
 
 The exact dipole hard edge fringe is the exact transport in the wedge region of a dipole when there
 is a finite "e1" or "e2" as shown in \figf:sbend. This model assumes that there are no
@@ -155,7 +155,7 @@ edge.
 The body of the dipole is treated as a sector bend. At the exit end, the propagation through the
 wedge is the reverse of the above.
 
----------------------------------------------------------------------------------
+###section Quadrupole Soft Edge Fringe Map
 
 The quadrupole soft edge fringe model is adapted from SAD\citeb:sad. This fringe is only used with
 "sad_mult" and "quadrupole" elements. The fringe map is:
@@ -189,7 +189,7 @@ in the region s > s_0.
 See Sec.~ for the relation between "fq1" / "fq2" and
 the corresponding "f1" and "f2" parameters of SAD.
 
----------------------------------------------------------------------------------
+###section Magnetic Multipole Hard Edge Fringe Map
 
 The magnetic multipole hard edge fringe field is modeled using the method shown in
 Forest\citeb:forest. For the m\Th order multipole the Lee transform 
@@ -213,7 +213,7 @@ With this, the implicit multipole map is (Forest Eq.~(13.31))
   \delta^f= \delta \CRNO
   z^f=\fracp_x^f \, f^x + p_y^f \, f^y(1 + \delta)^2 \nonumber
 
----------------------------------------------------------------------------------
+###section Electrostatic Multipole Hard Edge Fringe Map
 
 The electric multipole hard edge fringe field, to lowest order, consists of just a longitudinal
 field. The integrated longitudinal field at constant (x,y) for the n\Th order multipole is
@@ -226,7 +226,7 @@ The effect on the spin when tracking through the fringe field of a multipole fie
 to be weak. As such, this hard edge model is sufficient.  and the spin is tracked using
 the T-BMT equation (\Eqtbmt).
 
----------------------------------------------------------------------------------
+###section RF Fringe Fields
 
 Assuming cylindrical symmetry, the radial and azimuthal fields near the axis 
 can be related to the longitudinal electric field via Maxwell's equations\citeb:hartman

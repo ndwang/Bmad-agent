@@ -1,4 +1,4 @@
-chapter Beam Initialization
+###chapter Beam Initialization
 
 Some Bmad based programs track beams of particles instead of tracking individual particles
 one-by-one. This can be useful for several reasons. For example, tracking beams is useful when
@@ -11,6 +11,8 @@ example, the beam emittances) from which a distribution of particles can be cons
 "beam_init_struct" structure is explained in Section~. The other way is to
 specify the initial beam distribution via a file that has the individual particle positions. This is
 covered in Section~.
+
+###section Beam_Init_Struct Structure
 
 The "beam_init_struct" "structure"  holds parameters which are used to
 initialize a beam. The parameters of this structure, shown with their default values, are:
@@ -279,6 +281,8 @@ to the end of the element, the particle positions are converted to standard s-co
 Since HDF5 beam files store complete information about a particle, "use_to_coords" and
 "use_z_as_t" are not needed and are ignored.
 
+###section File Based Beam Initialization
+
 A beam initialization file specifies the coordinates of all the particles in a beam. If a Bmad
 based program uses a "beam_init_struct"  for inputting initialization
 parameters, the file name for file based beam initialization can be set using the "%position_file"
@@ -341,6 +345,8 @@ Distribution "code_examples/beam_track_example".
 
 Note: Beam files can be converted between ASCII and HDF5 binary using the program in the Bmad
 Distribution "util_programs/beam_file_translate_format".
+
+###subsection Old Beam ASCII Format
 
 There is an old ASCII format that is still accepted by Bmad but is deprecated and should be
 avoided. The format is:

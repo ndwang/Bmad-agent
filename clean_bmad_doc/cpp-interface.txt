@@ -1,4 +1,4 @@
-chapter C++ Interface
+###chapter C++ Interface
 
 To ease the task of using \cpp routines with Bmad, there is a
 library called "cpp_bmad_interface" which implements a set of \cpp
@@ -16,7 +16,7 @@ for use in the translation code discussed below. The names of these
 opaque classes have the form "Bmad_xxx_class" and are used to define
 pointer instances in routine argument lists.
 
-----------------------------------------------------------------------------
+###section C++ Classes and Enums
 
 Generally, The \cpp classes have been set up to simply mirror the
 corresponding Bmad structures. For example, the "CPP_lat" class
@@ -49,7 +49,7 @@ constructs like "ele%value(k1$)" consistant, the corresponding
 "ele.value[]" array has goes from 0 to "Bmad::NUM_ELE_ATTRIB"
 with the 0th element being unused.
 
-----------------------------------------------------------------------------
+###section Conversion Between Fortran and C++
 
   subroutine f_test
     use bmad_cpp_convert_mod

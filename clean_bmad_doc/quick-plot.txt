@@ -1,4 +1,4 @@
-chapter Quick_Plot Plotting
+###chapter Quick_Plot Plotting
 
 \quickplot is an interface layer to either the "PGPLOT"\citeb:pgplot or
 "PLPLOT"\citeb:plplot plotting libraries. Whether "PGPLOT" or "PLPLOT" is used depends upon
@@ -7,8 +7,6 @@ an environmental switch set when the Bmad library and other associated libraries
 distribution.] A quick reference guide can be seen online by using the command "getf
 quick_plot". For identification in a program, all \quickplot subroutines start with a "qp_"
 prefix. Also, by convention, all PGPLOT subroutines start with a "pg" prefix.
-
-----------------------------------------------------------------------------
 
 \index[routine]qp_open_page"
 \index[routine]qp_close_page
@@ -91,7 +89,7 @@ prefix. Also, by convention, all PGPLOT subroutines start with a "pg" prefix.
 
 \includegraphics[width=5.5in]plot-example.pdf
 
-----------------------------------------------------------------------------
+###section An Example
 
 An example of how \quickplot can be used in a program is shown in
 \figf:plot.example. In the Bmad distribution a copy of this
@@ -172,7 +170,7 @@ Lines 50 through 60 draw the third curve in the right hand graph.  The
 \Hyperrefr:qp.draw.axesqp_draw_axes in lines 40 and 57/58 comes from PGPLOT and allows
 special symbols along with subscripts and superscripts.
 
-----------------------------------------------------------------------------
+###section Plotting Coordinates
 
   \includegraphicsplot-coords.pdf
 
@@ -202,7 +200,7 @@ have no margins with 1 box covering the entire page. The
 \Hyperrefr:qp.set.marginqp_set_margin routine sets the distance between the box edges
 and the axes (See the PGPLOT manual for more details).
 
-----------------------------------------------------------------------------
+###section Length and Position Units
 
 Typically there is an optional "units" argument for \quickplot routines that
 have length and/or position arguments. For example, using "getf" one can
@@ -261,7 +259,7 @@ Examples:
   "%BOX"          -- Percentage of box so (1.0, 1.0) = RT of box.
   "INCH/PAGE"     -- Inches from LB of page.
 
-----------------------------------------------------------------------------
+###section Y2 and X2 axes
 
 The top and right axes of a graph are known as "X2" and "Y2"
 respectively as shown in \figf:plot.coords. Normally the
@@ -287,7 +285,7 @@ To plot data using the "X2" or "Y2" scale use the
   ! ... Do some data plotting here ...
   call qp_restore_state
 
-----------------------------------------------------------------------------
+###section Text
 
 PGPLOT defines certain escape sequences that can be used in text strings to draw Greek letters,
 etc. These escape sequences are given in Table~\reft:pgplot.escape.
@@ -297,7 +295,7 @@ PGPLOT defines a text background index:
           0 - Erase underlying graphics before drawing text.
    1 to 255 - Opaque with the number specifying the color index.
 
-----------------------------------------------------------------------------
+###section Styles
 
 Symbolic constants have been defined for \quickplot subroutine arguments that are used to choose
 various styles. As an example of this is in lines 44 and 45 of \figf:plot.example. The numbers in
@@ -403,7 +401,7 @@ is a Roman letter, map onto the Greek character set.
 ""\"g<r>" where ""<r>"" is a Roman character to the corresponding 
 Greek character.
 
-----------------------------------------------------------------------------
+###section Structures
 
 \quickplot uses several structures to hold data. The structure that
 defines a line is a "qp_line_struct"

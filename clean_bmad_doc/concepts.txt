@@ -1,10 +1,10 @@
-chapter Bmad Concepts and Organization
+###chapter Bmad Concepts and Organization
 
 This chapter is an overview of some of the nomenclature used by Bmad. Presented are the basic
 concepts, such as "element", "branch", and "lattice", that Bmad uses to describe such
 things as LINACs, storage rings, X-ray beam lines, etc.
 
----------------------------------------------------------------------------
+###section Lattice Elements
 
 The basic building block Bmad uses to describe a machine is the "lattice" "element". An
 element can be a physical thing that particles travel "through" like a bending magnet, a
@@ -20,7 +20,7 @@ which is always named "BEGINNING", is automatically included in every branch and
 marker for the beginning of the branch.  Additionally, every branch will, by default, have a final
 marker element  named "END".
 
----------------------------------------------------------------------------
+###section Lattice Branches
 
 The next level up from a "lattice" "element" is the "lattice" "branch". A "lattice"
 "branch" contains an ordered sequence of lattice elements that a particle will travel through. A
@@ -40,7 +40,7 @@ X-ray beam line. A "branch" from which other "branches" fork but is not forked t
 other "branch" is called a "root" branch. A branch that is forked to by some other branch
 is called a "downstream" branch.
 
----------------------------------------------------------------------------
+###section Lattice
 
 an array of "branches" that can be interconnected together to describe an entire machine
 complex. A "lattice" can include such things as transfer lines, dump lines, x-ray beam lines,
@@ -87,7 +87,7 @@ When parsing a lattice file, branches are not formed until the lattice is expand
 . Therefore, an "expand_lattice" statement is required before branch qualified
 names can be used in statements. See for more details.
 
----------------------------------------------------------------------------
+###section Lord and Slave Elements
 
  \includegraphics[width=6.0in]superimpose-ip.pdf
 Superposition Example. A) Interaction region layout with quadrupoles overlapping a solenoid. B) The
@@ -95,8 +95,6 @@ Bmad lattice representation has a list of split elements to track through and th
 elements. Pointers (double headed arrows), keep track of the correspondence between the lords and
 their slaves.
  
----------------------------------------------------------------------------
-
 A real machine is more than a collection of independent lattice elements. For example, the field
 strength in a string of elements may be tied together via a common power supply, or the fields of
 different elements may overlap.

@@ -1,4 +1,4 @@
-chapter The lat_struct
+###chapter The lat_struct
 
 The "lat_struct" is the structure that holds of all the information
 about a lattice . The components of a
@@ -36,7 +36,7 @@ end type
 The "%ele_init" component within the "lat_struct" is not used
 by Bmad and is available for general program use.
 
-----------------------------------------------------------------------------
+###section Initializing
 
 Normally initialization of a "lat_struct" lattice is done by
 \Hyperrefr:bmad.parserbmad_parser when a lattice file is parsed and does not have to be done by
@@ -52,7 +52,7 @@ branches. Example:
   call allocate_lat_ele_array (lat, 20, 1)  ! Branch(1) has 21 elements
   call allocate_lat_ele_array (lat, 30, 2)  ! Branch(2) has 31 elements.
 
-----------------------------------------------------------------------------
+###section Pointers
 
 Since the "lat_struct" has pointers within it, there is an extra burden on the programmer to make
 sure that allocation and deallocation is done properly. To this end, the equal sign has been
@@ -76,7 +76,7 @@ the routine.
 Using the save attribute will generally be faster but will use more
 memory. Typically using the save attribute will be the best choice.
 
-----------------------------------------------------------------------------
+###section Branches in the lat_struct
 
 The lattice is divided up into the "root branch"  and,
 if there are "fork" or "photon_fork" elements, a number "forked"
@@ -158,7 +158,7 @@ is being forked to is stored in:
   direction  = nint(branch_ele%value(direction$))
 The direction will be +1 for forward forking and -1 for backward forking.
 
-----------------------------------------------------------------------------
+###section Param_struct Component
 
 The "%param" component within each "lat%branch(:)" is a
 "lat_param_struct" structure whose definition is shown in
@@ -224,7 +224,7 @@ the functions "mass_of" and "charge_of" respectively.
   print *, "Particle mass (eV):    ", mass_of(lat%param%particle)
   print *, "Particle charge:       ", charge_of(lat%param%particle)
 
-----------------------------------------------------------------------------
+###section Elements Controlling Other Elements
 
 In the "lat_struct" structure, certain elements in the "%ele(:)" array (equivalent to the
 "%branch(0)%ele(:)" array), called "lord" elements, can control the attributes (component
@@ -473,7 +473,7 @@ lords.
 On the other hand, if a non "super_slave" element is being sliced, the "%lord" pointer
 component of the "slice_slave" will be set to point to the element being sliced.
 
-----------------------------------------------------------------------------
+###section Lattice Bookkeeping
 
 The term "lattice bookkeeping" refers to the updating of the appropriate parameter values when a
 given parameter in the lattice is changed. For example, if the accelerating gradient of an
@@ -549,7 +549,7 @@ remake the transfer matrices.  "lat_make_mat6" will remake the transfer matrices
 matrix was computed has shifted.  "lat_make_mat6" will set the "ele%status%mat6" flag to
 "ok$" for all elements whose transfer matrices are recomputed.
 
-----------------------------------------------------------------------------
+###section Intelligent Bookkeeping
 Historically, as the code for lattice bookkeeping  was being developed
 calls to bookkeeping routines were added to calculational
 routines such as the tracking routine \Hyperrefr:track1track1 and the routine for calculating
@@ -596,7 +596,7 @@ The "attribute" argument may be either real, integer, or logical.
 The "set_flags_for_changed_attribute" routine sets flags in the "ele%status" structure
 .
 
-----------------------------------------------------------------------------
+###section particle_start Component
 
 The "lat%particle_start" component is a "coord_struct" structure for holding the information
 obtained from "particle_start" statements  in a Bmad lattice file.
@@ -611,7 +611,7 @@ use as desired. Use \Hyperrefr:init.coordinit_coord to initalize a particle posi
   ! orbit_start is initalized for tracking from the beginning of the lattice
   call init_coord(orbit_start, lat%particle_start, lat%ele(0), downstream_end$)
 
-----------------------------------------------------------------------------
+###section Custom Parameters
 
 Custom parameters defined for the lattice as a whole ( are stored in
 "lat%custom". The following shows how to print a table of the custom parameters

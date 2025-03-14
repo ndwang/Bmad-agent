@@ -1,9 +1,9 @@
-chapter An Example Bmad Based Program
+###chapter An Example Bmad Based Program
 
 To get the general feel for how Bmad works before getting into the nitty--gritty details in
 subsequent chapters, this chapter analyzes an example test program.
 
------------------------------------------------------------------------------
+###section Programming Setup
 
 Information on how to setup your work environment for the compiling and linking of programs can be
 obtained from the Bmad web site at:
@@ -12,7 +12,7 @@ obtained from the Bmad web site at:
 In particular, instructions for compiling, linking, and running of the example program can be
 obtained by going to the above web page and clicking on the button labeled "Compiling Custom Programs".
 
------------------------------------------------------------------------------
+###section A First Program
 
 Consider the example program shown in \figf:program. The source code for this program is provided
 with Bmad in the directory:
@@ -74,7 +74,7 @@ deallocate (eles)
 
 end program
 
------------------------------------------------------------------------------
+###section Explanation of the Simple_Bmad_Program
 
 A line by line explanation of the example program follows. The "use bmad" statement at line 3
 defines the Bmad structures and defines the interfaces (argument lists) for the Bmad

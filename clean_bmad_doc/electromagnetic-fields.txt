@@ -1,4 +1,6 @@
-chapter Electromagnetic Fields
+###chapter Electromagnetic Fields
+
+###section Magnetostatic Multipole Fields
 
 Start with the assumption that the local magnetic field has no longitudinal component
 (obviously this assumption does not work with, say, a solenoid).  Following \mad, ignoring
@@ -112,6 +114,8 @@ automatically depending upon the type of element as shown in Table~\reft:ab. The
   "Sextupole"   K2 * L                                 2 
   "Octupole"    K3 * L                                 3  
 
+###section Electrostatic Multipole Fields
+
 Except for the "elseparator" element, Bmad specifies DC electric fields using normal
 b_en and skew a_en components . The potential \phi_n for the
 n\Th\ order multipole is
@@ -128,6 +132,8 @@ counterparts are not.
 Using the paraxial approximation, The kick given a particle due to the electric field is
   \fracdp_xds = \fracq \, E_x\beta \, P_0 \, c, \qquad \fracdp_yds = \fracq \, E_y\beta \, P_0 \, c
 Where \beta is the normalized velocity.
+
+###section Exact Multipole Fields in a Bend
 
 For static magnetic and electric multipole fields in a bend, the spacial dependence of the
 field is different from multipole fields in an element with a straight geometry as given
@@ -249,6 +255,8 @@ vertically or horizontally pure solutions. [Note to programmers: PTC always assu
 coefficients correspond to horizontally pure solutions. The Bmad PTC interface will
 convert coefficients as needed.]
 
+###section Map Decomposition of Magnetic and Electric Fields
+
 Electric and magnetic fields can be parameterized as the sum over a number of functions
 with each function satisfying Maxwell's equations. These functions are also referred to as
 "maps", "modes", or "terms". Bmad has three parameterizations:
@@ -271,6 +279,8 @@ decomposition is discussed in.
 The "generalized gradient map" start with the cylindrical map decomposition but then express the
 field using coefficients derived from an expansion of the scalar potential in powers of the radius
 .
+
+###section Cartesian Map Field Decomposition
 
 Electric and magnetic fields can be parameterized as the sum over a number of functions
 with each function satisfying Maxwell's equations. These functions are also referred to as
@@ -393,6 +403,8 @@ zero), and k_z must be non-zero for the "hyper-xy" forms, and k_x must be nonzer
 
 Note: The vector potential for these fields is given in.
 
+###section Cylindrical Map Decomposition
+
 Electric and magnetic fields can be parameterized as the sum over a number of functions with each
 function satisfying Maxwell's equations. These functions are also referred to as "maps",
 "modes", or "terms". Bmad has two types. The ""cylindrical"" decomposition is explained
@@ -404,6 +416,8 @@ explained in Sec.~.
 The "cylindrical" decomposition takes one of two forms depending upon whether the fields are time
 varying or not. The DC decomposition is explained in Sec.~ while the RF
 decomposition is explained in Sec.~.
+
+###subsection DC Cylindrical Map Decomposition
 
 The DC "cylindrical" parametrization used by Bmad essentially follows Venturini et
 al.\citeb:vent.map. See Section~ for details on the syntax used to cylindrical
@@ -492,6 +506,8 @@ Note: The description of the field using ""generalized gradients""\citeb:newton 
 the above equations. The difference is that, with the generalized gradient formalism, terms in
 \theta and \rho are expanded in a Taylor series in x and y.
 
+###subsection AC Cylindrical Map Decomposition
+
 For RF fields, the "cylindrical" mode parametrization used by Bmad essentially
 follows Abell\citeb:rf.abell. The electric field is the real part of the complex field
   E(r) = \sum_j=1^M \, E_j(r) \, \exp[-2 \pi i \, (f_j \, t + \phi_0j)]
@@ -577,6 +593,8 @@ fundamental accelerating mode, the vector potential can be analytically integrat
 identity
   \int dx \,\fracx \, I_1 (a \, \sqrtx^2+y^2)\sqrtx^2+y^2  = 
   \frac1a \, I_0 (a \, \sqrtx^2+y^2)
+
+###section Generalized Gradient Map Field Modeling
 
 Bmad has a number of "field map" models that can be used to model electric or magnetic fields
 . One model involves what are called "generalized gradients"\citeb:gen.grad.
@@ -676,6 +694,8 @@ The conversion for the cosine like derivatives is:
     \left( C_xy(m+1), \, S_xy(m+1) \right) \ig] 
   B_z= \frac(-1)^n \, m!4^n n! \, (n+m) 
     (x^2 + y^2)^n \, C^[2n+1]_m,c(z) \, C_xy(m) \nonumber
+
+###section RF fields
 
 The following describes the how RF fields are calculated when the "field_calc"
 attribute of an RF element is set to "bmad_standard".\footnote

@@ -1,6 +1,6 @@
-chapter Bmad Programming Overview
+###chapter Bmad Programming Overview
 
------------------------------------------------------------------------------
+###section Manual Notation
 
 Bmad defines a number of structures and these structures may contain
 components which are structures, etc. In order to keep the text in
@@ -35,7 +35,7 @@ The "ele" component of the "branch" component of the
 ""%branch%ele"", or ""%ele"". Potentially, the last of these
 could be confused with the ""lat%ele"" component so ""%ele""
 would only be used if the meaning is unambiguous in the context.
------------------------------------------------------------------------
+###section  The Bmad Libraries
 
 The code that goes into a program based upon Bmad is divided up into a number of libraries.
 The Bmad libraries are divided into two groups. One group of libraries contains "in-house"
@@ -111,7 +111,7 @@ to make things more programmer friendly.
 The xraylib library provides routines for obtaining parameters pertinent to the X-ray interaction
 with matter. xraylib is developed by Tom Schoonjans and is hosted on github\citeb:xraylib
 
------------------------------------------------------------------------------
+###section Using getf and listf for Viewing Routine and Structure Documentation
 
 As can be seen from the program example in Chapter~\refc:program.info
 there is a lot going on behind the scenes even for this
@@ -208,7 +208,7 @@ the fact that, to save time, "getf" and "listf" make assumptions
 about how documentation is arranged in a file and the non--Cornell libraries 
 do not follow this format.
 
------------------------------------------------------------------------
+###section Precision of Real Variables
 
 Historically, Bmad come in two flavors: One version where the real
 numbers are single precision and a second version with double
@@ -241,7 +241,7 @@ Independent of the setting of "rp", the parameters "sp" and
 "dp" are defined to give single and double precision numbers
 respectively.
 
------------------------------------------------------------------------------
+###section Programming Conventions
 
 Bmad subroutines follow the following conventions:
 
@@ -269,7 +269,7 @@ can be used.
 For example: "lat_struct", "ele_struct", etc. Structures without a 
 "_struct" are usually part of \'Etienne's PTC/FPP package.
 
------------------------------------------------------------------------
+###section  Using Modules
 
 When constructing a program unit,\footnote
   

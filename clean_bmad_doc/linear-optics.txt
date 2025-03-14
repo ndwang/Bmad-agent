@@ -1,4 +1,6 @@
-chapter Linear Optics
+###chapter Linear Optics
+
+###section Coupling and Normal Modes
 
 The coupling formalism used by Bmad is taken from the paper of Sagan and Rubin\citeb:coupling.
 The main equations are reproduced here.
@@ -130,6 +132,8 @@ default, Bmad sets the "mode_flip" at the beginning of the lattice to "False"
 point. For a lattice with a closed geometry, if the lattice is stable, the "mode_flip" state at
 the end of the lattice will be equal to the state at the beginning of the lattice.
 
+###section Tunes From One-Turn Matrix Eigen Analysis
+
   \includegraphics[width=5in]tune.pdf
 a clockwise rotation in (x, p_x) or (y, p_y) space represents a positive tune. B) For longitudinal
 oscillations, it is sometimes conventional to take counterclockwise rotation as positive if a machine
@@ -197,6 +201,8 @@ Chao\citeb:chao.spin, is the negative of the S matrix defined here and in the pa
 Hirata, and Oide \citeb:ohmi the phases are reversed (positive phase is counterclockwise rotation)
 as can be seen from Eqs.~(77) and (79) in their paper.
   
+###section Linear Action-Angle Coordinates
+
 The transformation from the one-turn 6 \cross 6 matrix T in laboratory coordinates to
 action-angle coordinates uses the similarity transformation
   T = N \, R \, N^-1
@@ -251,6 +257,8 @@ where the 2 \times 2 submatrices have the standard form
 with similar equations for N_b and N_c. To make the (1,2) component of these submatrices
 zero, along with having \sqrt\beta positive, the k\Th component of v_k, k = 1, 3, 5
 must be positive real. This fixes the overall phase of the eigenvectors.
+
+###section Dispersion Calculation
 
 The dispersion \eta is defined in the standard way
   \texteta_x = \eta_x(s) \equiv \left. \fracdxdp_z \right|_s \comma \qquad

@@ -1,4 +1,4 @@
-chapter HDF5
+###chapter HDF5
 
 "HDF5", which stands for "Hierarchical Data Format" version 5\citeb:hdf5, is a set of file
 formats designed to store and organize large amounts of data. HDF5 has been developed by scientists
@@ -15,6 +15,8 @@ define the syntax for how data is to be stored. For that, Bmad uses the syntax d
 "Beam Physics" extension to the "openPMD" standard\citeb:openpmd. To understand the rest of
 this chapter, the reader should familiarize themselves with the "openPMD" and "Beam Physics"
 standards.
+
+###section HDF5 Particle Beam Data Storage
 
 The code for reading and writing beam data to/from HDF5 files is contained in the routines
 \Hyperrefr:hdf5.read.beamhdf5_read_beam and \Hyperrefr:hdf5.write.beamhdf5_write_beam.
@@ -90,6 +92,8 @@ For clarity's sake, the "%vec(1)" through "%vec(6)" phase space coordinate compo
 "coord_struct" have been replaced by "%x", "%px", \ldots, "%z", "%pz" in the above
 table. Notice that the Beam Physics "z" position (not to be confused with phase space "z") is
 always zero by construction as shown in Fig.~\reff:local.coords. 
+
+###section HDF5 Grid_Field Data Storage
 
 The code for reading and writing "grid_field" data to/from HDF5 files is contained in the
 routines \Hyperrefr:hdf5.read.grid.fieldhdf5_read_grid_field and

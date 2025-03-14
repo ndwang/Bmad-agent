@@ -1,11 +1,11 @@
-chapter Superposition
+###chapter Superposition
 
 This chapter covers the concept of "superposition".  "Superposition" is used when elements
 overlap spatially.  With "superposition", "lord" and "slave" elements 
 are constructed by Bmad to hold the necessary information. The "lord" elements will represent
 the "physical" element while the "slave" elements will embody the "beam path".
 
------------------------------------------------------------------------------
+###section Superposition Fundamentals
 
   \includegraphics[width=0.95\textwidth]superimpose-example.pdf 
 Superposition example. A) The physical layout involves a quadrupole partially inside a solenoid. B)
@@ -246,7 +246,7 @@ Superposition with "line reflection"  works the same way as line reversal.
 
 The "no_superposition" statement  can be used to turn off superpositioning
 
------------------------------------------------------------------------------
+###section Superposition and Sub-Lines
 
 Sometimes it is convenient to do simulations with only part of a lattice. The rule for how
 superpositions are handled in this case is illustrated in the following example. Consider a lattice
@@ -276,7 +276,7 @@ then when the "full" line is used, the superposition of "m1" is referenced to th
 superposition of "m1" is referenced to the beginning of "sub2" which is not the same as the
 beginning of "full".
 
------------------------------------------------------------------------------
+###section Jumbo Super_Slaves
 
 The problem with the way "super_slave" elements are created as discussed above is that edge
 effects will not be dealt with properly when elements with non-zero fields are misaligned. When this
@@ -319,7 +319,7 @@ need to use jumbo elements when superimposing a "marker" element.
 Another possible way to handle overlapping fields is to use the "field_overlaps" element
 attribute as discussed in.
 
------------------------------------------------------------------------------
+###section Changing Element Lengths when there is Superposition
 
 When a program is running, if "group"  or "overlay" 
 elements are used to vary the length of elements that are involved in superimposition, the results

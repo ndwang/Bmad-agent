@@ -1,3 +1,4 @@
+###section *Introduction
 \pdfbookmark[1]IntroductionIntro
 
 As a consequence of Bmad being a software library, this manual serves two masters: The

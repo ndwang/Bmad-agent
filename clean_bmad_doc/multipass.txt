@@ -1,4 +1,4 @@
-chapter Multipass
+###chapter Multipass
 
 This chapter covers the concept of "multipass". "Multipass" is used when an element is
 "shared" between branches such as the interaction region shared by two storage rings, or when a
@@ -7,7 +7,7 @@ linac. With "multipass", "lord" and "slave" elements  are constructed
 by Bmad to hold the necessary information. The "lord" elements will represent the "physical"
 element while the "slave" elements will embody the "beam path".
 
------------------------------------------------------------------------------
+###section Multipass Fundamentals
 
 "Multipass" lines are a way to handle the bookkeeping when different elements being tracked
 through represent the same physical element. For example, consider the case where dual ring colliding
@@ -152,7 +152,7 @@ It is important to note that the global coordinates  of the slaves of a given
 multipass lord are not constrained by Bmad to be the same. It is up to the lattice designer to make
 sure that the physical positions of the slaves makes sense (that is, are the same).
 
------------------------------------------------------------------------------
+###section The Reference Energy in a Multipass Line
 
 Consider the lattice where the tracking elements are
   A\1, C, A\2

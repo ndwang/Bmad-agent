@@ -1,5 +1,4 @@
-chapter OPAL
-----------------------------------------------------------------------------
+###chapter OPAL
 
 OPAL (Object Oriented Parallel Accelerator Library) is a tool for charged-particle optic
 calculations in large accelerator structures and beam lines including 3D space charge. OPAL is built
@@ -18,7 +17,7 @@ field.
 The  manual can be obtained at
   amas.web.psi.ch/docs/opal/   
 
---------------------------------------------------------------------------
+###section Phase Space
 
 OPAL uses different longitudinal phase space coordinates compared to Bmad.  Bmad's phase space
 coordinates are
@@ -27,3 +26,44 @@ OPAL uses
   (x, \gamma \beta_x,  y, \gamma \beta_y, z, \gamma \beta_z)
 "convert_particle_coordinates_s_to_t" and "convert_particle_coordinates_s_to_t" are conversion routines \ldots
 
+%--------------------------------------------------------------------------
+###section Initialization
+\labels:etienne.init
+
+One important parameter in PTC is the order of the Taylor maps.
+By default Bmad will set this to 3. The order can be set within
+a lattice file using the "parameter[taylor_order]" attribute.
+In a program the order can be set using "set_ptc". In fact
+"set_ptc" must be called by a program before PTC can be used.
+"bmad_parser" will do this when reading in a lattice file.
+That is, if a program does not use "bmad_parser" then to use PTC it
+must call "set_ptc". Note that resetting PTC to a different order
+reinitializes PTC's internal memory so one must be careful if one wants
+to change the order in mid program.
+
+%--------------------------------------------------------------------------
+###section Taylor Maps
+\labels:etienne.taylor
+
+FPP stores its "real_8" Taylor maps in such a way that it is not
+easy to access them directly to look at the particular terms. To
+simplify life, \'Etienne has implemented the
+"universal_taylor"structure:
+\beginexample
+ type universal_taylor
+   integer, pointer  :: n       ! Number of coefficients
+   integer, pointer  :: nv      ! Number of variables
+   real(dp), pointer :: c(:)    ! Coefficients C(N)
+   integer, pointer  :: j(:,:)  ! Exponents of each coefficients J(N,NV)
+ end type
+\endexample
+Bmad always sets "nv" = 6. Bmad overloads the equal sign to call 
+routines to convert between \'Etienne's
+"real_8" Taylor maps and "universal_taylor":
+\beginexample
+ type (real_8) tlr(6)           ! Taylor map
+ type (universal_taylor) ut(6)  ! Taylor map
+ ...
+ tlr = ut                       ! Convert universal_taylor -> real_8
+ ut = tlr                       ! Convert real_8 -> universal_taylor
+\endexample

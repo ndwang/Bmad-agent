@@ -1,6 +1,149 @@
------------------------------------------
 Note: Use pdflatex to process this file.
------------------------------------------
 
 \documentclassbook
+
+%\usepackage[all]nowidow
+\usepackageindex
+\usepackagesetspace
+\usepackagegraphicx
+\usepackagemoreverb    % Defines listing environment.
+\usepackageamsmath, amsthm, amssymb, amsbsy, mathtools
+\usepackagealltt
+\usepackagerotating
+\usepackagesubcaption
+\usepackagexspace
+\usepackagexcolor
+%\usepackagemakeidx
+\usepackage[section]placeins   % For preventing floats from floating to end of chapter.
+\usepackagelongtable  % For splitting long vertical tables into pieces
+\usepackagemultirow
+\usepackagebooktabs   % For table layouts
+\usepackageyhmath     % For widehat
+\usepackageeso-pic    % For cover graphics
+\usepackageenumitem
+%\usepackagefancyvrb
+\usepackagemarginnote
+
+\usepackage[T1]fontenc   % so _, <, and > print correctly in text.
+\usepackage[strings]underscore    % to use "_" in text
+\usepackage[pdftex,colorlinks=true,bookmarksnumbered=true]hyperref   % Must be last package 
+
+\newcommand\ackgroundPic%
+\put(0,0)%
+\parbox[b][\paperheight]\paperwidth%
+
+\centering
+\includegraphics[width=\paperwidth,height=\paperheight,%
+keepaspectratio]success-kid-image.jpg%
+
+\inputmacros.tex
+
+\setlength\textwidth6.25in
+\setlength\hoffset0.0in
+\setlength\oddsidemargin0.0in
+\setlength\evensidemargin0.0in
+\setlength\textheight8.5in
+\setlength\topmargin0in
+
+\renewcommand\textfraction0.1
+\renewcommand\topfraction1.0
+\renewcommand\bottomfraction1.0
+
+\makeindex
+\newindexroutinerdxrndRoutine Index
+
+\AddToShipoutPicture*\ackgroundPic
+
+\includecover-page
+
+\setlength\parskip\dPar
+\setlength\parindent0ex
+\includeoverview
+\includeintroduction
+
+\cleardoublepage
+\phantomsection 
+\pdfbookmark[0]ContentsContents
+\pdfbookmark[1]Table of Contentstoc 
+\tableofcontents
+
+\cleardoublepage
+\phantomsection 
+\pdfbookmark[1]List of FiguresLoF 
+\listoffigures
+
+\cleardoublepage
+\phantomsection 
+\pdfbookmark[1]List of TablesLoT 
+\listoftables
+
+\setlength\parskip\dPar
+\setlength\parindent0ex
+
+\partLanguage Reference
+\includeorientation
+\includeconcepts
+\includelattice-file
+\includeelements
+\includeattributes
+\includemethods
+\includelines-and-lists
+\includesuperposition
+\includemultipass
+\includeparam-statements
+\includeparam-structs
+\includebeam-init
+\includelattice-examples
+\includeconversion
+\includelist-element-attributes
+
+\partConventions and Physics
+\includecoordinates
+\includeelectromagnetic-fields
+\includefringe-fields
+\includewakefields
+\includemultiparticle
+\includesynchrotron-radiation
+\includelinear-optics
+\includespin
+\includetaylor-maps
+\includecharged-tracking
+\includexray-tracking
+\includesimulation-modules
+\includeptc-use
+
+\partProgrammer's Guide
+\includeprogramming
+\includeexample-program
+\includeele-struct
+\includelat-struct
+\includemanipulation-lat-ele
+\includereading-and-writing-lattices
+\includenormal-modes
+\includetracking
+\includemisc-programming
+\includeptc-programming
+% \includefpp
+\includeopal
+\includecpp-interface
+\includequick-plot
+\includehdf5-programming
+\includesubroutines
+
+\partBibliography and Index
+
+\cleardoublepage
+\phantomsection
+\addcontentslinetocchapterBibliography
+\includebibliography
+
+\cleardoublepage
+\phantomsection
+\addcontentslinetocchapterRoutine Index
+\printindex[routine]
+
+\cleardoublepage
+\phantomsection
+\addcontentslinetocchapterIndex
+\printindex
 

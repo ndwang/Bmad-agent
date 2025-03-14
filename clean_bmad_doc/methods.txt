@@ -1,4 +1,4 @@
-chapter Tracking, Spin, and Transfer Matrix Calculation Methods
+###chapter Tracking, Spin, and Transfer Matrix Calculation Methods
 
 Bmad allows for a number of methods that can be use to "track" a particle through a lattice
 element. Here "track" can mean one of three things:
@@ -24,7 +24,7 @@ of elements.
 
 These switches are discussed in more detail in the following sections.
 
-----------------------------------------------------------------------------
+###section Particle Tracking Methods
 
 The "tracking_method" attribute of an element sets the algorithm that is used for single particle
 tracking through that element.  Table~\reft:track.methods gives which methods are available for
@@ -139,8 +139,6 @@ low energy particles generated at the vacuum chamber walls can be found travelin
 directions. Notice that "time_runge_kutta" is different from using "absolute time tracking" as
 explained in. This method is non-symplectic .
 
-----------------------------------------------------------------------------
-
 \rule0pt80pt 
 \em Element Class
  
@@ -191,7 +189,7 @@ default method. "X" denotes a valid method. Photonic
 elements are elements in Table~\reft:photon.classes that cannot be used for
 charged particle tracking (Table~\reft:particle.classes).
 
-----------------------------------------------------------------------------
+###section Linear Transfer Map (Mat6) Calculation Methods
 
 The "mat6_calc_method" attribute sets how the 6x6 Jacobian transfer matrix for a given element is
 computed. Table~\reft:mat6.methods gives which methods are available for each type of element.
@@ -325,7 +323,7 @@ sets the six deltas used for displacing the initial particle coordinates from th
 available mat6_calc_method switches. When tracking photons, transfer
 matrices are not computed.  "D" denotes the default method. "X" denotes an available method.
 
-----------------------------------------------------------------------------
+###section Spin Tracking Methods
 
 The "spin_tracking_method" attribute of an elements sets the algorithm that is used for tracking
 a particle's spin  through that element.  Table~\reft:spin.methods gives which
@@ -407,6 +405,8 @@ Example:
 available "spin_tracking_method"\ switches. "D" denotes the default method. 
 "X" denotes an available method. Note: Photon tracking does not involve spin.
 
+###section Integration Methods
+
 "Integration methods" are tracking methods that involve integrating through an element's magnetic
 and electric fields.  Integration methods are split into two classes: Those that can track Taylor
 maps and those that simply track a particle's position.  The Taylor map methods are
@@ -431,6 +431,8 @@ there are a number of element attributes that can affect the calculation. They a
 Example:
   q1: quadrupole, l = 0.6, tracking_method = bmad_standard, 
         mat6_calc_method = symp_lie_ptc, ds_step = 0.2, field_calc = custom
+
+###section CSR and Space Charge Methods
 
 When doing beam tracking through an element , Coherent Synchrotron Radiation
 (CSR) and Space Charge (SC) effects can be included by setting the appropriate method switches in
@@ -462,6 +464,8 @@ space charge and CSR calculations.
 
 Note: There is also high energy space charge calculation that can be used with single particle
 tracking and is discussed in.
+
+###subsection ds_step and num_steps Parameters
 
 One way to create a transfer map through an element is to divide the element up into slices and then
 to propagate the transfer map slice by slice.  There are several ways to do this integration. The
@@ -503,6 +507,8 @@ The estimated error of the integration is then bounded by
 lowering the error bounds makes for greater accuracy (as long as round-off 
 doesn't hurt) but for slower tracking. 
 
+###subsection Field_calc Parameter
+
 The "runge_kutta" type tracking methods all use as input the electric and magnetic fields of
 an element. How the EM fields are calculated is determined by the "field_calc" attribute for an
 element.  For all lattice elements, except "wigglers" and "undulators", possible values for
@@ -536,6 +542,8 @@ control algorithm shortens the step and tries again. A field that does not obey 
 can fool the control algorithm into thinking that the error is always larger than the allowed
 tolerance for any finite step size. A typical situation is where the field has an unphysical step
 across some boundary.
+
+###subsection PTC Integration
 
 The "integrator_order" element attribute is the order of the integration formula for
 "Symp_Lie_PTC" and is used for constructing Taylor maps. Possible values are
@@ -592,6 +600,8 @@ the setting of "ptc_integration_type" is ignored and tracking will be "drift_kic
 an electric field is introduced into an element, more integration steps may be required to get the
 correct tune.
 
+###section Symplectic Versus Non-Symplectic Tracking
+
 When selecting tracking methods for lattice elements, there are several factors to consider,
 including symplecticity. Despite its emphasis in accelerator textbooks, symplecity (or the lack
 therof) is typically only relevant for long-term tracking when there is minimal radiation emission
@@ -609,6 +619,8 @@ proved quite adequate. However in other cases with radiation, the symplectic err
 extra damping or anti-damping effect, giving equilibrium beam sizes that are an under/overestimate 
 of the actual beam sizes. When opting for speed versus symplecticity in long term tracking over 
 many turns, care should be taken to ensure that the effects of the non-symplecticity are minimal.
+
+###section Symplectify Attribute
 
 The "symplectify" attribute
   symplectify = <Logical>
@@ -629,6 +641,8 @@ this case, "symplectification" involves first transforming the
 transfer matrix so that the reference momentum is the same upstream
 and downstream, then performing symplectification, and finally back
 transforming the reference momentum to their original values.
+
+###section taylor_map_include_offsets Attribute
 
 The "taylor_map_includes_offsets" attribute sets whether the Taylor map
 generated for an element includes the affect due to the elements

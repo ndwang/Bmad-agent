@@ -1,6 +1,6 @@
-chapter Lattice Element Manipulation
+###chapter Lattice Element Manipulation
 
---------------------------------------------------------------------------
+###section Creating Element Slices
 
 It is sometimes convenient to split an element longitudinally into
 "slices" that represent a part of the element.  This is complicated
@@ -19,7 +19,7 @@ Example:
   call create_element_slice (sliced_ele, ele, l_start, param, ...)
 See the documentation on "create_element_slice" for more details .
 
-----------------------------------------------------------------------------
+###section Adding and Deleting Elements From a Lattice
 
 Modifying the number of elements in a lattice involves a bit of
 bookkeeping. To help with this there are a number of routines. 
@@ -70,7 +70,7 @@ in the following list:
   s_position$      ! Varies element's overall s-position. Constant length.
 See Section~ for the meaning of these attributes
 
----------------------------------------------------------------------------
+###section Finding Elements
 
 The routine \Hyperrefr:lat.ele.locatorlat_ele_locator 
 can be used to search for an element
@@ -108,7 +108,7 @@ check if an attribute is free to vary.
   free = attribute_free (eles(i)%ele, "K1", lat, .false.)
   if (.not. free) print *, "Cannot vary k1 attribute of element Q10W"
 
----------------------------------------------------------------------------
+###section Accessing Named Element Attributes
 
 A "named" parameter of the "ele_struct" structure is a parameter that has an associated name
 that can be used in a lattice file. For example, the quadrupole strength is named "K1"

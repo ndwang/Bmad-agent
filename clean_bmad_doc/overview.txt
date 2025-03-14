@@ -1,3 +1,4 @@
+###section *Overview
 \pdfbookmark[1]OverviewOverview
 
 Bmad (Otherwise known as "Baby MAD" or "Better MAD" or just plain "Be MAD!") is a subroutine

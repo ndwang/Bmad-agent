@@ -1,4 +1,4 @@
-chapter Tracking of Charged Particles
+###chapter Tracking of Charged Particles
 
 Bmad can track both charged particles and X-rays. This chapter deals with charged particles and
 X-rays are handled in chapter~.
@@ -9,6 +9,8 @@ discusses the "bmad_standard" calculation that is the default for almost all ele
 the "symp_lie_bmad" calculation that does symplectic integration.
 
 Generally, it will be assumed that tracking is in the forward direction.
+
+###section Relative Versus Absolute Time Tracking
 
 Unlike other elements, the kick given a particle going through an "lcavity", "rfcavity", or
 possibly an "em_field" element depends upon the time that the particle enters the element
@@ -90,8 +92,7 @@ independent variable.
 One important point to always keep in mind is that any PTC based tracking  will
 always use relative time tracking independent of the setting of "bmad_com[absolute_time_tracking]".
 
--------------------------------------------------------------------------
--------------------------------------------------------------------------
+###section Element Coordinate System
 
 The general procedure for tracking through an element makes use of "element reference"
 coordinates (also called just "element" coordinates). Without any offsets, pitches or tilt
@@ -114,14 +115,12 @@ At the exit end of the element, transform from the exit "element" reference fram
 The transformation between "laboratory" and "element" reference frames is given in
  and.
 
--------------------------------------------------------------------------
-
   \includegraphics[width=5in]coord-offset.pdf
   
 "Element" coordinates are coordinates attached to the physical element (solid green outline). The
 "laboratory" coordinates are fixed at the nominal position of the element (red dashed outline).
   
--------------------------------------------------------------------------
+###section Hamiltonian
 The time dependent Hamiltonian H_t in the curvilinear coordinate system shown
 in \figf:local.coords is (\citeb:ruth)
   H_t = \wt\psi + \left[ \left( \fracp_s - a_s1 + g\, x \right)^2 + \wt m^2 + 
@@ -195,8 +194,7 @@ variable. the Hamiltonian H_\wt s is then
   H_\wt s = -(1 + g \, x) \sqrt(1 + p_z)^2 - (p_x - a_x)^2 - (p_y - a_y)^2 + 
   a_s + \frac1\beta_0 \, \sqrt(1+p_z)^2 + \wt m^2
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section Symplectic Integration
 
 Using \Eqhpapa the Hamiltonian is written in the form
   H = H_x + H_y + H_z
@@ -231,8 +229,7 @@ zero (cf.~\Eqakxgx).
 For "lcavity" and "rfcavity" elements, the vector potential is computed from
 \Eqaiew.
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section BeamBeam Tracking
 
 A beam-beam element  simulates the effect on a tracked particle of an opposing
 beam of particles moving in the opposite direction. The opposing beam, called the "strong" beam,
@@ -314,8 +311,7 @@ relative velocity (2c) between the beams.
 
 \newpage  % If newpage is removed, the footnote get put on the next page! 
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section Bend: Exact Body Tracking with k1 = 0
 
   \includegraphics[width=5in]bend-exact.pdf
 
@@ -400,8 +396,7 @@ The matrix is:
 where
   \sincc(\theta) \equiv \fracx - \sin(x)x^3
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section Bend: Body Tracking with finite k1
 
 For a bend with a finite "k1", the Hamiltonian for the body of an "sbend" is
   H = (g_\tot - g) \, x - g \, x \, p_z + 
@@ -442,8 +437,7 @@ and
   m_522= \frac-14 \, (1 + p_z1)^2 \, (L + c_x \, s_x) \qqquad
   m_544= \frac-14 \, (1 + p_z1)^2 \, (L + c_y \, s_y) \nonumber
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section Bend: Fiducial Point Calculations
 
 When the "fiducial_pt" switch for a bend is set to something other than "none", changing one
 of "rho", "g", "b_field" or "angle" in a program (that is, changing after the lattice
@@ -536,8 +530,7 @@ calculation is again similar to the "angle"-variation analysis with the "fiducia
 either end. If "e1" and "e2" are not equal, a calculation is done that gives the desired angle
 but the center point will shift.
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section Converter Tracking
 
 Tracking through a "converter" element involves generating five random numbers
   \footnote
@@ -562,8 +555,6 @@ the element parameters :
   pc_out_max    ! Maximum momentum of generated outgoing particles (eV).
   angle_out_max ! Maximum angle to the surface perpendicular (rad).
 
--------------------------------------------------------------------------
-
   \includegraphics[width=5in]converter.pdf
   
 An incoming particle strikes the bottom of the converter. At some point within the interior, a new
@@ -573,8 +564,6 @@ orientation of the outgoing particle, a coordinate system is established where t
 through and the (x,y) axes are randomly rotated with respect to the (x_b,y_b) body coordinate axes.
 By construction, the position of the outgoing particle will be along the x-axis.
   
--------------------------------------------------------------------------
-
 The geometry of the converter is shown in \figf:converter. On the top surface, where the outgoing
 particle emerges, (x_b,y_b) are the axes for the element body coordinate system .
 To generate the position and orientation of the outgoing particle, another coordinate system is used
@@ -688,8 +677,7 @@ introduce inaccuracies. Typically, however, the incoming particles will be fairl
 perpendicular. Considering this, and considering the approximations used to calculate the
 distribution parameters, the neglect of incoming particle orientation effects is usually justified.
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section Drift Tracking
 
 Bmad uses the exact map for a drift
 This gives the map
@@ -704,8 +692,7 @@ normalized velocity, and p_l is the normalized longitudinal momentum
   p_l \equiv \fracP_lP_0 = \sqrt(1 + p_z)^2 - p_x^2 - p_y^2
 with P_l being the longitudinal momentum.
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section ElSeparator Tracking
 
   \includegraphics[width=5in]elseparator.pdf
   
@@ -755,15 +742,14 @@ the longitudinal component of the edge field. Specifically, the argument of the 
 \Eqhp1b must be non-negative and a particle will only make it through the separator if
   x_0 > \frac1k_E \, \left( \sqrt\wt m^2 + p_x0^2 + p_y0^2 - \wt E \right)
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section Foil Tracking
 
 A particle going through a "foil" element is scattered both in angle and in energy, and the
 charge of the particle may be affected. The following two subsections give the formulas used for
 scattering and energy loss. Currently, the final charge is a fixed number but that may change in the
 future.
 
----------------------------------------------------------------------------------
+###subsection Scattering in a Foil
 
 For the angle scattering, the user can select between one of two algorithms, both
 of which are given in the paper by Peralta and Louro\citeb:peralta (also see Lynch and Dahl\citeb:lynch)
@@ -813,7 +799,7 @@ foil versus two foils with half the thickness as the single foil will not give e
 results. This is just a reflection that both algorithms are trying to model an inherently non-Gaussian
 process.
 
----------------------------------------------------------------------------------
+###subsection Energy Loss in a Foil
 
 The particle energy loss per unit length dE/dx through a foil is calculated using the "Bethe-Bloch" formula
   - \left\langle\fracdEdx\right\rangle = 
@@ -826,8 +812,7 @@ the normalized velocity, and e and m_e the electron charge and rest mass respect
 Note that to keep the direction of travel of the particle constant when energy is lost, this implies
 that p_x/(1+p_z) and p_y/(1+p_z) are to be held constant (\Eqxpa1p).
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section Kicker, Hkicker, and Vkicker Tracking
 
 The Hamiltonian for a horizontally deflecting kicker or separator is
   H = \fracp_x^2 + p_y^22 (1 + p_z) - k_0 \, x 
@@ -841,8 +826,7 @@ This gives the map
   p_z2= p_z1 \nonumber
 The generalization when the kick is not in the horizontal plane is easily derived.
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section LCavity Tracking
 
 For tracking using something like "runge_kutta", with "field_calc" set to "bmad_standard",
 the fields are modeled by the equations given in Sections~ and.
@@ -893,23 +877,19 @@ Note that the above transport equations are only symplectic on-axis There are se
 the transverse coordinates that are missing. To obtain a proper symplectic matrix, the
 "symplectify" attribute of an "lcavity" element  can be set to True.
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section Octupole Tracking
 
 The Hamiltonian for an upright octupole is
   H = \fracp_x^2 + p_y^22 (1 + p_z) + \frack_324 (x^4 - 6 \, x^2 \, y^2 + y^4)
 
 An octupole is modeled using a kick-drift-kick model.
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section Patch Tracking
 
   \includegraphics[width=5in]patch.pdf
 Standard tracking through a patch element. A particle's starting coordinate at the entrance end of
 the patch has, by construction, coordinate z = 0. The particle is drifted, as in a field free
 region, between the entrance z = 0 plane and the exit z = 0 plane.
-
----------------------------------------------------------------------------------
 
 The transformation of the reference coordinates through a "standard" patch (a patch where custom
 fields are not used) is given by \Eqsvwlv and \eqwws. At the entrance end of the patch, a
@@ -953,8 +933,7 @@ L_0 is the drift length of the reference particle
   S^-1_31 \, \textx_offset + S^-1_32 \, \texty_offset + S^-1_33 \, \textz_offset
   \right)
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section Quadrupole Tracking
 
 The "bmad_standard" calculates the transfer map through an upright
 quadrupole and then transforms that map to the laboratory frame.
@@ -988,8 +967,7 @@ with this
   m_522= \frac-14 \, (1 + p_z1)^2 \, (L + c_x \, s_x) \qqquad
   m_544= \frac-14 \, (1 + p_z1)^2 \, (L + c_y \, s_y) \nonumber
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section RFcavity Tracking
 
 For tracking using something like "runge_kutta", with "field_calc" set to "bmad_standard",
 the fields are modeled by the equations given in Sections~ and.
@@ -1003,8 +981,7 @@ With "bmad_standard" tracking, the transverse forces due to the RF are ignored. 
 a reasonable approximation when the acceleration is small as is standard in rings. "Lcavity"
 elements should be used in place of "rfcavity" elements when this is not so.
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section Sad_Mult Tracking
 
 The "hard edge" fringe field kick is taken from Forest\citeb:forest Eqs.~(13.29) and onward.
 In the notation of Bmad, and taking into account both normal and skew terms, Eq.~(13.29)
@@ -1036,16 +1013,14 @@ where
   w= -\sin\theta \, x_1 + \cos\theta \, y_1, \qquad
   \tan\theta= \frac-SK_0K_0 \nonumber
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section Sextupole Tracking
 
 The Hamiltonian for an upright sextupole is
   H = \fracp_x^2 + p_y^22 (1 + p_z) + \frack_26 (x^3 - 3 \, x \, y^2)
 
 Tracking through a sextupole uses a kick-drift-kick model.
 
----------------------------------------------------------------------------------
----------------------------------------------------------------------------------
+###section Sol_Quad Tracking
 
 The Hamiltonian is
   H = \frac(p_x + \frack_s 2\, y)^22 (1 + p_z) + 
@@ -1115,14 +1090,12 @@ hyperbolic functions. These integrals are trivial to do but the
 explicit equations for m_5jk are quite long and in the interests of
 brevity are not reproduced here.
 
----------------------------------------------------------------------------------
-
   \includegraphics[width=5in]solenoid.pdf
   
 Solenoid with a hard edge. The field is assumed to end abruptly at the edges of the solenoid. Here,
 for purposes of illustration, the field lines at the ends are displaced from one another.
   
----------------------------------------------------------------------------------
+###section Solenoid Tracking
 
 The "bmad_standard" solenoid tracking does not make the small angle approximation.
 The transfer map for the solenoid is:
@@ -1152,7 +1125,7 @@ the solenoid fringe field is assumed to end abruptly at the edges of the solenoi
 \figf:solenoid), and the reference axis z-axis (at x = y = 0) is placed along the
 centerline of the solenoid so that there is cylindrical symmetry around the z-axis.
 
------------------------------------------------------------------------------------------
+###section Sprint Spin Tracking
 
 The "sprint" spin tracking method is named after the "SPRINT" program developed by Matthias
 Vogt.  The "sprint" algorithm Uses a first order spin map evaluated with respect to the zero
@@ -1172,7 +1145,7 @@ tools. Appropriate quaternions are concatenated according to the values of "spin
  s_d= \sin(d)          c_e2&= \cos(\frace2)& s_s&= \sin(s)       s_t2&= \sin(\fract2) \CRNO
  \chi = 1+a\gamma          \zeta= \gamma - 1   \qquad& \psi= \gamma^2 - 1    c_t2&= \cos(\fract2) \nonumber
 
------------------------------------------------------------------------------------------
+###subsection SBend Body, k_1 = 0
 
         q_0    q_y     q_z  
   1   c_e2 -s_e2        \addlinespace[1ex]
@@ -1181,7 +1154,7 @@ tools. Appropriate quaternions are concatenated according to the values of "spin
   p_y                    \frac1\gamma \zeta \, s_e2  \addlinespace[1ex]
   p_z \frac12 \gamma \left(\gamma \, \chi \, s_d -a \, \psi \, d \right) s_e2 
   
------------------------------------------------------------------------------------------
+###subsection Sbend Body, k_1 \neq 0
 
    k_x = k_1 + g^2 
   \omega_x = \sqrt|k_x| 
@@ -1220,7 +1193,7 @@ tools. Appropriate quaternions are concatenated according to the values of "spin
   p_z \fracg2\left(\frac\chi s_x\omega_x - \fraca l \psi\gamma\right) s_e2   
     \fracg2\left(\frac\chi s_x\omega_x - \fraca l \psi\gamma\right) c_e2 
   
------------------------------------------------------------------------------------------
+###subsection Sbend Entrance Fringe
 
 To calculate the exit fringe, multiply all field strengths g by
 -1, and replace all entrance face angles e_1 with exit face angles -e_2. The negative exit face
@@ -1230,7 +1203,7 @@ angle is used due to Bmad convention.
   x                                     \frac12 \chi g \tan(e_1)  \addlinespace[1ex]
   y       \frac12(1+a)g \sin(e_1)                                -\frac12(1+a)g \cos(e_1) 
   
------------------------------------------------------------------------------------------
+###subsection Quadrupole
 
   \omega = \sqrt|k_1| \nonumber
 
@@ -1246,7 +1219,7 @@ angle is used due to Bmad convention.
   y         -\frac12 k_1 \chi s_y  \addlinespace[1ex]
   p_y       -\frac12 k_1 \chi c_y 
 
------------------------------------------------------------------------------------------
+###subsection Solenoid Element Body
 
    q_0 q_x q_y q_z  
   1 c_t2 -s_t2  \addlinespace[1ex]
@@ -1256,14 +1229,14 @@ angle is used due to Bmad convention.
   p_y \frac12 \zeta ((-1 + c_s) c_t2 + s_s s_t2) \frac12 \zeta ((1-c_s) s_t2 + s_s c_t2)  \addlinespace[1ex]
   p_z \frac12 t s_t2 \frac12 t c_t2 
 
------------------------------------------------------------------------------------------
+###subsection Solenoid Entrance Fringe
 To calculate the exit fringe, multiply all field strengths k_s by -1.
   q_0 q_x q_y  
   1 1 
   x \frac14 k_s \chi   
   y \frac14 k_s \chi  
 
----------------------------------------------------------------------------------
+###section Symplectic Tracking with Cartesian Modes
 
 The method for symplectic integration for elements that define the magnetic field using a
 Cartesian mode decomposition  is outlined in.  The

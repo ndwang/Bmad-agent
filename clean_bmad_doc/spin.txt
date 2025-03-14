@@ -1,4 +1,6 @@
-chapter Spin Dynamics
+###chapter Spin Dynamics
+
+###section Equations of Motion
 
 The propagation of the classical spin vector S is described in the local reference
 frame  by a modified Thomas-Bargmann-Michel-Telegdi
@@ -46,6 +48,8 @@ Note: Some authors define \eta without the factor of c is the denominator.
 It is important to keep in mind that the a and g-factors used here are defined using \Eqmgq2m
 which, in the case of nuclei and other composite baryonic particles, differs from the conventional
 definition \Eqmgq2m2. See the discussion after \Eqmgq2m.
+
+###section Quaternions and Biquaternions
 
 Bmad uses a quaternion representation for spin rotations\citeb:quat and for the single resonance
 analysis  it is convenient to use biquaternions which are quaternions with
@@ -175,6 +179,8 @@ These relations are fairly easy to derive. For example, the last one is proved v
 and since the magnitude of both \re(Q) and \im(Q) must be positive (since \re and \im
 produce real numbers), it follows that |\re(Q)| = |\im(Q)|.
 
+###section Invariant Spin Field
+
 In a storage ring, the "invariant spin field" n(r, s) = (n_x, n_y, n_z)
 \citeb:spin.hoff,b:duan15, which is a function of phase space position r = (x, p_x, y, p_y, z,
 p_z) and longitudinal position s, is the \em continuous function with unit amplitude that
@@ -219,6 +225,8 @@ With this, n_0 is given by
   n_0 = \frac\sign(q_0)\left| (q_x, q_y, q_z) \right| \, ( q_x, q_y, q_z )
 where \sign is the sign function. With this, the calculation of the tune and n_0 is
 independent of whether q or -q is used.
+
+###section Polarization Limits and Polarization/Depolarization Rates
 
 Once the invariant spin field  has been calculated, various quantities of interest can be
 computed. For example, given some initial distribution of spins in a beam, the maximum possible time
@@ -312,6 +320,8 @@ vertical direction and \partialn/\partial\delta will be perpendicular to the ver
 where \tau_dep^-1 is calculated via particle tacking and the other quantities are calculated by
 integrals over the closed orbit ignoring beam size effects.
 
+###section Bmad Tune and n_0 convention
+
 As mentioned above, at any point in a ring the direction of the closed orbit invariant spin n_0
 is ambiguous since, if n_0 is a valid invariant spin direction, then so is -n_0. The same
 is true of the spin tune \nu_0 and if \nu_0 is the spin tune associated with n_0, -\nu_0
@@ -329,6 +339,8 @@ involving n_0. To ensure a consistent tune, Bmad uses the following convention t
 tune will always be in the range [0, \pi], and the direction of n_0 will be chosen to be
 consistent with this choice in tune (it is left as an exercise for the reader to prove that there
 will always be exactly one spin tune in the range [0, \pi].
+
+###section Linear \texorpdfstring\partialn/\partial\deltadn/dpz Calculation
 
 When evaluating the equations in the previous section, in many situations it is sufficient to just
 use the value of \partialn/\partial\delta as calculated in the linear regime. In the linear regime,
@@ -425,6 +437,8 @@ G can be decomposed into three 2\times2 sub-matrices:
   G = \left( G_x, G_y, G_z \right)
 Zeroing q_1 and q_2 is equivalent to zeroing G_x, etc.
 
+###section Single Resonance Model
+
 Resonances occur when the spin tune \nu_s is an integer ("imperfection" resonances) and when the spin
 tune \nu_s in combination with the three orbital tunes \nu_x, \nu_y, and \nu_z is an integer
 ("intrinsic" or "spin-orbit" resonances)
@@ -500,6 +514,8 @@ approximation, the spin will be
 strength is the angle (modulo 2 \, \pi) that a spin is tipped away from n_0 in one turn. The
 linear approximation will be valid for N such that N \, \epsilon_r \ll 1. For the linear
 approximation to be valid for any positive N, \epsilon_r must satisfy \epsilon_r \ll 1.
+
+###section Linear Resonance Analysis
 
 Within the linear approximation, the resonance strength \epsilon_r (\Eqstos) can be related to
 the first order spin transport (\Eqqqqr). The analysis starts by inversion of \Eqsr0n and
@@ -584,6 +600,8 @@ is -n).
 The resonance strength can also be calculated within the "SLIM" formalism  via
 \Eqx1pg or \Eqx2pg. Comparing \Eqsx12pq1 or \eqx12pq2 with \Eqx2pg it is seen
 that \cal G is the quaternion equivalent of the SLIM G 2\cross6 matrix.
+
+###section SLIM Formalism
 
 The "SLIM" formalism\footnote
   
@@ -810,6 +828,8 @@ where
 with G(1,:) being the first row of the 2\times6 G matrix and G(2,:) being
 the second row. It can be shown that an equivalent way of writing \Eqx1pg is 
   \xi_r = \frac\sqrt22 \, \pi \, \big| (G(1,:) \cdot v_k, G(2,:) \cdot v_k) \big|
+
+###section Spinor Notation
 
 The following describes the old spinor representation formally used by Bmad to represent
 spins. This documentation is kept as an aid for comparison with the spin tracking literature.

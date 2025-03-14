@@ -1,6 +1,6 @@
-chapter Miscellaneous Programming
+###chapter Miscellaneous Programming
 
------------------------------------------------------------------------------
+###section Custom and Hook Routines
 
 Bmad calculations, like particle tracking through a lattice element, can be customized using what
 are called ""custom"" and ""hook"" routines. The general idea is that a programmer can
@@ -60,7 +60,7 @@ is not met by the existing set of entry points, please contact a Bmad maintainer
 Note: The custom and hook routines in "/bmad/custom/" are not compiled with the Bmad library. Their
 only purpose is to serve as prototypes for code development.
 
------------------------------------------------------------------------------
+###section Custom Calculations
 
 There are essentially two ways to do "custom" (as opposed to "hook") calculations. One way
 involves using a "custom" element . The other way involves setting the
@@ -181,7 +181,7 @@ hit the wall. If "%hit_when" is set to "wall_transition$", a collision occurs wh
 particle crosses the wall boundary. The distinction between "outside_wall$" and
 "wall_transition$" is important if particles are to be allowed to travel outside the wall.
 
------------------------------------------------------------------------------
+###section Hook Routines
 
 A "hook" routine is like a "custom" routine in that a "hook" routine can be used for
 customizing a Bmad calculation by replacing the "dummy" version of a "hook" routine with
@@ -228,7 +228,7 @@ called and "track1_custom" will be handling radiation damping and excitation eff
 
 The "track1_wake_hook" can be used to apply custom wakes.
 
------------------------------------------------------------------------------
+###section Nonstandard Init_Custom Use
 
 For back compatibility reasons, a nonstandard method for using "init_custom" is supported.
 This method involves not bothering to set the "init_custom_ptr" 
@@ -237,7 +237,7 @@ of routines to link to. The problem with this method is that it is not guarantee
 on all platforms. In particular, this method is known to fail with MacOS and the "gcc"
 compiler. Due to this, this method is discouraged. 
 
------------------------------------------------------------------------------
+###section Physical and Mathematical Constants
 
 Common physical and mathematical constants that can be used in any expression
 are defined in the file:
@@ -273,7 +273,7 @@ The following constants are defined
   g_factor_electron = 0.001159652193    ! Anomalous gyro-magnetic moment
   g_factor_proton   = 1.79285           ! Anomalous gyro-magnetic moment
 
------------------------------------------------------------------------------
+###section Global Coordinates and S-positions
 
 The routine \Hyperrefr:lat.geometrylat_geometry will compute the global floor coordinates at the
 end of every element in a lattice.  "lat_geometry" works by repeated calls to
@@ -286,7 +286,7 @@ W  and the orientation angles \theta, \phi, \psi, the routines
 The routine \Hyperrefr:s.calcs_calc calculates the longitudinal s positions for the elements
 in a lattice.
 
------------------------------------------------------------------------------
+###section Reference Energy and Time
 
 \index reference energy
 The reference energy and time for the elements in a lattice is calculated by
@@ -331,7 +331,7 @@ Additionally, photonic elements like "crystal", "capillary",
 "mirror" and "multilayer_mirror" elements have an associated photon reference wavelength
   ele%value(ref_wavelength$)      ! Meters.
 
------------------------------------------------------------------------------
+###section Global Common Structures
 
 There are two common variables used by Bmad for communication between routines. These are
 "bmad_com", which is a "bmad_common_struct" structure, and "global_com" which is a
@@ -357,7 +357,7 @@ error. Stopping is generally the right thing when a program is simply doing a ca
 getting a wrong answer is not productive. In control system programs and in interactive programs
 like "Tao", it is generally better not to stop on an error.
 
------------------------------------------------------------------------------
+###section Parallel Processing
 
 Bmad was initially developed without regard to parallel processing. When a demand for
 multithreading capability arose, Bmad was modified to meet the need and uses both MP

@@ -83,8 +83,8 @@ def clean_latex_file(input_file, output_file):
             line = line.rstrip('\n')
             
             # Exit conditions
-            if line.startswith('%%'):
-                break
+            #if line.startswith('%%'):
+            #    break
                 
             if '\\begin{example}' in line:
                 in_example = True
@@ -93,7 +93,7 @@ def clean_latex_file(input_file, output_file):
                 
             # Skip certain LaTeX commands
             if any(line.strip().startswith(cmd) for cmd in [
-                '\\section', '\\subsection', '\\label', '\\begin', '\\end',
+                '\\label', '\\begin', '\\end',
                 '\\centering', '\\caption', '\\vskip']):
                 continue
                 
@@ -172,7 +172,9 @@ def clean_latex_file(input_file, output_file):
             line, _ = substitute(line, '"\\W"', '"^"')
             line, _ = substitute(line, '\\Bf ', '')
             line, _ = substitute(line, '\\B', '\\')
-            line, _ = substitute(line, '\\chapter', 'chapter ')
+            line, _ = substitute(line, '\\chapter', '###chapter ')
+            line, _ = substitute(line, '\\section', '###section ')
+            line, _ = substitute(line, '\\subsection', '###subsection ')
             
             # Remove LaTeX comments
             if line.startswith('% '):
